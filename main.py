@@ -2,7 +2,7 @@ import argparse
 import algorithms
 import input
 
-def main():
+if __name__ == '__main__':
     # move to new class
     parser = argparse.ArgumentParser()
     parser.add_argument("algorithm")
@@ -14,7 +14,3 @@ def main():
 
     # gonna be a big if stack somewhere
     print(output)
-
-main()
-
-
