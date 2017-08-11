@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+# from abc import ABC
+from abc import abstractmethod
 import input
 
 class Algorithm(object):
@@ -31,16 +32,38 @@ class Dijkstra(Algorithm):
 
         return V, E
 
+# Flow networks:
+
 class FordFulkerson(Algorithm):
     def exploit(self, generator, n_inputs):
-        weight = generator.get_max_value()
-        E = [[weight for x in range(n_inputs)] for y in range(n_inputs)]
-        # Incomplete
+        heavy = generator.get_max_value()
+        light = 1
+        G = {}
+        possible_nodes = []
+        n = "A"  # Maybe should be generator.get_min_value()
+        for i in range(n_inputs):
+            possible_nodes.append(n)
+            n = generator.get_greater_than(n)
+        for i in range(1, n_inputs-1):
+            G[possible_nodes[i]] = (set(), light)
+            for j in range(1, n_inputs - 1):
+                G[possible_nodes[i]][0].add(possible_nodes[j])
+        G[possible_nodes[0]] = (set(), heavy)
+        for i in range(n_inputs):
+            G[possible_nodes[0]][0].add(possible_nodes[i])
+        return G
         # https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm#Integral_example
 
-class PushRelabel(Algorithm):
+class PushRelabel(Algorithm):  # O(V^2 * E)
     def exploit(self, generator, n_inputs):
-        pass
+        return Kruskal.exploit(generator, n_inputs)
+
+class EdmondsKarp(Algorithm): # O(V * E^2)
+    def exploit(self, generator, n_inputs):
+        return Kruskal.exploit(generator, n_inputs)
+
+# Directly from engagement problms:
+# TODO: Go through engagement problems
 
 # Definitely needs to be broadened (Response8.txt, 52)
 class RecursiveXML(Algorithm):
@@ -76,6 +99,11 @@ class Fleury(Algorithm):
         return G
 
 
+class FloydWarshall(Algorithm):
+    def exploit(self, generator, n_inputs):
+        Fleury.exploit(generator, n_inputs)
+
+
 class Hierholzer(Algorithm):
     def exploit(self, generator, n_inputs):
         return Fleury.exploit(generator, n_inputs)
@@ -87,12 +115,25 @@ class TopologicalSort(Algorithm):
 
 
 # Minimum spanning tree
+# Weighted graphs represented G = {0 -> {1 -> 0.7, 2 -> 1.5} , ...}
 class Kruskal(Algorithm):
-    pass
+    def exploit(self, generator, n_inputs):
+        G = {}
+        weight = generator.get_random()
+        possible_nodes = []
+        n = "A"
+        for i in range(n_inputs):
+            possible_nodes.append(n)
+            n = generator.get_greater_than(n)
+        for i in range(n_inputs):
+            for n in range(n_inputs):
+                G[possible_nodes[i]] = (possible_nodes[n], weight)
+        return G
 
 
 class Prim(Algorithm):
-    pass
+    def exploit(self, generator, n_inputs):
+        return Kruskal.exploit(generator, n_inputs)
 
 
 class BFS(Algorithm):
@@ -111,7 +152,7 @@ class KCenter(Algorithm):
 
 
 # Comparison algorithm
-#  occurs when all characters of pattern and text are same as the hash values of all the substrings of txt[] match with hash value of pat[]. For example pat[] = “AAA” and txt[] = “AAAAAAA”.
+
 class RabinKarp(Algorithm):
     def exploit(self, generator, n_inputs):
         whole = generator.get_random() * n_inputs
