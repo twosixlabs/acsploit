@@ -21,17 +21,6 @@ class Sort(Algorithm):
 
 # Graph algorithms - return adj matrix (?)
 
-class Dijkstra(Algorithm):
-    # Return vertices and edge weights
-    # Maybe make values different
-    def exploit(self, generator, n_inputs):
-        value = generator.get_random() # Just names for nodes...
-        weight = generator.get_random()
-        V = [value] * n_inputs
-        E = [[weight for x in range(n_inputs)] for y in range(n_inputs)]
-
-        return V, E
-
 # Flow networks:
 
 class FordFulkerson(Algorithm):
@@ -91,13 +80,24 @@ class Fleury(Algorithm):
         n = "A"
         for i in range(n_inputs):
             possible_nodes.append(n)
+            G[n] = set()
             n = generator.get_greater_than(n)
         for i in range(n_inputs):
             for n in range(n_inputs):
-                G[possible_nodes[i]] = possible_nodes[n]
-
+                G[possible_nodes[i]].add(possible_nodes[n])
         return G
 
+class Dijkstra(Algorithm):
+    # TODO: Fix return
+    # Return vertices and edge weights
+    # Maybe make values different
+    def exploit(self, generator, n_inputs):
+        value = generator.get_random()  # Just names for nodes...
+        weight = generator.get_random()
+        V = [value] * n_inputs
+        E = [[weight for x in range(n_inputs)] for y in range(n_inputs)]
+
+        return V, E
 
 class FloydWarshall(Algorithm):
     def exploit(self, generator, n_inputs):
@@ -106,8 +106,11 @@ class FloydWarshall(Algorithm):
 
 class Hierholzer(Algorithm):
     def exploit(self, generator, n_inputs):
-        return Fleury.exploit(generator, n_inputs)
+        return Fleury.exploit(Fleury(), generator, n_inputs)
 
+class Johnson(Algorithm):
+    def exploit(self, generator, n_inputs):
+        pass
 
 class TopologicalSort(Algorithm):
     def exploit(self, generator, n_inputs):
@@ -143,6 +146,7 @@ class BFS(Algorithm):
 
 class DFS(Algorithm):
     def exploit(self, generator, n_inputs):
+        # Actually might be different
         return Fleury.exploit(generator, n_inputs)
 
 
@@ -155,15 +159,17 @@ class KCenter(Algorithm):
 
 class RabinKarp(Algorithm):
     def exploit(self, generator, n_inputs):
-        whole = generator.get_random() * n_inputs
-        pattern = generator.get_random() * int(n_inputs / 2)
+        base = generator.get_random()[0]
+        whole = base * n_inputs
+        pattern = base * int(n_inputs / 2)
         return whole, pattern
 
 
 class BoyerMoore(Algorithm):
     def exploit(self, generator, n_inputs):
-        whole = generator.get_random() * n_inputs
-        pattern = generator.get_random() * int(n_inputs / 2)
+        base = generator.get_random()[0]
+        whole = base * n_inputs
+        pattern = base * int(n_inputs / 2)
         return whole, pattern
 
 
@@ -177,7 +183,8 @@ class BoyerMoore(Algorithm):
 # For instance - union on binary heaps is O(n), where all other operations are either O(log n) or O(1)
 
 class Hashmap(Algorithm):
-    pass
+    def exploit(self, generator, n_inputs):
+        pass
 
 class Trie(Algorithm):
     # Worst case - input with as similar input as possible
@@ -227,9 +234,5 @@ class BinomialHeap(Algorithm):
     pass
 
 class FibonacciHeap(Algorithm):
-    # Delete node and delete minimum can take O(n) time
-    pass
-
-class Graph(Algorithm):
-    # Maybe consider distinction for different graph algorithms
+    # Delete minimum takes O(n) time
     pass
