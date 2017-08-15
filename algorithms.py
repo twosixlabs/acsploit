@@ -1,5 +1,7 @@
 # from abc import ABC
 from abc import abstractmethod
+import random
+import math
 import input
 
 class Algorithm(object):
@@ -18,8 +20,6 @@ class Sort(Algorithm):
             output.append(generator.get_less_than(output[i-1]))
 
         return output
-
-# Graph algorithms - return adj matrix (?)
 
 # Flow networks:
 
@@ -70,6 +70,7 @@ class MatrixOperations(Algorithm):
 class Exponent(Algorithm):
     pass
 
+# Graph algorithms - return adj matrix (?)
 
 class Fleury(Algorithm):
     # this could be slow if n_inputs is large enough
@@ -88,33 +89,28 @@ class Fleury(Algorithm):
         return G
 
 class Dijkstra(Algorithm):
-    # TODO: Fix return
-    # Return vertices and edge weights
-    # Maybe make values different
     def exploit(self, generator, n_inputs):
-        value = generator.get_random()  # Just names for nodes...
-        weight = generator.get_random()
-        V = [value] * n_inputs
-        E = [[weight for x in range(n_inputs)] for y in range(n_inputs)]
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
-        return V, E
+class BellmanFord(Algorithm):
+    def exploit(self, generator, n_inputs):
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
 class FloydWarshall(Algorithm):
     def exploit(self, generator, n_inputs):
-        Fleury.exploit(generator, n_inputs)
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
+class Johnson(Algorithm):
+    def exploit(self, generator, n_inputs):
+        return Fleury.exploit(Fleury(), generator, n_inputs)
 
 class Hierholzer(Algorithm):
     def exploit(self, generator, n_inputs):
         return Fleury.exploit(Fleury(), generator, n_inputs)
 
-class Johnson(Algorithm):
-    def exploit(self, generator, n_inputs):
-        pass
-
 class TopologicalSort(Algorithm):
     def exploit(self, generator, n_inputs):
-        pass  # likely the same as the past two
+        return Fleury.exploit(Fleury(), generator, n_inputs)
 
 
 # Minimum spanning tree
@@ -122,15 +118,16 @@ class TopologicalSort(Algorithm):
 class Kruskal(Algorithm):
     def exploit(self, generator, n_inputs):
         G = {}
-        weight = generator.get_random()
+        weight = 1
         possible_nodes = []
         n = "A"
         for i in range(n_inputs):
             possible_nodes.append(n)
             n = generator.get_greater_than(n)
         for i in range(n_inputs):
+            G[possible_nodes[i]] = []
             for n in range(n_inputs):
-                G[possible_nodes[i]] = (possible_nodes[n], weight)
+                G[possible_nodes[i]].append((possible_nodes[n], weight))
         return G
 
 
@@ -155,7 +152,7 @@ class KCenter(Algorithm):
         pass
 
 
-# Comparison algorithm
+# Comparison algorithms
 
 class RabinKarp(Algorithm):
     def exploit(self, generator, n_inputs):
@@ -172,9 +169,30 @@ class BoyerMoore(Algorithm):
         pattern = base * int(n_inputs / 2)
         return whole, pattern
 
+# Shapes:
+
+class Jarvis(Algorithm):
+    def exploit(self, generator, n_inputs):
+        # Generate n points on a polygon, to force all points to lie on a hull -> worse case O(n^2)
+        angles = []
+        points = []
+        for n in range(n_inputs):
+            angles.append(random.random() * 2 * math.pi)
+        return points
+
+
+class Graham(Algorithm):
+    def exploit(self, generator, n_inputs):
+        # Points that create a spiral could generate a very slow case. Otherwise, worst case O(n*log(n))
+        pass
+
+# Need to be categorized:
+
+class HopcroftKarp(Algorithm):
+    def exploit(self, generator, n_inputs):
+        pass
 
 # Dynamic:
-
 
 
 # Data structures:
