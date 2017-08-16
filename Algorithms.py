@@ -182,7 +182,7 @@ class Jarvis(Algorithm):
         for n in range(n_inputs):
             x = x0 + R * math.cos(angles[n])
             y = y0 + R * math.sin(angles[n])
-            points.append((x, y))
+            points.append((int(x), int(y)))
 
         return points
 

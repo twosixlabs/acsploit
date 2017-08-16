@@ -6,10 +6,11 @@ if __name__ == '__main__':
     # move to new class
     parser = argparse.ArgumentParser()
     parser.add_argument("algorithm")
-    parser.add_argument("--restraints", action="store_true")
+    parser.add_argument("--bounds", action="store_true")
+    parser.add_argument("--constraints", action="store_true")
     args = parser.parse_args()
 
-    min_int = 0
+    min_int = -2**31 + 1
     max_int = 2**31 - 1
     
     min_char = 0x61
@@ -20,9 +21,35 @@ if __name__ == '__main__':
     
     n_inputs = 26
 
-    if args.restraints:
+    if args.bounds:
+        val = input("min_int: ")
+        if val and type(val) == int:
+            min_int = val
+
+        val = input("max_int: ")
+        if val and type(val) == int:
+            max_int = val
+
+        val = input("min_char: ")
+        if val and len(val) == 1:
+            min_char = val
+
+        val = input("max_char: ")
+        if val and len(val) == 1:
+            max_char = val
+
+        val = input("min_len: ")
+        if val and type(val) == int:
+            min_len = val
+
+        val = input("max_len: ")
+        if val and type(val) == int:
+            max_len = val
+
+    if args.constraints:
+        # other arbitrary restrictions on possible input
         pass
-    
+
     output = None
 
     # gonna be a big if stack somewhere
