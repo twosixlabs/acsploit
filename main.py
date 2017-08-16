@@ -1,88 +1,102 @@
 import argparse
-import algorithms
-import input
+import Algorithms
+import Input
 
 if __name__ == '__main__':
     # move to new class
     parser = argparse.ArgumentParser()
     parser.add_argument("algorithm")
+    parser.add_argument("--restraints", action="store_true")
     args = parser.parse_args()
 
+    min_int = 0
+    max_int = 2**31 - 1
+    
+    min_char = 0x61
+    max_char = 0x71
+    
+    min_len = 10
+    max_len = 10
+    
+    n_inputs = 26
+
+    if args.restraints:
+        pass
+    
     output = None
 
     # gonna be a big if stack somewhere
     if args.algorithm == "sort":
-        algorithm = algorithms.Sort()
-        output = algorithm.exploit(input.StringGenerator(input.CharGenerator(0x61, 0x7a), 10, 10), 26)
+        algorithm = Algorithms.Sort()
+        output = algorithm.exploit(Input.StringGenerator(Input.CharGenerator(min_char, max_char), min_len, max_len), n_inputs)
 
 
     # flow networks:
     elif args.algorithm == "fordfulkerson":
-        algorithm = algorithms.FordFulkerson()
-        output = algorithm.exploit(input.IntGenerator(0, 2**31-1), 26)
+        algorithm = Algorithms.FordFulkerson()
+        output = algorithm.exploit(Input.IntGenerator(min_int, max_int), n_inputs)
 
     elif args.algorithm == "pushrelabel":
-        algorithm = algorithms.PushRelabel()
-        output = algorithm.exploit(input.IntGenerator(0, 2**31-1), 26)
+        algorithm = Algorithms.PushRelabel()
+        output = algorithm.exploit(Input.IntGenerator(min_int, max_int), n_inputs)
 
     elif args.algorithm == "edmondskarp":
-        algorithm = algorithms.EdmondsKarp()
-        output = algorithm.exploit(input.IntGenerator(0, 2**31-1), 26)
+        algorithm = Algorithms.EdmondsKarp()
+        output = algorithm.exploit(Input.IntGenerator(min_int, max_int), n_inputs)
 
-
-    # graph algorithms:
+    # graph Algorithms:
     elif args.algorithm == "dijkstra":
-        algorithm = algorithms.Dijkstra()
-        output = algorithm.exploit(input.StringGenerator(input.CharGenerator(0x61, 0x7a), 10, 10), 26)
+        algorithm = Algorithms.Dijkstra()
+        output = algorithm.exploit(Input.StringGenerator(Input.CharGenerator(min_char, max_char), min_len, max_len), n_inputs)
 
     elif args.algorithm == "fleury":
-        algorithm = algorithms.Fleury()
-        output = algorithm.exploit(input.StringGenerator(input.CharGenerator(0x61, 0x7a), 10, 10), 26)
+        algorithm = Algorithms.Fleury()
+        output = algorithm.exploit(Input.StringGenerator(Input.CharGenerator(min_char, max_char), min_len, max_len), n_inputs)
 
     elif args.algorithm == "floydwarshall":
-        algorithm = algorithms.FloydWarshall()
-        output = algorithm.exploit(input.StringGenerator(input.CharGenerator(0x61, 0x7a), 10, 10), 26)
+        algorithm = Algorithms.FloydWarshall()
+        output = algorithm.exploit(Input.StringGenerator(Input.CharGenerator(min_char, max_char), min_len, max_len), n_inputs)
 
     elif args.algorithm == "hierholzer":
-        algorithm = algorithms.Hierholzer()
-        output = algorithm.exploit(input.StringGenerator(input.CharGenerator(0x61, 0x7a), 10, 10), 26)
+        algorithm = Algorithms.Hierholzer()
+        output = algorithm.exploit(Input.StringGenerator(Input.CharGenerator(min_char, max_char), min_len, max_len), n_inputs)
 
     elif args.algorithm == "bfs":
-        algorithm = algorithms.BFS()
-        output = algorithm.exploit(input.StringGenerator(input.CharGenerator(0x61, 0x7a), 10, 10), 26)
+        algorithm = Algorithms.BFS()
+        output = algorithm.exploit(Input.StringGenerator(Input.CharGenerator(min_char, max_char), min_len, max_len), n_inputs)
 
     elif args.algorithm == "dfs":
-        algorithm = algorithms.DFS()
-        output = algorithm.exploit(input.StringGenerator(input.CharGenerator(0x61, 0x7a), 10, 10), 26)
+        algorithm = Algorithms.DFS()
+        output = algorithm.exploit(Input.StringGenerator(Input.CharGenerator(min_char, max_char), min_len, max_len), n_inputs)
 
 
     # finding minimum spanning tree:
     elif args.algorithm == "kruskal":
-        algorithm = algorithms.Kruskal()
-        output = algorithm.exploit(input.IntGenerator(0, 2 ** 31-1), 26)
+        algorithm = Algorithms.Kruskal()
+        output = algorithm.exploit(Input.IntGenerator(min_int, max_int), n_inputs)
 
     elif args.algorithm == "prim":
-        algorithm = algorithms.Prim()
-        output = algorithm.exploit(input.IntGenerator(0, 2 ** 31-1), 26)
+        algorithm = Algorithms.Prim()
+        output = algorithm.exploit(Input.IntGenerator(min_int, max_int), n_inputs)
 
 
-    # string comparison algorithms:
+    # string comparison Algorithms:
     elif args.algorithm == "rabinkarp":
-        algorithm = algorithms.RabinKarp()
-        output = algorithm.exploit(input.StringGenerator(input.CharGenerator(0x61, 0x7a), 10, 10), 26)
+        algorithm = Algorithms.RabinKarp()
+        output = algorithm.exploit(Input.StringGenerator(Input.CharGenerator(min_char, max_char), min_len, max_len), n_inputs)
 
     elif args.algorithm == "boyermoore":
-        algorithm = algorithms.BoyerMoore()
-        output = algorithm.exploit(input.StringGenerator(input.CharGenerator(0x61, 0x7a), 10, 10), 26)
+        algorithm = Algorithms.BoyerMoore()
+        output = algorithm.exploit(Input.StringGenerator(Input.CharGenerator(min_char, max_char), min_len, max_len), n_inputs)
 
 
     # Shapes:
     elif args.algorithm == "jarvis":
-        algorithm = algorithms.Jarvis()
-        output = algorithm.exploit(input.IntGenerator(0, 2**31-1), 26)
+        algorithm = Algorithms.Jarvis()
+        output = algorithm.exploit(Input.IntGenerator(min_int, max_int), n_inputs)
 
     elif args.algorithm == "graham":
-        algorithm = algorithms.Graham()
-        output = algorithm.exploit(input.IntGenerator(0, 2 ** 31 - 1), 26)
+        algorithm = Algorithms.Graham()
+        output = algorithm.exploit(Input.IntGenerator(min_int, max_int), n_inputs)
 
     print(output)

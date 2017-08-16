@@ -2,7 +2,6 @@
 from abc import abstractmethod
 import random
 import math
-import input
 
 class Algorithm(object):
     @abstractmethod
