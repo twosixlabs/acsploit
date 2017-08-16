@@ -14,7 +14,7 @@ class Sort(Algorithm):
     # 1. ascending vs descending
     # 2. what if there are not enough values (n > range)
     def exploit(self, generator, n_inputs):
-        output = [generator.get_random()] # pick random value for now, need to check range in future
+        output = [generator.get_random()]  # pick random value for now, need to check range in future
 
         for i in range(1,n_inputs):
             output.append(generator.get_less_than(output[i-1]))
@@ -112,6 +112,15 @@ class TopologicalSort(Algorithm):
     def exploit(self, generator, n_inputs):
         return Fleury.exploit(Fleury(), generator, n_inputs)
 
+# A 'complete' graph might actually make these a lot faster...
+class BFS(Algorithm):
+    def exploit(self, generator, n_inputs):
+        return Fleury.exploit(generator, n_inputs)
+
+class DFS(Algorithm):
+    def exploit(self, generator, n_inputs):
+        # Actually might be different
+        return Fleury.exploit(generator, n_inputs)
 
 # Minimum spanning tree
 # Weighted graphs represented G = {0 -> {1 -> 0.7, 2 -> 1.5} , ...}
@@ -136,21 +145,9 @@ class Prim(Algorithm):
         return Kruskal.exploit(generator, n_inputs)
 
 
-class BFS(Algorithm):
-    def exploit(self, generator, n_inputs):
-        return Fleury.exploit(generator, n_inputs)
-
-
-class DFS(Algorithm):
-    def exploit(self, generator, n_inputs):
-        # Actually might be different
-        return Fleury.exploit(generator, n_inputs)
-
-
 class KCenter(Algorithm):
     def exploit(self, generator, n_inputs):
         pass
-
 
 # Comparison algorithms
 
@@ -176,15 +173,24 @@ class Jarvis(Algorithm):
         # Generate n points on a polygon, to force all points to lie on a hull -> worse case O(n^2)
         angles = []
         points = []
+        x0 = y0 = (generator.get_max_value() + generator.get_min_value()) / 2
+        R = generator.get_random() / 2  # Need to be very careful with getting random (could go out of bounds)
         for n in range(n_inputs):
             angles.append(random.random() * 2 * math.pi)
+
+        list.sort(angles)
+
+        for n in range(n_inputs):
+            x = x0 + R * math.cos(angles[n])
+            y = y0 + R * math.sin(angles[n])
+            points.append((x, y))
+
         return points
 
 
-class Graham(Algorithm):
+class Graham(Algorithm):  # Might not be a terrible worst case - just O(n*log(n))
     def exploit(self, generator, n_inputs):
-        # Points that create a spiral could generate a very slow case. Otherwise, worst case O(n*log(n))
-        pass
+        return Jarvis.exploit(Jarvis(), generator, n_inputs)
 
 # Need to be categorized:
 
@@ -202,7 +208,23 @@ class HopcroftKarp(Algorithm):
 
 class Hashmap(Algorithm):
     def exploit(self, generator, n_inputs):
-        pass
+        keys = []
+        base = generator.get_random()
+        hash = self.get_hash_function()
+
+        for i in range(n_inputs):
+            # TODO: Figure out how to generate values -> same hash
+            value = 0
+            if hash(value) == hash(base):
+                keys.append(value)
+            else:
+                pass
+                # try again
+
+        return keys
+
+    def get_hash_function(self):
+        return int
 
 class Trie(Algorithm):
     # Worst case - input with as similar input as possible

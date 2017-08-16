@@ -59,11 +59,11 @@ if __name__ == '__main__':
     # finding minimum spanning tree:
     elif args.algorithm == "kruskal":
         algorithm = algorithms.Kruskal()
-        output = algorithm.exploit(input.IntGenerator(0, 2 ** 3101), 26)
+        output = algorithm.exploit(input.IntGenerator(0, 2 ** 31-1), 26)
 
     elif args.algorithm == "prim":
         algorithm = algorithms.Prim()
-        output = algorithm.exploit(input.IntGenerator(0, 2 ** 3101), 26)
+        output = algorithm.exploit(input.IntGenerator(0, 2 ** 31-1), 26)
 
 
     # string comparison algorithms:
@@ -75,5 +75,14 @@ if __name__ == '__main__':
         algorithm = algorithms.BoyerMoore()
         output = algorithm.exploit(input.StringGenerator(input.CharGenerator(0x61, 0x7a), 10, 10), 26)
 
+
+    # Shapes:
+    elif args.algorithm == "jarvis":
+        algorithm = algorithms.Jarvis()
+        output = algorithm.exploit(input.IntGenerator(0, 2**31-1), 26)
+
+    elif args.algorithm == "graham":
+        algorithm = algorithms.Graham()
+        output = algorithm.exploit(input.IntGenerator(0, 2 ** 31 - 1), 26)
 
     print(output)
