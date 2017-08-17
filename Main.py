@@ -10,11 +10,11 @@ if __name__ == '__main__':
     parser.add_argument("--constraints", action="store_true")
     args = parser.parse_args()
 
-    min_int = -2**31 + 1
+    min_int = -2**31
     max_int = 2**31 - 1
     
     min_char = 0x61
-    max_char = 0x71
+    max_char = 0x7a
     
     min_len = 10
     max_len = 10
@@ -22,32 +22,35 @@ if __name__ == '__main__':
     n_inputs = 26
 
     if args.bounds:
-        val = input("min_int: ")
+        val = input("min_int (default -2**31): ")
         if val and type(val) == int:
             min_int = val
 
-        val = input("max_int: ")
+        val = input("max_int (default 2**31-1): ")
         if val and type(val) == int:
             max_int = val
 
-        val = input("min_char: ")
+        val = input("min_char (default 0x61)")
         if val and len(val) == 1:
-            min_char = val
+            min_char = ord(val)
 
-        val = input("max_char: ")
+        val = input("max_char (default 0x7a): ")
         if val and len(val) == 1:
-            max_char = val
+            max_char = ord(val)
 
-        val = input("min_len: ")
+        val = input("min_len (default 10): ")
         if val and type(val) == int:
             min_len = val
 
-        val = input("max_len: ")
+        val = input("max_len (default 10): ")
         if val and type(val) == int:
             max_len = val
 
     if args.constraints:
-        # other arbitrary restrictions on possible input
+        # TODO: implement arbitrary constraints
+        # Limited selection of characters (eg, there could be gaps; range = [A, G] U [J, Z]
+        # Ints might have to be prime, multiple or factors of another int, other strange constraints
+
         pass
 
     output = None

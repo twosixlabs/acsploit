@@ -42,13 +42,17 @@ class FordFulkerson(Algorithm):
         return G
         # https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm#Integral_example
 
+class Dinic(Algorithm):
+    def exploit(self, generator, n_inputs):
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
+
 class PushRelabel(Algorithm):  # O(V^2 * E)
     def exploit(self, generator, n_inputs):
-        return Kruskal.exploit(generator, n_inputs)
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
 class EdmondsKarp(Algorithm): # O(V * E^2)
     def exploit(self, generator, n_inputs):
-        return Kruskal.exploit(generator, n_inputs)
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
 # Directly from engagement problms:
 # TODO: Go through engagement problems
@@ -114,12 +118,12 @@ class TopologicalSort(Algorithm):
 # A 'complete' graph might actually make these a lot faster...
 class BFS(Algorithm):
     def exploit(self, generator, n_inputs):
-        return Fleury.exploit(generator, n_inputs)
+        return Fleury.exploit(Fleury(), generator, n_inputs)
 
 class DFS(Algorithm):
     def exploit(self, generator, n_inputs):
         # Actually might be different
-        return Fleury.exploit(generator, n_inputs)
+        return Fleury.exploit(Fleury(), generator, n_inputs)
 
 # Minimum spanning tree
 # Weighted graphs represented G = {0 -> {1 -> 0.7, 2 -> 1.5} , ...}
@@ -141,7 +145,7 @@ class Kruskal(Algorithm):
 
 class Prim(Algorithm):
     def exploit(self, generator, n_inputs):
-        return Kruskal.exploit(generator, n_inputs)
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
 
 class KCenter(Algorithm):
@@ -193,9 +197,25 @@ class Graham(Algorithm):  # Might not be a terrible worst case - just O(n*log(n)
 
 # Need to be categorized:
 
+
 class HopcroftKarp(Algorithm):
     def exploit(self, generator, n_inputs):
-        pass
+        left = []
+        right = []
+        n = generator.get_min_value()
+        for i in range(int(n_inputs/2)):
+            left.append(n)
+            n = generator.get_greater_than(n)
+            right.append(n)
+            n = generator.get_greater_than(n)
+        G = {}
+        for i in range(len(left)):
+            G[left[i]] = []
+            G[right[i]] = []
+            for n in range(len(right)):
+                G[left[i]].append(right[n])
+                G[right[i]].append(left[n])  # Redundant list -> should make sure all graphs are either redundant or not
+        return G
 
 # Dynamic:
 
@@ -259,19 +279,24 @@ class AVLTree(Algorithm):
         return output
 
 class RedBlackTree(Algorithm):
-    pass
+    def exploit(self, generator, n_inputs):
+        pass
 
 # Worst case - as few children on each node as possible
 class BTree(Algorithm):
-    pass
+    def exploit(self, generator, n_inputs):
+        pass
 
 class BinaryHeap(Algorithm):
     # Merging heaps takes O(n) time (slower than other operations)
-    pass
+    def exploit(self, generator, n_inputs):
+        pass
 
 class BinomialHeap(Algorithm):
-    pass
+    def exploit(self, generator, n_inputs):
+        pass
 
 class FibonacciHeap(Algorithm):
     # Delete minimum takes O(n) time
-    pass
+    def exploit(self, generator, n_inputs):
+        pass
