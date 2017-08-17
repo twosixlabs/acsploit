@@ -30,7 +30,7 @@ if __name__ == '__main__':
         if val and type(val) == int:
             max_int = val
 
-        val = input("min_char (default 0x61)")
+        val = input("min_char (default 0x61): ")
         if val and len(val) == 1:
             min_char = ord(val)
 

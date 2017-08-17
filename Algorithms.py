@@ -22,25 +22,27 @@ class Sort(Algorithm):
 
 # Flow networks:
 
-class FordFulkerson(Algorithm):
+class FordFulkerson(Algorithm):  # Flow network
     def exploit(self, generator, n_inputs):
+        # https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm#Integral_example
         heavy = generator.get_max_value()
         light = 1
         G = {}
         possible_nodes = []
-        n = "A"  # Maybe should be generator.get_min_value()
+        n = 0  # This is just the name, bounds shouldn't matter
         for i in range(n_inputs):
             possible_nodes.append(n)
             n = generator.get_greater_than(n)
         for i in range(1, n_inputs-1):
-            G[possible_nodes[i]] = (set(), light)
+            G[possible_nodes[i]] = set()
             for j in range(1, n_inputs - 1):
-                G[possible_nodes[i]][0].add(possible_nodes[j])
-        G[possible_nodes[0]] = (set(), heavy)
+                G[possible_nodes[i]].add((possible_nodes[j], light))
+        G[possible_nodes[0]] = set()
         for i in range(n_inputs):
-            G[possible_nodes[0]][0].add(possible_nodes[i])
+            G[possible_nodes[0]].add((possible_nodes[i], heavy))
+        explain = "{node: {(node, weight), (node, weight), ...}, node: {...}, ...}"
+        print(explain)
         return G
-        # https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm#Integral_example
 
 class Dinic(Algorithm):
     def exploit(self, generator, n_inputs):
@@ -75,7 +77,7 @@ class Exponent(Algorithm):
 
 # Graph algorithms - return adj matrix (?)
 
-class Fleury(Algorithm):
+class Fleury(Algorithm):  # Unweighted graph
     # this could be slow if n_inputs is large enough
     # TODO: Find a way to modify the constraints of which edges can be made
     def exploit(self, generator, n_inputs):
@@ -115,7 +117,6 @@ class TopologicalSort(Algorithm):
     def exploit(self, generator, n_inputs):
         return Fleury.exploit(Fleury(), generator, n_inputs)
 
-# A 'complete' graph might actually make these a lot faster...
 class BFS(Algorithm):
     def exploit(self, generator, n_inputs):
         return Fleury.exploit(Fleury(), generator, n_inputs)
@@ -127,12 +128,14 @@ class DFS(Algorithm):
 
 # Minimum spanning tree
 # Weighted graphs represented G = {0 -> {1 -> 0.7, 2 -> 1.5} , ...}
-class Kruskal(Algorithm):
+class Kruskal(Algorithm):  # Weighted graph
     def exploit(self, generator, n_inputs):
         G = {}
-        weight = 1
+        weight = 1  # Should be minimum positive value, but 1 seems unlikely to be outside range
         possible_nodes = []
-        n = "A"
+        n = generator.get_random()
+        if type(generator.get_min_value) == int:
+            n = 0  # Avoid obnoxious int names
         for i in range(n_inputs):
             possible_nodes.append(n)
             n = generator.get_greater_than(n)
@@ -147,10 +150,11 @@ class Prim(Algorithm):
     def exploit(self, generator, n_inputs):
         return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
-
+'''
 class KCenter(Algorithm):
     def exploit(self, generator, n_inputs):
         pass
+'''
 
 # Comparison algorithms
 
