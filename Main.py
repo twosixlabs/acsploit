@@ -7,7 +7,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("algorithm")
     parser.add_argument("--bounds", action="store_true")
-    parser.add_argument("--restrictions", action="store_true")
+    parser.add_argument("--restraints", action="store_true")
     args = parser.parse_args()
 
     min_int = -2**31
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     min_len = 10
     max_len = 10
     
-    n_inputs = 26
+    n_inputs = 26  # Probably should be user inputted
 
     if args.bounds:
         val = input("min_int (default -2**31): ")
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         if val and type(val) == int:
             max_len = val
     restrictions = []
-    if args.restrictions:
+    if args.restraints:
         # TODO: implement arbitrary constraints
         # Limited selection of characters (eg, there could be gaps; range = [A, G] U [J, Z]
         # Ints might have to be prime, multiple or factors of another int, other strange constraints
@@ -136,5 +136,14 @@ if __name__ == '__main__':
     elif args.algorithm == "graham":
         algorithm = Algorithms.Graham()
         output = algorithm.exploit(int_gen, n_inputs)
+
+    # Other/need to be organized:
+    elif args.algorithm == "huffman":
+        algorithm = Algorithms.Huffman()
+        output = algorithm.exploit(string_gen, n_inputs)
+
+    else:
+        print("Algorithm not recognized - exiting")
+        output = ""
 
     print(output)

@@ -118,18 +118,21 @@ class CharGenerator(Generator):
         self.characters = chars
 
     def get_less_than(self, value):
-        if (ord(value) == 0):
-            return 0
-        return chr(ord(value) - 1)
+        if ord(value) == self.min:
+            return self.min
+        value = chr(ord(value) - 1)
+        while chr(ord(value)) not in self.characters:
+            value = chr(ord(value) - 1)
+        return value
 
     def get_greater_than(self, value):
         if (ord(value) == self.max):
             return value
-        while value not in self.characters:
+        value = chr(ord(value) + 1)
+        while chr(ord(value)) not in self.characters:
             value = chr(ord(value) + 1)
-            if ord(value) > 256:
-                return self.characters[len(self.characters) - 1]
-        return chr(ord(value) + 1)
+        return value
+
 
     def get_max_value(self):
         return chr(self.max)

@@ -107,7 +107,7 @@ class FloydWarshall(Algorithm):
 
 class Johnson(Algorithm):
     def exploit(self, generator, n_inputs):
-        return Fleury.exploit(Fleury(), generator, n_inputs)
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
 class Hierholzer(Algorithm):
     def exploit(self, generator, n_inputs):
@@ -143,8 +143,6 @@ class Kruskal(Algorithm):  # Weighted graph
             G[possible_nodes[i]] = []
             for n in range(n_inputs):
                 G[possible_nodes[i]].append((possible_nodes[n], weight))
-        print(G)
-        print("as")
         return G
 
 
@@ -223,6 +221,22 @@ class HopcroftKarp(Algorithm):
                 G[right[i]].append(left[n])  # Redundant list -> should make sure all graphs are either redundant or not
         return G
 
+# Worst case - frequency of characters correspond with Fibonacci numbers
+class Huffman(Algorithm):
+    def exploit(self, generator, n_inputs):  # n_inputs - character limit
+        characters = ""
+        n = generator.get_min_value()[0]  # presumably something like 'a'
+        count = 1
+        while len(characters) + self.fib(count) < n_inputs:
+            characters = characters + (n * self.fib(count))
+            n = generator.get_greater_than(n)
+            count += 1
+        return characters
+
+    def fib(self, n):
+        return int(((1+math.sqrt(5))**n-(1-math.sqrt(5))**n)/(2**n*math.sqrt(5)))
+
+
 # Dynamic:
 
 
@@ -231,6 +245,7 @@ class HopcroftKarp(Algorithm):
 # There should be a way to indicate/exploit worst case operations
 # For instance - union on binary heaps is O(n), where all other operations are either O(log n) or O(1)
 
+# Could use eval? Not sure how to import a hash function from another program
 class Hashmap(Algorithm):
     def exploit(self, generator, n_inputs):
         keys = []
@@ -240,11 +255,10 @@ class Hashmap(Algorithm):
         for i in range(n_inputs):
             # TODO: Figure out how to generate values -> same hash
             value = 0
-            if hash(value) == hash(base):
-                keys.append(value)
-            else:
+            while hash(value) != hash(base):
                 pass
                 # try again
+            keys.append(value)
 
         return keys
 
