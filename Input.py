@@ -105,8 +105,17 @@ class CharGenerator(Generator):
     # min cannot equal max
     def __init__(self, min, max):
         super(CharGenerator, self).__init__()
+
         self.min = min
         self.max = max
+        self.characters = []
+        self.init_characters()
+
+    def init_characters(self):
+        chars = []
+        for i in range(int(self.min), int(self.max) + 1):
+            chars.append(chr(i))
+        self.characters = chars
 
     def get_less_than(self, value):
         if (ord(value) == 0):
@@ -116,6 +125,10 @@ class CharGenerator(Generator):
     def get_greater_than(self, value):
         if (ord(value) == self.max):
             return value
+        while value not in self.characters:
+            value = chr(ord(value) + 1)
+            if ord(value) > 256:
+                return self.characters[len(self.characters) - 1]
         return chr(ord(value) + 1)
 
     def get_max_value(self):
@@ -125,4 +138,11 @@ class CharGenerator(Generator):
         return chr(self.min)
 
     def get_random(self):
-        return chr(random.randint(self.min, self.max))
+        return random.choice(self.characters)
+
+    def add_restrictions(self, restrictions):
+        for restriction in restrictions:
+            try:
+                self.characters.remove(restriction)
+            except ValueError:
+                pass  # Error doesn't need to be dealt with

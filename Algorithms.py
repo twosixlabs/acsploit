@@ -143,6 +143,8 @@ class Kruskal(Algorithm):  # Weighted graph
             G[possible_nodes[i]] = []
             for n in range(n_inputs):
                 G[possible_nodes[i]].append((possible_nodes[n], weight))
+        print(G)
+        print("as")
         return G
 
 
