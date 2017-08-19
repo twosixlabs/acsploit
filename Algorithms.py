@@ -1,9 +1,8 @@
-# from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 import random
 import math
 
-class Algorithm(object):
+class Algorithm(ABC):
     @abstractmethod
     def exploit(self, generator, n_inputs):
         pass
@@ -20,9 +19,9 @@ class Sort(Algorithm):
 
         return output
 
-# Flow networks:
+# Maximum flow in flow networks:
 
-class FordFulkerson(Algorithm):  # Flow network
+class FordFulkerson(Algorithm):
     def exploit(self, generator, n_inputs):
         # https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm#Integral_example
         heavy = generator.get_max_value()
@@ -44,11 +43,11 @@ class FordFulkerson(Algorithm):  # Flow network
         print(explain)
         return G
 
-class Dinic(Algorithm):
+class PushRelabel(Algorithm):  # O(V^2 * E)
     def exploit(self, generator, n_inputs):
         return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
-class PushRelabel(Algorithm):  # O(V^2 * E)
+class Dinic(Algorithm):  # O(V^2 * E)
     def exploit(self, generator, n_inputs):
         return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
@@ -75,10 +74,10 @@ class MatrixOperations(Algorithm):
 class Exponent(Algorithm):
     pass
 
-# Graph algorithms - return adj matrix (?)
+# Graph algorithms - return adj matrix
 
 class Fleury(Algorithm):  # Unweighted graph
-    # this could be slow if n_inputs is large enough
+    # this could be slow if n_inputs is large
     # TODO: Find a way to modify the constraints of which edges can be made
     def exploit(self, generator, n_inputs):
         G = {}

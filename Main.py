@@ -9,6 +9,7 @@ if __name__ == '__main__':
     parser.add_argument("--bounds", action="store_true")
     parser.add_argument("--restraints", action="store_true")
     args = parser.parse_args()
+    args.algorithm = args.algorithm.lower()
 
     min_int = -2**31
     max_int = 2**31 - 1
@@ -63,13 +64,15 @@ if __name__ == '__main__':
 
     output = None
 
+
+
     # gonna be a big if stack somewhere
     if args.algorithm == "sort":
         algorithm = Algorithms.Sort()
         output = algorithm.exploit(string_gen, n_inputs)
 
 
-    # flow networks:
+    # Flow networks:
     elif args.algorithm == "fordfulkerson":
         algorithm = Algorithms.FordFulkerson()
         output = algorithm.exploit(int_gen, n_inputs)
@@ -82,9 +85,13 @@ if __name__ == '__main__':
         algorithm = Algorithms.EdmondsKarp()
         output = algorithm.exploit(int_gen, n_inputs)
 
-    # graph Algorithms:
+    # Graph algorithms:
     elif args.algorithm == "dijkstra":
         algorithm = Algorithms.Dijkstra()
+        output = algorithm.exploit(string_gen, n_inputs)
+
+    elif args.algorithm == "bellmanford":
+        algorithm = Algorithms.BellmanFord()
         output = algorithm.exploit(string_gen, n_inputs)
 
     elif args.algorithm == "fleury":
@@ -97,6 +104,14 @@ if __name__ == '__main__':
 
     elif args.algorithm == "hierholzer":
         algorithm = Algorithms.Hierholzer()
+        output = algorithm.exploit(string_gen, n_inputs)
+
+    elif args.algorithm == "johnson":
+        algorithm = Algorithms.Johnson()
+        output = algorithm.exploit(string_gen, n_inputs)
+
+    elif args.algorithm == "hopcroftkarp":
+        algorithm = Algorithms.HopcroftKarp()
         output = algorithm.exploit(string_gen, n_inputs)
 
     elif args.algorithm == "bfs":
