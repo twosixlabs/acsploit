@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 import random
 
 class Generator(object):
@@ -45,7 +46,7 @@ class IntGenerator(Generator):
 		return self.min
 
 	def get_random(self):
-		return randint(self.min, self.max)
+		return random.randint(self.min, self.max)
 
 class StringGenerator(Generator):
 	def __init__(self, char_gen, min_length, max_length):

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import argparse
 import input
 
 class Algorithm(object):
@@ -7,6 +8,8 @@ class Algorithm(object):
 		pass
 
 class Sort(Algorithm):
+	isDescending = True
+
 	#TODO
 	#1. ascending vs descending
 	#2. what if there are not enough values (n > range)
@@ -17,3 +20,7 @@ class Sort(Algorithm):
 			output.append(generator.get_less_than(output[i-1]))		
 
 		return output
+
+	def set_descending(self, isDescending):
+		self.isDescending = isDescending
+
