@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from enum import Enum
 import random
 
 class Generator(object):
@@ -102,27 +101,50 @@ class StringGenerator(Generator):
 		return ''.join(value)
 
 class CharGenerator(Generator):
-	# min cannot equal max
-	def __init__(self, min, max):
-		super(CharGenerator, self).__init__()
-		self.min = min
-		self.max = max
+    # min cannot equal max
+    def __init__(self, min, max):
+        super(CharGenerator, self).__init__()
 
-	def get_less_than(self, value):
-		if (ord(value) == 0):
-			return 0
-		return chr(ord(value) - 1)
-		
-	def get_greater_than(self, value):
-		if (ord(value) == self.max):
-			return value
-		return chr(ord(value) + 1)
-		
-	def get_max_value(self):
-		return chr(self.max)
+        self.min = min
+        self.max = max
+        self.characters = []
+        self.init_characters()
 
-	def get_min_value(self):
-		return chr(self.min)
+    def init_characters(self):
+        chars = []
+        for i in range(int(self.min), int(self.max) + 1):
+            chars.append(chr(i))
+        self.characters = chars
 
-	def get_random(self):
-		return chr(random.randint(self.min, self.max))
+    def get_less_than(self, value):
+        if ord(value) == self.min:
+            return self.min
+        value = chr(ord(value) - 1)
+        while chr(ord(value)) not in self.characters:
+            value = chr(ord(value) - 1)
+        return value
+
+    def get_greater_than(self, value):
+        if (ord(value) == self.max):
+            return value
+        value = chr(ord(value) + 1)
+        while chr(ord(value)) not in self.characters:
+            value = chr(ord(value) + 1)
+        return value
+
+
+    def get_max_value(self):
+        return chr(self.max)
+
+    def get_min_value(self):
+        return chr(self.min)
+
+    def get_random(self):
+        return random.choice(self.characters)
+
+    def add_restrictions(self, restrictions):
+        for restriction in restrictions:
+            try:
+                self.characters.remove(restriction)
+            except ValueError:
+                pass  # Error doesn't need to be dealt with
