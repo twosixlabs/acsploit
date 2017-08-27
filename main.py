@@ -33,19 +33,14 @@ class AcsploitCommandLine(cmdline.BaseCmd):
 		algorithm_name = args.split()[0]
 
 		commands = self.get_select_commands()
-		if commands[algorithm_name]:
+		if algorithm_name in commands:
 			commands[algorithm_name].start_instance()
+		else:
+			print("Invalid argument: " + algorithm_name)
+			self.help_select()
 
 
 def main():
-
-	for name, obj in inspect.getmembers(cmdline, inspect.isclass):
-		if isinstance(obj(), cmdline.ExploitCommandLine) and obj is not cmdline.ExploitCommandLine:
-			print(name)
-			arg_name = re.sub("CommandLine", '', name).lower()
-			print(arg_name)
-
-
 	AcsploitCommandLine.start_instance()
 
 main()
