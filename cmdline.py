@@ -10,22 +10,6 @@ class BaseCmd(Cmd):
 	def do_exit(self, args):
 		return True
 
-class AcsploitCommandLine(BaseCmd):
-	@staticmethod
-	def start_instance():
-		prompt = AcsploitCommandLine()
-		prompt.prompt = "> "
-		prompt.cmdloop('***************Acsploit***************\nSelect an algorithm to being. Type \'help\' for available commands')
-
-	def do_select(self, args):
-		algorithm_name = args.split()[0]
-		
-		prompt = {
-			'sort': SortCommandLine,
-		}.get(algorithm_name, '')
-
-		prompt.start_instance()
-
 class ExploitCommandLine(BaseCmd):
 	def help_type(self):
 		print("Set data type. Must be of type int, string, or char")
@@ -81,6 +65,7 @@ class SortCommandLine(ExploitCommandLine):
 	def do_exploit(self, args):
 		if self.generator == '':
 			self.help_exploit()
+			return
 
 		print(algorithms.Sort().exploit(self.generator, 10))
 
