@@ -36,28 +36,30 @@ class ExploitCommandLine(BaseCmd):
 
 
 class SortCommandLine(ExploitCommandLine):
-	isDescending = True
-
+	algorithm = algorithms.Sort()
+	generator = ''
+	
 	@staticmethod
 	def start_instance():
 		prompt = SortCommandLine()
 		prompt.prompt = "exploit(sort)$ "
 		prompt.cmdloop("Exploit Sorting Algorithms. Type \'help\' for available commands")
 
-	def help_descending(self):
-		print("Usage: descending true OR descending false. Sets the output to be in descending order or not. Descending is the default")
+	def help_ascending(self):
+		print("Usage: ascending true OR ascending false. " +
+			"Sets the output to be worst case for an algorithm that sorts in ascending order (true)  or not (false). Ascending=true is the default")
 
-	def do_descending(self, args):
+	def do_ascending(self, args):
 		split_args = args.split()
 
 		if len(split_args) != 1:
-			self.help_descending()
+			self.help_ascending()
 			return
 
 		if split_args[0].lower() == "true":
-			self.isDescending = True
+			self.algorithm.is_ascending = True
 		elif split_args[0].lower() == "false":
-			self.isDescending = False
+			self.algorithm.is_ascending = False
 
 	def help_exploit(self):
 		print("Prints the output of the exploit. Must have set a type first.")
@@ -66,7 +68,7 @@ class SortCommandLine(ExploitCommandLine):
 		if self.generator == '':
 			self.help_exploit()
 			return
-
-		print(algorithms.Sort().exploit(self.generator, 10))
+		
+		print(self.algorithm.exploit(self.generator, 10))
 
 
