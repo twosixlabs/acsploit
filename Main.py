@@ -24,12 +24,12 @@ if __name__ == '__main__':
 
     if args.bounds:
         val = input("min_int (default -2**31): ")
-        if val and type(val) == int:
-            min_int = val
+        if val and val.isdigit():
+            min_int = int(val)
 
         val = input("max_int (default 2**31-1): ")
-        if val and type(val) == int:
-            max_int = val
+        if val and val.isdigit():
+            max_int = int(val)
 
         val = input("min_char (default 0x61): ")
         if val and len(val) == 1:
@@ -39,13 +39,18 @@ if __name__ == '__main__':
         if val and len(val) == 1:
             max_char = ord(val)
 
-        val = input("min_len (default 10): ")
-        if val and type(val) == int:
-            min_len = val
+        val = input("min_len (of strings) (default 10): ")
+        if val and val.isdigit():
+            min_len = int(val)
 
-        val = input("max_len (default 10): ")
-        if val and type(val) == int:
-            max_len = val
+        val = input("max_len (of strings) (default 10): ")
+        if val and val.isdigit():
+            max_len = int(val)
+
+        val = input("n_inputs (default 26): ")
+        if val and val.isdigit():
+            n_inputs = int(val)
+
     restrictions = []
     if args.restraints:
         # TODO: implement arbitrary constraints

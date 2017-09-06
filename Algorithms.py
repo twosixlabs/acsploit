@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 import random
 import math
 import hashlib
+import inspect
+import sys
 
 class Algorithm(ABC):
     @abstractmethod
@@ -227,7 +229,7 @@ class Huffman(Algorithm):
         characters = ""
         n = generator.get_min_value()[0]  # presumably something like 'a'
         count = 1
-        while len(characters) + self.fib(count) < n_inputs:
+        while (len(characters) + self.fib(count)) < n_inputs:
             characters = characters + (n * self.fib(count))
             n = generator.get_greater_than(n)
             count += 1

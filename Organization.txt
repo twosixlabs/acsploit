@@ -1,0 +1,54 @@
+To get readable list of all classes in python:
+for pair in inspect.getmembers(sys.modules[__name__], inspect.isclass):
+    print(pair[0])
+
+String comparison algorithms
+    BoyerMoore
+    RabinKarp
+
+Graph algorithms
+    BFS
+    DFS
+    BellmanFord
+    Dijkstra
+    Fleury
+    FloydWarshall
+    Hierholzer
+    Johnson
+    TopologicalSort
+
+Maximum flow algorithms
+    Dinic
+    EdmondsKarp
+    FordFulkerson
+    PushRelabel
+
+Minimum spanning tree algorithms
+    Kruskal
+    Prim
+
+Geometric algorithms
+    Graham
+    Jarvis
+
+Data structures
+    BinaryHeap
+    BinomialHeap
+    FibonacciHeap
+    Hashmap
+    PriorityQueue
+    (Trees)
+        AVLTree
+        BTree
+        BinarySearchTree
+        RedBlackTree
+    Trie
+
+Other
+    Exponent
+    Compression
+    HopcroftKarp
+    Huffman
+    MatrixOperations
+    RecursiveXML
+    Sort
