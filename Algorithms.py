@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import random
 import math
+import hashlib
 
 class Algorithm(ABC):
     @abstractmethod
@@ -244,25 +245,32 @@ class Huffman(Algorithm):
 # There should be a way to indicate/exploit worst case operations
 # For instance - union on binary heaps is O(n), where all other operations are either O(log n) or O(1)
 
-# Could use eval? Not sure how to import a hash function from another program
+# Could use eval? Not sure how to import a hash function from another program/user
 class Hashmap(Algorithm):
     def exploit(self, generator, n_inputs):
         keys = []
-        base = generator.get_random()
-        hash = self.get_hash_function()
+        hash_pairs = dict()  # hash -> key
+        hashes = set()
+        hash_f = self.hash_function
 
-        for i in range(n_inputs):
-            # TODO: Figure out how to generate values -> same hash
-            value = 0
-            while hash(value) != hash(base):
-                pass
-                # try again
-            keys.append(value)
+        # Currently can only generate multiple pairs of keys that generate the same hash (using the Birthday Attack)
+        while len(keys) < n_inputs:
+            current_value = generator.get_random()
+            hash = hash_f(current_value)
+            while hash not in hashes:
+                hash_pairs[hash] = current_value
+                hashes.add(hash)
+                current_value = generator.get_random()
+                hash = hash_f(current_value)
+
+            keys.append(current_value)
+            keys.append(hash_pairs[hash_f(current_value)])
 
         return keys
 
-    def get_hash_function(self):
-        return int
+    def hash_function(self, key):
+        h = hashlib.md5
+        return h(key.encode('utf-8')).hexdigest()[:8]
 
 class Trie(Algorithm):
     # Worst case - input with as similar input as possible

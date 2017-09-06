@@ -157,6 +157,13 @@ if __name__ == '__main__':
         algorithm = Algorithms.Huffman()
         output = algorithm.exploit(string_gen, n_inputs)
 
+
+    # Data structures:
+    elif args.algorithm == "hash" or args.algorithm == "hashmap":
+        algorithm = Algorithms.Hashmap()
+        output = algorithm.exploit(string_gen, n_inputs)
+
+
     else:
         print("Algorithm not recognized - exiting")
         output = ""
