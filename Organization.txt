@@ -2,6 +2,10 @@ To get readable list of all classes in python:
 for pair in inspect.getmembers(sys.modules[__name__], inspect.isclass):
     print(pair[0])
 
+Currently, each of the following are contained within the Algorithms module without much structure. Ideally, they would be organized so that the user wouldn't have to know every algorithm in order to select it. One solution would just be printing the structure and names of algorithms to the console, but that might not be great as more algorithms are added.
+
+Potential organization:
+
 String comparison algorithms
     BoyerMoore
     RabinKarp
