@@ -1,3 +1,2 @@
-__pycache__/algorithms.cpython-36.pyc
-__pycache__/cmdline.cpython-36.pyc
-__pycache__/input.cpython-36.pyc
+*.pyc
+*.pyo
