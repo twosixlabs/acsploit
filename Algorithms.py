@@ -165,7 +165,19 @@ class Kruskal(Algorithm):  # Weighted graph
             G[possible_nodes[i]] = []
             for n in range(n_inputs):
                 G[possible_nodes[i]].append((possible_nodes[n], weight))
-        return G
+        formatted_output = ""
+        for node in G:
+            formatted_output += (node + ": ")
+            first = True
+            for connection in G[node]:
+                if first:
+                    formatted_output += connection
+                    first = False
+                else:
+                    formatted_output += (", " + connection)
+            formatted_output += "\n"
+
+        return formatted_output
 
 
 class Prim(Algorithm):
