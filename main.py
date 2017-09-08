@@ -44,9 +44,5 @@ class AcsploitCommandLine(acsploit.BaseCmd):
 			self.help_use()
 
 
-def main():
+if __name__ == '__main__':
 	AcsploitCommandLine.start_instance()
-
-main()
-
-
