@@ -116,6 +116,7 @@ class CharGenerator(Generator):
         for i in range(int(self.min), int(self.max) + 1):
             chars.append(chr(i))
         self.characters = chars
+        print(self.characters)
 
     def get_less_than(self, value):
         if ord(value) == self.min:
@@ -126,7 +127,7 @@ class CharGenerator(Generator):
         return value
 
     def get_greater_than(self, value):
-        if (ord(value) == self.max):
+        if ord(value) == self.max:
             return value
         value = chr(ord(value) + 1)
         while chr(ord(value)) not in self.characters:

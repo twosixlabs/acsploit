@@ -21,15 +21,18 @@ Graph algorithms
     Johnson
     TopologicalSort
 
-Maximum flow algorithms
+flow network algorithms
     Dinic
     EdmondsKarp
     FordFulkerson
     PushRelabel
+    Karger
 
 Minimum spanning tree algorithms
     Kruskal
     Prim
+    Boruvka
+    ReverseDelete
 
 Geometric algorithms
     Graham

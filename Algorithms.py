@@ -22,8 +22,8 @@ class Sort(Algorithm):
 
         return output
 
-# Maximum flow in flow networks:
-
+# flow network algorithms:
+# TODO: Make sure Kruskal's algorithm output works with flow networks
 class FordFulkerson(Algorithm):
     def exploit(self, generator, n_inputs):
         # https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm#Integral_example
@@ -58,6 +58,11 @@ class EdmondsKarp(Algorithm): # O(V * E^2)
     def exploit(self, generator, n_inputs):
         return Kruskal.exploit(Kruskal(), generator, n_inputs)
 
+class Karger(Algorithm):  # O(E) = O(V^2)
+    def exploit(self, generator, n_inputs):
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
+
+
 # Directly from engagement problms:
 # TODO: Go through engagement problems
 
@@ -78,22 +83,36 @@ class Exponent(Algorithm):
     pass
 
 # Graph algorithms - return adj matrix
-
+# TODO: Consider graph searching algorithms
 class Fleury(Algorithm):  # Unweighted graph
     # this could be slow if n_inputs is large
     # TODO: Find a way to modify the constraints of which edges can be made
     def exploit(self, generator, n_inputs):
         G = {}
         possible_nodes = []
-        n = "A"
+        n = generator.get_min_value()[0]
         for i in range(n_inputs):
             possible_nodes.append(n)
             G[n] = set()
             n = generator.get_greater_than(n)
         for i in range(n_inputs):
             for n in range(n_inputs):
-                G[possible_nodes[i]].add(possible_nodes[n])
-        return G
+                if G[possible_nodes[i]] not in G[possible_nodes[n]]:
+                    G[possible_nodes[i]].add(possible_nodes[n])
+
+        formatted_output = ""
+        for node in G:
+            formatted_output += (node + ": ")
+            first = True
+            for connection in G[node]:
+                if first:
+                    formatted_output += connection
+                    first = False
+                else:
+                    formatted_output += (", " + connection)
+            formatted_output += "\n"
+
+        return formatted_output
 
 class Dijkstra(Algorithm):
     def exploit(self, generator, n_inputs):
@@ -128,6 +147,7 @@ class DFS(Algorithm):
         # Actually might be different
         return Fleury.exploit(Fleury(), generator, n_inputs)
 
+
 # Minimum spanning tree
 # Weighted graphs represented G = {0 -> {1 -> 0.7, 2 -> 1.5} , ...}
 class Kruskal(Algorithm):  # Weighted graph
@@ -151,6 +171,15 @@ class Kruskal(Algorithm):  # Weighted graph
 class Prim(Algorithm):
     def exploit(self, generator, n_inputs):
         return Kruskal.exploit(Kruskal(), generator, n_inputs)
+
+class Boruvka(Algorithm):  # O(E*log V)
+    def exploit(self, generator, n_inputs):
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
+
+class ReverseDelete(Algorithm):  # O(E*log V * (log log V)^3)
+    def exploit(self, generator, n_inputs):
+        return Kruskal.exploit(Kruskal(), generator, n_inputs)
+
 
 '''
 class KCenter(Algorithm):
@@ -285,7 +314,8 @@ class Trie(Algorithm):
         return output
 
 class PriorityQueue(Algorithm):
-    pass
+    def exploit(self, generator, n_inputs):
+        pass
 
 class BinarySearchTree(Algorithm):
     # Identical to sort
