@@ -1,5 +1,5 @@
 from .base import Generator
-import cmdline
+import acsploit
 import random
 
 class IntGenerator(Generator):
@@ -30,7 +30,7 @@ class IntGenerator(Generator):
 
 	def get_options():
 		return dict({
-			'min_value' : cmdline.Option('min_value', 'int', 0),
-			'max_value' : cmdline.Option('max_value', 'int', 255),
+			'min_value' : acsploit.Option('min_value', 'int', 0),
+			'max_value' : acsploit.Option('max_value', 'int', 255),
 		})
 

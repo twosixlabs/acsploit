@@ -1,6 +1,6 @@
 from .chars import CharGenerator
 from .base import Generator
-import cmdline
+import acsploit
 import random
 
 class StringGenerator(Generator):
@@ -58,8 +58,8 @@ class StringGenerator(Generator):
 
 	def get_options():
 		 options = dict({
-			'min_length' : cmdline.Option('min_length', 'int', 0),
-			'max_length' : cmdline.Option('max_length', 'int', 10)
+			'min_length' : acsploit.Option('min_length', 'int', 0),
+			'max_length' : acsploit.Option('max_length', 'int', 10)
 		})
 		 options.update(CharGenerator.get_options())
 		 return options

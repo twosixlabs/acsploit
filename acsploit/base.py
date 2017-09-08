@@ -52,7 +52,7 @@ class InputGeneratorCommandLine(OptionCommandLine):
 		prompt.data_type = data_type
 		prompt.cmdloop()
 
-	def do_create(self, args):
+	def do_save(self, args):
 		input.Generator.create(self.name, self.data_type, self.options)
 
 		return True

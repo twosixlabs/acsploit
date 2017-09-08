@@ -1,10 +1,11 @@
 import abc
-import cmdline
+import acsploit
+import exploits
 import inspect
 import re
 import sys
 
-class AcsploitCommandLine(cmdline.BaseCmd):
+class AcsploitCommandLine(acsploit.BaseCmd):
 	def preloop(self):
 		self.select_commands = {}
 
@@ -12,15 +13,15 @@ class AcsploitCommandLine(cmdline.BaseCmd):
 	def start_instance():
 		prompt = AcsploitCommandLine()
 		prompt.prompt = "> "
-		prompt.cmdloop('***************Acsploit***************\nSelect an algorithm to being. Type \'help\' for available commands')
+		prompt.cmdloop('***************Acsploit***************\nSelect an exploit to being. Type \'help\' for available commands')
 
 	def get_select_commands(self):
 		if not self.select_commands:
-			for name, obj in inspect.getmembers(cmdline, inspect.isclass):
+			for name, obj in inspect.getmembers(exploits, inspect.isclass):
 				try:
-					if isinstance(obj(), cmdline.ExploitCommandLine) and obj is not cmdline.ExploitCommandLine:
-						arg_name = re.sub("CommandLine", '', name).lower()
-						self.select_commands[arg_name] = obj()
+					#if isinstance(obj(), acsploit.Exploit):
+					arg_name = re.sub("Exploit", '', name).lower()
+					self.select_commands[arg_name] = obj
 				except TypeError:
 					pass
 
@@ -40,7 +41,7 @@ class AcsploitCommandLine(cmdline.BaseCmd):
 			commands[algorithm_name].start_instance()
 		else:
 			print("Invalid argument: " + algorithm_name)
-			self.help_select()
+			self.help_use()
 
 
 def main():
