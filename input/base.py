@@ -5,6 +5,10 @@ class Generator(object):
 	@staticmethod
 	def create(name, data_type, options):
 		config = configparser.RawConfigParser()
+
+		if (config.has_section(name)):
+			raise ValueError("Input generator with name " + name + " already exists!")
+
 		config.add_section(name)
 
 		config.set(name, 'data_type', data_type)
@@ -12,7 +16,7 @@ class Generator(object):
 		for option in options.values():
 			config.set(name, option.key, option.value)
 
-		with open('.input.cfg', 'w') as configfile:
+		with open('.input.cfg', 'a') as configfile:
 			config.write(configfile)
 
 	@staticmethod
@@ -22,9 +26,11 @@ class Generator(object):
 
 		saved_config = {}
 
+		if not config.has_section(name):
+			return None
+
 		options = dict(config.items(name))
 
-		print(options)
 		for key in options.keys():
 			saved_config[key] = options[key]
 
