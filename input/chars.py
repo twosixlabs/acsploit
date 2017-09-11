@@ -11,6 +11,7 @@ class CharGenerator(Generator):
 		self.max = int(options['max_value'])
 		self.characters = []
 		self.init_characters()
+		#self.add_restrictions(options['restrictions'])
 
 	def init_characters(self):
 		chars = []
@@ -23,6 +24,8 @@ class CharGenerator(Generator):
 			return self.min
 		value = chr(ord(value) - 1)
 		while chr(ord(value)) not in self.characters:
+			if ord(value) - 1 < 0:
+				return self.min
 			value = chr(ord(value) - 1)
 		return value
 
@@ -47,7 +50,8 @@ class CharGenerator(Generator):
 	def get_options():
 		return dict({
 			'min_value' : acsploit.Option('min_value', 'int', 0x61),
-			'max_value' : acsploit.Option('max_value', 'int', 0x71)
+			'max_value' : acsploit.Option('max_value', 'int', 0x71),
+			'restrictions' : acsploit.Option('restrictions', 'string', '')
 		})
 
 	def add_restrictions(self, restrictions):
