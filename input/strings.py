@@ -46,21 +46,21 @@ class StringGenerator(Generator):
 
 	def get_random(self):
 		length = self.min_length
-
+		
 		if (self.min_length != self.max_length):
 			length = random.randint(self.min_length, self.max_length)
 
 		value = []
 		for i in range(length):
 			value.append(self.char_gen.get_random())
-
+			
 		return ''.join(value)
-
+	
 	def get_options():
-		 options = dict({
+		options = dict({
 			'min_length' : acsploit.Option('min_length', 'int', 1),
 			'max_length' : acsploit.Option('max_length', 'int', 10)
 		})
-		 options.update(CharGenerator.get_options())
-		 return options
+		options.update(CharGenerator.get_options())
+		return options
 
