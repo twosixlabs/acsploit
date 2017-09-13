@@ -11,7 +11,8 @@ class CharGenerator(Generator):
 		self.max = int(options['max_value'])
 		self.characters = []
 		self.init_characters()
-		#self.add_restrictions(options['restrictions'])
+		# TODO: When there are a lot of restrictions, the char/string generators breaks - needs fix
+		self.add_restrictions(options['restrictions'])
 
 	def init_characters(self):
 		chars = []

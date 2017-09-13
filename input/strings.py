@@ -58,7 +58,7 @@ class StringGenerator(Generator):
 
 	def get_options():
 		 options = dict({
-			'min_length' : acsploit.Option('min_length', 'int', 0),
+			'min_length' : acsploit.Option('min_length', 'int', 1),
 			'max_length' : acsploit.Option('max_length', 'int', 10)
 		})
 		 options.update(CharGenerator.get_options())
