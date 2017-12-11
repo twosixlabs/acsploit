@@ -1,48 +1,54 @@
 import acsploit
 import exploits
 import inspect
-import re
-import sys
-import abc
+import cmd
 
-class AcsploitCommandLine(acsploit.BaseCmd):
-	def preloop(self):
-		self.select_commands = {}
+class cmdline(cmd.Cmd):
 
-	@staticmethod
-	def start_instance():
-		prompt = AcsploitCommandLine()
-		prompt.prompt = "> "
-		prompt.cmdloop('***************Acsploit***************\nSelect an exploit to being. Type \'help\' for available commands')
+    intro = "\n--Welcome--\n"
+    prompt = "(acsploit) "
+    origpromptlen = len(prompt)
+    options = dict({"exploit" : "", "input" : ""})
+    currexp = None
 
-	def get_select_commands(self):
-		if not self.select_commands:
-			for name, obj in inspect.getmembers(exploits, inspect.isclass):
-				try:
-					#if isinstance(obj(), acsploit.Exploit):
-					arg_name = re.sub("Exploit", '', name).lower()
-					self.select_commands[arg_name] = obj
-				except TypeError:
-					pass
+    def do_EOF(self, args):
+        return True
 
-		return self.select_commands
+    def do_options(self, args):
+        for key, option in self.options.items():
+            print "  " + key + ": " +  str(option)
+        if self.currexp != None:
+            for key, option in self.currexp.options.items():
+                print "  " + key + ": " +  str(option)
 
-	def help_use(self):
-		commands = self.get_select_commands()
-		print("Available exploitable algorithms and data structures are:")
-		for key in commands.keys():
-			print(key)
+    def do_set(self, args):
+        args = args.split()
+        if len(args) < 2:
+            return
 
-	def do_use(self, args):
-		algorithm_name = args.split()[0]
+        key = args[0]
+        val = args[1]
 
-		commands = self.get_select_commands()
-		if algorithm_name in commands:
-			commands[algorithm_name].start_instance()
-		else:
-			print("Invalid argument: " + algorithm_name)
-			self.help_use()
+        if key == "exploit":
+            self.set_exploit(val)
+        elif (self.currexp != None) and (key in self.currexp.options):
+            self.currexp.options[key] = val
+        else:
+            self.options[key] = val
 
+    def set_exploit(self, expname):
+        self.prompt = self.prompt[:self.origpromptlen - 2] + ":"+expname+") "
+        if expname == "sort":
+            self.currexp = sort()
+        if expname == "tree":
+            self.currexp = tree()
+        self.options["exploit"] = expname
+
+class sort():
+    options = dict({"numtries": "", "blah": ""})
+
+class tree():
+    options = dict({"abcd": "", "1234": ""})
 
 if __name__ == '__main__':
-	AcsploitCommandLine.start_instance()
+    cmdline().cmdloop()
