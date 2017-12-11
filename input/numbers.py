@@ -1,5 +1,4 @@
 from .base import Generator
-import acsploit
 import random
 
 class IntGenerator(Generator):
