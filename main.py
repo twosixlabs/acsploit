@@ -7,7 +7,7 @@ import input
 
 class cmdline(cmd.Cmd):
 
-    intro = "\n--Welcome--\n"
+    intro = "\n**********ACsploit**********\n"
     prompt = "(acsploit) "
     origpromptlen = len(prompt)
     options = dict({"exploit" : "", "input" : "", "attack" : "time"})
