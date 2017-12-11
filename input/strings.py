@@ -1,6 +1,5 @@
 from .chars import CharGenerator
 from .base import Generator
-import acsploit
 import random
 
 class StringGenerator(Generator):
