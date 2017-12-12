@@ -59,13 +59,18 @@ class cmdline(cmd.Cmd):
             self.update_exploit(val)
         elif key == "input":
             #TODO list options with help or something else
-            self.options["input"] = val
             if val == "int":
                 self.currinputgen = input.IntGenerator()
-            if val == "char":
+                self.options["input"] = val
+            elif val == "char":
                 self.currinputgen = input.CharGenerator()
-            if val == "string":
+                self.options["input"] = val
+            elif val == "string":
                 self.currinputgen = input.StringGenerator()
+                self.options["input"] = val
+            else:
+                print "Input " + val + " does not exist."
+                return
         elif (self.currexp != None) and (key in self.currexp.options):
             #TODO check input type is what is expected
             self.currexp.options[key] = val
