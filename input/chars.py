@@ -20,7 +20,11 @@ class CharGenerator(Generator):
         self.characters = chars
 
     def get_less_than(self, value):
-        if ord(value) == int(self.options['min_value']):
+        tempmin = int(self.options['min_value'])
+        while chr(tempmin) not in self.characters:
+            tempmin += 1
+
+        if ord(value) == tempmin:
             return value
         value = chr(ord(value) - 1)
         while chr(ord(value)) not in self.characters:
@@ -30,7 +34,11 @@ class CharGenerator(Generator):
         return value
 
     def get_greater_than(self, value):
-        if (ord(value) == int(self.options['max_value'])):
+        tempmax = int(self.options['max_value'])
+        while chr(tempmax) not in self.characters:
+            tempmax -= 1
+
+        if (ord(value) == tempmax):
             return value
         value = chr(ord(value) + 1)
         while chr(ord(value)) not in self.characters:
@@ -45,6 +53,7 @@ class CharGenerator(Generator):
 
     def get_random(self):
         self.init_characters() #in case options have been changed
+        self.add_restrictions(self.options['restrictions'])
         return random.choice(self.characters)
 
     def add_restrictions(self, restrictions):
