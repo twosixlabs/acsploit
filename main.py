@@ -17,7 +17,7 @@ class cmdline(cmd.Cmd):
     prompt = BLUE + "(acsploit) " + ENDC
     origpromptlen = len(prompt)
     options = dict({"input" : "", "attack" : "time"})
-    descriptions = dict({"exploit" : "Type of exploit to use. Use 'list' to view." , "input" : "One of int, char, str." , "attack" : "One of time or memory."})
+    descriptions = dict({"input" : "One of int, char, str." , "attack" : "One of time or memory."})
     currexp = None
     currinputgen = None
     availexps = {}
@@ -102,8 +102,8 @@ class cmdline(cmd.Cmd):
         else:
             print(RED + "Option "+ key+ " does not exist." + ENDC)
 
-    def do_exploit(self, args):
-        """Lists all available exploits, and sets the current exploit. Usage: exploit [optional exploit to set]"""
+    def do_use(self, args):
+        """Lists all available exploits, and sets the current exploit. Usage: use [optional exploit to set]"""
         args = args.split()
         if len(args) == 0:
             print GREEN + "Available exploits:" + ENDC
@@ -120,12 +120,12 @@ class cmdline(cmd.Cmd):
             print(RED + "Exploit " + expname + " does not exist." + ENDC)
             pass
 
-    def do_run(self, args):
+    def do_exploit(self, args):
         """Runs exploit with given options."""
         if self.currexp == None:
-            print RED + "No exploit set, nothing to do." + ENDC
+            print RED + "No exploit set, nothing to do. See options." + ENDC
         elif self.currinputgen == None:
-            print RED + "No input specified, nothing to do." + ENDC
+            print RED + "No input specified, nothing to do. See options." + ENDC
         else:
             self.currexp().run(self.currinputgen) 
 
