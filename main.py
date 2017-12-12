@@ -34,7 +34,7 @@ class cmdline(cmd.Cmd):
             print "\n  Exploit options:"
             for key, option in self.currexp.options.items():
                 print "    " + key + ": " +  str(option)
-        if self.options["input"] != "":
+        if self.currinputgen != None:
             print "\n  Input options:"
             for key, option in self.currinputgen.options.items():
                 print "    " + key + ": " +  str(option)
@@ -42,7 +42,8 @@ class cmdline(cmd.Cmd):
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
         args = args.split()
-        if len(args) < 2:
+        if len(args) != 2:
+            print "Usage: set [option_name] [value]"
             return
 
         key = args[0]
@@ -51,7 +52,7 @@ class cmdline(cmd.Cmd):
         if key == "exploit":
             self.update_exploit(val)
         elif key == "input":
-            #TODO list options with help 
+            #TODO list options with help or something else
             self.options["input"] = val
             if val == "int":
                 self.currinputgen = input.IntGenerator()
