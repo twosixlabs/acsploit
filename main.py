@@ -3,11 +3,17 @@ import inspect
 import re
 import cmd
 import input
+#from termcolor import colored
+
+BLUE = '\033[94m'
+GREEN = '\033[92m'
+RED = '\033[93m'
+ENDC = '\033[0m'
 
 class cmdline(cmd.Cmd):
-
+    #intro = colored("\n**********ACsploit**********\n", 'red')
     intro = "\n**********ACsploit**********\n"
-    prompt = "(acsploit) "
+    prompt = BLUE + "(acsploit) " + ENDC
     origpromptlen = len(prompt)
     options = dict({"exploit" : "", "input" : "", "attack" : "time"})
     descriptions = dict({"exploit" : "Type of exploit to use. Use 'list' to view." , "input" : "One of int, char, str." , "attack" : "One of time or memory."})
@@ -38,29 +44,29 @@ class cmdline(cmd.Cmd):
         if len(args.split()) == 0:
             print("")
             for key, option in self.options.items():
-                print "  " + key + ": " +  str(option)
+                print GREEN + "  " + key + ": " + ENDC +  str(option)
             if self.currexp != None:
-                print "\n  Exploit options:"
+                print GREEN + "\n  Exploit options" + ENDC
                 for key, option in self.currexp.options.items():
-                    print "    " + key + ": " +  str(option)
+                    print GREEN + "    " + key + ": " + ENDC +  str(option)
             if self.currinputgen != None:
-                print "\n  Input options:"
+                print GREEN + "\n  Input options" + ENDC
                 for key, option in self.currinputgen.options.items():
-                    print "    " + key + ": " +  str(option)
+                    print GREEN + "    " + key + ": " + ENDC +  str(option)
             print("")
         else:
             if args.split()[0] == "describe":
                 print("")
                 for key, desc in self.descriptions.items():
-                    print "  " + key + ": " +  str(desc)
+                    print GREEN + "  " + key + ": " + ENDC +  str(desc)
                 if self.currexp != None:
-                    print "\n  Exploit options:" 
+                    print GREEN + "\n  Exploit options" + ENDC
                     for key, desc in self.currexp.descriptions.items():
-                        print "    " + key + ": " + str(desc)
+                        print GREEN + "    " + key + ": " + ENDC + str(desc)
                 if self.currinputgen != None:
-                    print "\n  Input options:" 
+                    print GREEN + "\n  Input options" + ENDC
                     for key, desc in self.currinputgen.descriptions.items():
-                        print "    " + key + ": " + str(desc)
+                        print GREEN + "    " + key + ": " + ENDC + str(desc)
                 print("")
 
     def do_set(self, args):
@@ -105,7 +111,7 @@ class cmdline(cmd.Cmd):
 
     def update_exploit(self, expname):
         if expname in self.availexps:
-            self.prompt = self.prompt[:self.origpromptlen - 2] + ":"+expname+") "
+            self.prompt = self.prompt[:self.origpromptlen - 6] + ":"+expname+") " + '\033[0m'
             self.currexp = self.availexps[expname]
             self.options["exploit"] = expname
         else:
