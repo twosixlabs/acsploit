@@ -22,10 +22,12 @@ class cmdline(cmd.Cmd):
             except TypeError:
                 pass
 
-    def do_EOF(self, args):
+    def do_exit(self, args):
+        """Exits ACsploit."""
         return True
 
     def do_options(self, args):
+        """Displays current options, more of which appear after 'input' and 'exploit' are set."""
         for key, option in self.options.items():
             print "  " + key + ": " +  str(option)
         if self.currexp != None:
@@ -38,6 +40,7 @@ class cmdline(cmd.Cmd):
                 print "    " + key + ": " +  str(option)
 
     def do_set(self, args):
+        """Sets an option. Usage: set [option_name] [value]"""
         args = args.split()
         if len(args) < 2:
             return
@@ -48,7 +51,7 @@ class cmdline(cmd.Cmd):
         if key == "exploit":
             self.update_exploit(val)
         elif key == "input":
-            #TODO check input
+            #TODO list options with help 
             self.options["input"] = val
             if val == "int":
                 self.currinputgen = input.IntGenerator()
@@ -57,11 +60,16 @@ class cmdline(cmd.Cmd):
             if val == "string":
                 self.currinputgen = input.StringGenerator()
         elif (self.currexp != None) and (key in self.currexp.options):
-            #TODO check input type is what is expected?
+            #TODO check input type is what is expected
             self.currexp.options[key] = val
         elif (self.currinputgen != None) and (key in self.currinputgen.options):
-            #TODO check input type is what is expected?
+            #TODO check input type is what is expected
             self.currinputgen.options[key] = val
+        elif key == "attack":
+            if val == "time" or val == "memory":
+                self.options["attack"] = val
+            else:
+                print "No " + val + " attack exists."
         else:
             print("Option "+ key+ " does not exist.")
 
@@ -75,12 +83,13 @@ class cmdline(cmd.Cmd):
             pass
 
     def do_run(self, args):
-        #TODO
-        if self.currexp != None:
-            self.currexp().run(self.currinputgen) 
+        """Runs exploit with given options."""
+        if self.currexp == None:
+            print "No exploit set, nothing to do."
+        elif self.currinputgen == None:
+            print "No input specified, nothing to do."
         else:
-            #TODO print error
-            pass
+            self.currexp().run(self.currinputgen) 
 
 if __name__ == '__main__':
     cmdlineobj = cmdline()
