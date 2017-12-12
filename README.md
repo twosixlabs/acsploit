@@ -1,4 +1,4 @@
-ACsploit: a tool for generating worst-case inputs for common algorithms
+ACsploit: a tool for generating worst-case inputs for algorithms
 =======================================================================
 
 TODO: write description.
