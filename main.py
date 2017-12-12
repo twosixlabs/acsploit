@@ -106,7 +106,7 @@ class cmdline(cmd.Cmd):
         """Lists all available exploits, and sets the current exploit. Usage: use [optional exploit to set]"""
         args = args.split()
         if len(args) == 0:
-            print GREEN + "Use this command to set an exploit by typing:\n\n    exploit <exploit name>\n\nAvailable exploits:" + ENDC
+            print GREEN + "Use this command to set an exploit by typing:\n\n    use <exploit name>\n\nAvailable exploits:" + ENDC
             for key in self.availexps:
                 print GREEN + "    " + key + ENDC
         else:
