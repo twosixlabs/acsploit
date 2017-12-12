@@ -4,6 +4,7 @@ import random
 class CharGenerator(Generator):
 
     options = dict({"min_value":0x61, "max_value":0x7A, "restrictions":""})
+    descriptions = dict({"min_value": "Minimum ASCII value to use.", "max_value": "Maximum ASCII value to use.", "restrictions": "String of characters to exclude."})
 
     # min cannot equal max
     def __init__(self):
