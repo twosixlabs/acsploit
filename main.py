@@ -7,7 +7,8 @@ import input
 
 BLUE = '\033[94m'
 GREEN = '\033[92m'
-RED = '\033[93m'
+YELLOW = '\033[93m'
+RED = '\033[91m'
 ENDC = '\033[0m'
 
 class cmdline(cmd.Cmd):
@@ -15,7 +16,7 @@ class cmdline(cmd.Cmd):
     intro = "\n**********ACsploit**********\n"
     prompt = BLUE + "(acsploit) " + ENDC
     origpromptlen = len(prompt)
-    options = dict({"exploit" : "", "input" : "", "attack" : "time"})
+    options = dict({"input" : "", "attack" : "time"})
     descriptions = dict({"exploit" : "Type of exploit to use. Use 'list' to view." , "input" : "One of int, char, str." , "attack" : "One of time or memory."})
     currexp = None
     currinputgen = None
@@ -32,12 +33,6 @@ class cmdline(cmd.Cmd):
     def do_exit(self, args):
         """Exits ACsploit."""
         return True
-
-    def do_list(self, args):
-        """Lists available exploits."""
-        print "Available exploits:"
-        for key in self.availexps:
-            print "  " + key
 
     def do_options(self, args):
         """Displays current options, more of which appear after 'input' and 'exploit' are set. Use 'options describe' to see descriptions of each."""
@@ -79,9 +74,7 @@ class cmdline(cmd.Cmd):
         key = args[0]
         val = args[1]
 
-        if key == "exploit":
-            self.update_exploit(val)
-        elif key == "input":
+        if key == "input":
             #TODO list options with help or something else
             if val == "int":
                 self.currinputgen = input.IntGenerator()
@@ -93,7 +86,7 @@ class cmdline(cmd.Cmd):
                 self.currinputgen = input.StringGenerator()
                 self.options["input"] = val
             else:
-                print "Input " + val + " does not exist."
+                print RED + "Input " + val + " does not exist." + ENDC
                 return
         elif (self.currexp != None) and (key in self.currexp.options):
             #TODO check input type is what is expected
@@ -105,25 +98,34 @@ class cmdline(cmd.Cmd):
             if val == "time" or val == "memory":
                 self.options["attack"] = val
             else:
-                print "No " + val + " attack exists."
+                print RED + "No " + val + " attack exists." + ENDC
         else:
-            print("Option "+ key+ " does not exist.")
+            print(RED + "Option "+ key+ " does not exist." + ENDC)
+
+    def do_exploit(self, args):
+        """Lists all available exploits, and sets the current exploit. Usage: exploit [optional exploit to set]"""
+        args = args.split()
+        if len(args) == 0:
+            print GREEN + "Available exploits:" + ENDC
+            for key in self.availexps:
+                print GREEN + "  " + key + ENDC
+        else:
+            self.update_exploit(args[0])
 
     def update_exploit(self, expname):
         if expname in self.availexps:
             self.prompt = self.prompt[:self.origpromptlen - 6] + ":"+expname+") " + '\033[0m'
             self.currexp = self.availexps[expname]
-            self.options["exploit"] = expname
         else:
-            print("Exploit " + expname + " does not exist.")
+            print(RED + "Exploit " + expname + " does not exist." + ENDC)
             pass
 
     def do_run(self, args):
         """Runs exploit with given options."""
         if self.currexp == None:
-            print "No exploit set, nothing to do."
+            print RED + "No exploit set, nothing to do." + ENDC
         elif self.currinputgen == None:
-            print "No input specified, nothing to do."
+            print RED + "No input specified, nothing to do." + ENDC
         else:
             self.currexp().run(self.currinputgen) 
 
