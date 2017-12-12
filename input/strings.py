@@ -5,6 +5,7 @@ import random
 class StringGenerator(Generator):
 
     options = dict({"min_length":1, "max_length":10, "min_value":0x61, "max_value":0x7A, "restrictions":""})
+    descriptions = dict({"min_length": "Minimum length of string.", "max_length": "Maximum length of string.", "min_value": "Minimum ASCII character to use.", "max_value": "Maximum ASCII character to use.", "restrictions": "String of characters to exclude."})
 
     def __init__(self):
         super(StringGenerator, self).__init__()

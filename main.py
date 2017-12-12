@@ -10,6 +10,7 @@ class cmdline(cmd.Cmd):
     prompt = "(acsploit) "
     origpromptlen = len(prompt)
     options = dict({"exploit" : "", "input" : "", "attack" : "time"})
+    descriptions = dict({"exploit" : "Type of exploit to use. Use 'list' to view." , "input" : "One of int, char, str." , "attack" : "One of time or memory."})
     currexp = None
     currinputgen = None
     availexps = {}
@@ -33,17 +34,30 @@ class cmdline(cmd.Cmd):
             print "  " + key
 
     def do_options(self, args):
-        """Displays current options, more of which appear after 'input' and 'exploit' are set."""
-        for key, option in self.options.items():
-            print "  " + key + ": " +  str(option)
-        if self.currexp != None:
-            print "\n  Exploit options:"
-            for key, option in self.currexp.options.items():
-                print "    " + key + ": " +  str(option)
-        if self.currinputgen != None:
-            print "\n  Input options:"
-            for key, option in self.currinputgen.options.items():
-                print "    " + key + ": " +  str(option)
+        """Displays current options, more of which appear after 'input' and 'exploit' are set. Use 'options describe' to see descriptions of each."""
+        if len(args.split()) == 0:
+            for key, option in self.options.items():
+                print "  " + key + ": " +  str(option)
+            if self.currexp != None:
+                print "\n  Exploit options:"
+                for key, option in self.currexp.options.items():
+                    print "    " + key + ": " +  str(option)
+            if self.currinputgen != None:
+                print "\n  Input options:"
+                for key, option in self.currinputgen.options.items():
+                    print "    " + key + ": " +  str(option)
+        else:
+            if args.split()[0] == "describe":
+                for key, desc in self.descriptions.items():
+                    print "  " + key + ": " +  str(desc)
+                if self.currexp != None:
+                    print "\n  Exploit options:" 
+                    for key, desc in self.currexp.descriptions.items():
+                        print "    " + key + ": " + str(desc)
+                if self.currinputgen != None:
+                    print "\n  Input options:" 
+                    for key, desc in self.currinputgen.descriptions.items():
+                        print "    " + key + ": " + str(desc)
 
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
