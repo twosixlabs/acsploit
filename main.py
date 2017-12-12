@@ -26,6 +26,12 @@ class cmdline(cmd.Cmd):
         """Exits ACsploit."""
         return True
 
+    def do_list(self, args):
+        """Lists available exploits."""
+        print "Available exploits:"
+        for key in self.availexps:
+            print "  " + key
+
     def do_options(self, args):
         """Displays current options, more of which appear after 'input' and 'exploit' are set."""
         for key, option in self.options.items():
