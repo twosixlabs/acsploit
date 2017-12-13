@@ -3,6 +3,8 @@ ACsploit: a tool for generating worst-case inputs for algorithms
 
 TODO: write description.
 
+[![Screenshot](acsploit.png)](gitlab.labs/stac/acsploit/awesomebranch/acsploit.png)
+
 Usage
 -----
 
