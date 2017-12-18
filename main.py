@@ -75,7 +75,6 @@ class cmdline(cmd.Cmd):
         val = args[1]
 
         if key == "input":
-            #TODO list options with help or something else
             if val == "int":
                 self.currinputgen = input.IntGenerator()
                 self.options["input"] = val
