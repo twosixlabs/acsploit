@@ -19,7 +19,7 @@ class cmdline(cmd.Cmd):
     options = dict({"input" : 'string'})
     descriptions = dict({"input" : "One of int, char, str."})
     currexp = None
-    currinputgen = "string"
+    currinputgen = input.StringGenerator()
     availexps = {}
     
     def init(self):
