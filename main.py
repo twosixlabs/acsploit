@@ -16,10 +16,10 @@ class cmdline(cmd.Cmd):
     intro = "\n**********ACsploit**********\n"
     prompt = BLUE + "(acsploit) " + ENDC
     origpromptlen = len(prompt)
-    options = dict({"input" : "", "attack" : "time"})
-    descriptions = dict({"input" : "One of int, char, str." , "attack" : "One of time or memory."})
+    options = dict({"input" : 'string'})
+    descriptions = dict({"input" : "One of int, char, str."})
     currexp = None
-    currinputgen = None
+    currinputgen = "string"
     availexps = {}
     
     def init(self):
