@@ -1,10 +1,17 @@
 from .base import Generator
 import random
 
+
 class CharGenerator(Generator):
 
-    options = dict({"min_value":0x61, "max_value":0x7A, "restrictions":""})
-    descriptions = dict({"min_value": "Minimum ASCII value to use.", "max_value": "Maximum ASCII value to use.", "restrictions": "String of characters to exclude."})
+    options = {
+        'min_value': 0x61,
+        'max_value': 0x7A,
+        'restrictions': ''}
+    descriptions = {
+        'min_value': 'Minimum ASCII value to use.',
+        'max_value': 'Maximum ASCII value to use.',
+        'restrictions': 'String of characters to exclude.'}
 
     # min cannot equal max
     def __init__(self):
@@ -39,7 +46,7 @@ class CharGenerator(Generator):
         while chr(tempmax) not in self.characters:
             tempmax -= 1
 
-        if (ord(value) == tempmax):
+        if ord(value) == tempmax:
             return value
         value = chr(ord(value) + 1)
         while chr(ord(value)) not in self.characters:
@@ -53,7 +60,7 @@ class CharGenerator(Generator):
         return chr(int(self.options['min_value']))
 
     def get_random(self):
-        self.init_characters() #in case options have been changed
+        self.init_characters()  # in case options have been changed
         self.add_restrictions(self.options['restrictions'])
         return random.choice(self.characters)
 

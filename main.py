@@ -3,7 +3,6 @@ import inspect
 import re
 import cmd
 import input
-#from termcolor import colored
 
 BLUE = '\033[94m'
 GREEN = '\033[92m'
@@ -11,13 +10,14 @@ YELLOW = '\033[93m'
 RED = '\033[91m'
 ENDC = '\033[0m'
 
+
 class cmdline(cmd.Cmd):
-    #intro = colored("\n**********ACsploit**********\n", 'red')
+    # intro = colored("\n**********ACsploit**********\n", 'red')
     intro = "\n**********ACsploit**********\n"
     prompt = BLUE + "(acsploit) " + ENDC
     origpromptlen = len(prompt)
-    options = dict({"input" : 'string'})
-    descriptions = dict({"input" : "One of int, char, str."})
+    options = {"input": 'string'}
+    descriptions = {"input": "One of int, char, str."}
     currexp = None
     currinputgen = input.StringGenerator()
     availexps = {}
@@ -39,26 +39,26 @@ class cmdline(cmd.Cmd):
         if len(args.split()) == 0:
             print("")
             for key, option in self.options.items():
-                print GREEN + "  " + key + ": " + ENDC +  str(option)
-            if self.currexp != None:
+                print GREEN + "  " + key + ": " + ENDC + str(option)
+            if self.currexp is not None:
                 print GREEN + "\n  Exploit options" + ENDC
                 for key, option in self.currexp.options.items():
-                    print GREEN + "    " + key + ": " + ENDC +  str(option)
-            if self.currinputgen != None:
+                    print GREEN + "    " + key + ": " + ENDC + str(option)
+            if self.currinputgen is not None:
                 print GREEN + "\n  Input options" + ENDC
                 for key, option in self.currinputgen.options.items():
-                    print GREEN + "    " + key + ": " + ENDC +  str(option)
+                    print GREEN + "    " + key + ": " + ENDC + str(option)
             print("")
         else:
             if args.split()[0] == "describe":
                 print("")
                 for key, desc in self.descriptions.items():
-                    print GREEN + "  " + key + ": " + ENDC +  str(desc)
-                if self.currexp != None:
+                    print GREEN + "  " + key + ": " + ENDC + str(desc)
+                if self.currexp is not None:
                     print GREEN + "\n  Exploit options" + ENDC
                     for key, desc in self.currexp.descriptions.items():
                         print GREEN + "    " + key + ": " + ENDC + str(desc)
-                if self.currinputgen != None:
+                if self.currinputgen is not None:
                     print GREEN + "\n  Input options" + ENDC
                     for key, desc in self.currinputgen.descriptions.items():
                         print GREEN + "    " + key + ": " + ENDC + str(desc)
@@ -87,11 +87,11 @@ class cmdline(cmd.Cmd):
             else:
                 print RED + "Input " + val + " does not exist." + ENDC
                 return
-        elif (self.currexp != None) and (key in self.currexp.options):
-            #TODO check input type is what is expected
+        elif self.currexp is not None and key in self.currexp.options:
+            # TODO check input type is what is expected
             self.currexp.options[key] = val
-        elif (self.currinputgen != None) and (key in self.currinputgen.options):
-            #TODO check input type is what is expected
+        elif self.currinputgen is not None and key in self.currinputgen.options:
+            # TODO check input type is what is expected
             self.currinputgen.options[key] = val
         elif key == "attack":
             if val == "time" or val == "memory":
@@ -122,9 +122,9 @@ class cmdline(cmd.Cmd):
 
     def do_exploit(self, args):
         """Runs exploit with given options."""
-        if self.currexp == None:
+        if self.currexp is None:
             print RED + "No exploit set, nothing to do. See options." + ENDC
-        elif self.currinputgen == None:
+        elif self.currinputgen is None:
             print RED + "No input specified, nothing to do. See options." + ENDC
         else:
             self.currexp().run(self.currinputgen) 

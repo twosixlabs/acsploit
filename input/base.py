@@ -1,5 +1,5 @@
 from abc import abstractmethod
-import configparser
+
 
 class Generator(object):
 

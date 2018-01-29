@@ -1,10 +1,15 @@
 from .base import Generator
 import random
 
+
 class IntGenerator(Generator):
 
-    options = dict({'max_value': 255, 'min_value': 0})
-    descriptions = dict({'max_value' : 'Maximum integer allowed.' , 'min_value' : 'Minimum integer allowed.'})
+    options = {
+        'max_value': 255,
+        'min_value': 0}
+    descriptions = {
+        'max_value': 'Maximum integer allowed.',
+        'min_value': 'Minimum integer allowed.'}
 
     def __init__(self):
         super(IntGenerator, self).__init__()
