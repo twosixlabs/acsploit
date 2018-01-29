@@ -1,8 +1,7 @@
-from .base import Generator
 import random
 
 
-class IntGenerator(Generator):
+class IntGenerator(object):
 
     options = {
         'max_value': 255,
@@ -12,7 +11,6 @@ class IntGenerator(Generator):
         'min_value': 'Minimum integer allowed.'}
 
     def __init__(self):
-        super(IntGenerator, self).__init__()
         self.max = int(self.options['max_value'])
         self.min = int(self.options['min_value'])
 

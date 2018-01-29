@@ -1,8 +1,7 @@
-from .base import Generator
 import random
 
 
-class CharGenerator(Generator):
+class CharGenerator(object):
 
     options = {
         'min_value': 0x61,
@@ -15,7 +14,6 @@ class CharGenerator(Generator):
 
     # min cannot equal max
     def __init__(self):
-        super(CharGenerator, self).__init__()
         self.characters = []
         self.init_characters()
         # TODO: When there are a lot of restrictions, the char/string generators breaks - needs fix

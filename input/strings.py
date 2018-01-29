@@ -1,9 +1,8 @@
 from .chars import CharGenerator
-from .base import Generator
 import random
 
 
-class StringGenerator(Generator):
+class StringGenerator(object):
 
     options = {'min_length': 1,
                'max_length': 10,
@@ -18,7 +17,6 @@ class StringGenerator(Generator):
         'restrictions': 'String of characters to exclude.'}
 
     def __init__(self):
-        super(StringGenerator, self).__init__()
         self.char_gen = CharGenerator()
         self.init_char_gen()
 
