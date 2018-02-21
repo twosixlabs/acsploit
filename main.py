@@ -102,15 +102,16 @@ class cmdline(cmd.Cmd):
             print(RED + "Option "+ key+ " does not exist." + ENDC)
 
     def do_use(self, args):
-        """Lists all available exploits, and sets the current exploit. Usage: use [optional exploit to set]"""
+        """Sets the current exploit. Usage: use [exploit_name]"""
         args = args.split()
-        if len(args) == 0:
-            print GREEN + "\nUse this command to set an exploit by typing:\n\n    use <exploit name>\n\nAvailable exploits:" + ENDC
-            for key in self.availexps:
-                print GREEN + "    " + key + ENDC
-            print("")
-        else:
-            self.update_exploit(args[0])
+        self.update_exploit(args[0])
+
+    def do_show(self, args):
+        """Lists all available exploits."""
+        print GREEN + "\nAvailable exploits:" + ENDC
+        for key in self.availexps:
+            print GREEN + "    " + key + ENDC
+        print("")
 
     def update_exploit(self, expname):
         if expname in self.availexps:
@@ -120,7 +121,7 @@ class cmdline(cmd.Cmd):
             print(RED + "Exploit " + expname + " does not exist." + ENDC)
             pass
 
-    def do_exploit(self, args):
+    def do_run(self, args):
         """Runs exploit with given options."""
         if self.currexp is None:
             print RED + "No exploit set, nothing to do. See options." + ENDC
