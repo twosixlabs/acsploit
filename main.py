@@ -25,8 +25,10 @@ class cmdline(cmd.Cmd):
     def init(self):
         for name, obj in inspect.getmembers(exploits, inspect.isclass):
             try:
-                arg_name = re.sub("Exploit", '', name).lower()
-                self.availexps[arg_name] = obj
+                path = inspect.getfile(obj).split("/")
+                i = path.index('exploits')
+                fullname = '/'.join(path[i+1:]).split('.')[0]
+                self.availexps[fullname] = obj
             except TypeError:
                 pass
 
@@ -109,13 +111,13 @@ class cmdline(cmd.Cmd):
     def do_show(self, args):
         """Lists all available exploits."""
         print GREEN + "\nAvailable exploits:" + ENDC
-        for key in self.availexps:
+        for key in sorted(self.availexps):
             print GREEN + "    " + key + ENDC
         print("")
 
     def update_exploit(self, expname):
         if expname in self.availexps:
-            self.prompt = self.prompt[:self.origpromptlen - 6] + ":"+expname+") " + '\033[0m'
+            self.prompt = self.prompt[:self.origpromptlen - 6] + " : "+expname+") " + '\033[0m'
             self.currexp = self.availexps[expname]
         else:
             print(RED + "Exploit " + expname + " does not exist." + ENDC)
