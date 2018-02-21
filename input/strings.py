@@ -73,3 +73,14 @@ class StringGenerator(object):
             value.append(self.char_gen.get_random())
             
         return ''.join(value)
+
+    def is_valid(self, candidate):  # determine if candidate is valid
+        if (len(candidate) >= int(self.options['min_length'])) & (len(candidate) <= int(self.options['max_length'])):
+            for character in candidate:
+                if character <= self.char_gen.get_min_value() or character >= self.char_gen.get_max_value():
+                    return False
+                if character in self.options['restrictions']:
+                    return False
+            return True
+        else:
+            return False

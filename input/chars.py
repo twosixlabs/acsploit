@@ -62,6 +62,9 @@ class CharGenerator(object):
         self.add_restrictions(self.options['restrictions'])
         return random.choice(self.characters)
 
+    def is_valid(self, candidate):
+        return (candidate >= self.get_min_value() & candidate <= self.get_max_value())
+
     def add_restrictions(self, restrictions):
         for restriction in restrictions:
             try:
