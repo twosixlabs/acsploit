@@ -1,6 +1,7 @@
 from .chars import CharGenerator
 import random
-
+from xeger import Xeger
+import re
 
 class StringGenerator(object):
 
@@ -73,6 +74,13 @@ class StringGenerator(object):
             value.append(self.char_gen.get_random())
             
         return ''.join(value)
+
+    def get_random_regex(self,regex):
+        x=Xeger()
+        y=x.xeger(regex)
+        while self.is_valid(y)==False or re.match(regex,y)==False:
+            y=x.xeger(regex)
+        return y
 
     def is_valid(self, candidate):  # determine if candidate is valid
         if (len(candidate) >= int(self.options['min_length'])) & (len(candidate) <= int(self.options['max_length'])):
