@@ -11,7 +11,7 @@ RED = '\033[91m'
 ENDC = '\033[0m'
 
 
-class cmdline(cmd.Cmd):
+class CmdLine(cmd.Cmd):
     # intro = colored("\n**********ACsploit**********\n", 'red')
     intro = "\n**********ACsploit**********\n"
     prompt = BLUE + "(acsploit) " + ENDC
@@ -43,7 +43,6 @@ class cmdline(cmd.Cmd):
             if str(type(obj)) == "<type 'classobj'>":
                 d[name] = obj
         return d
-            
 
     def do_exit(self, args):
         """Exits ACsploit."""
@@ -146,6 +145,7 @@ class cmdline(cmd.Cmd):
             self.currexp().run(self.currinputgen) 
 
 if __name__ == '__main__':
-    cmdlineobj = cmdline()
+    # TODO: work out what's going on here and why?
+    cmdlineobj = CmdLine()
     cmdlineobj.init()
-    cmdline().cmdloop()
+    CmdLine().cmdloop()
