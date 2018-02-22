@@ -36,16 +36,16 @@ class IntGenerator(object):
     def is_valid(self, value):  # Checks if a candidate value is valid, can be made stronger in the future
         return (value >= self.options['min_value'] & value <= self.options['max_value'])
 
-    def get_list_of_values(self, values):  # returns a list of valid numbers starting from min_value.
+    def get_list_of_values(self, numvalues):  # returns a list of valid numbers starting from min_value.
         list_of_values = []
-        if (values > 0):
-            i = 0
-            while len(list_of_values) < values:
-                i += 1
-                candidate = self.options['min_value'] + i
+        if (numvalues > 0):
+            candidate = self.options['min_value']
+            while len(list_of_values) < numvalues:
                 if self.is_valid(candidate):
                     list_of_values.append(candidate)
-                if candidate > self.options['max_value']:
+                if candidate > self.get_max_value():
                     print "Candidate larger than maximum, aborting"
                     break
+                candidate = self.get_greater_than(candidate)
+
             return list_of_values

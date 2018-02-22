@@ -82,6 +82,19 @@ class StringGenerator(object):
             y=x.xeger(regex)
         return y
 
+    def get_list_of_values(self, numvalues):  # returns a list of valid numbers starting from min_value.
+        list_of_values = []
+        if (numvalues > 0):
+            candidate = self.options['min_value']
+            while len(list_of_values) < numvalues:
+                if self.is_valid(candidate):
+                    list_of_values.append(candidate)
+                if candidate > self.get_max_value():
+                    print "Candidate larger than maximum, aborting"
+                    break
+                candidate = self.get_greater_than(candidate)
+            return list_of_values
+
     def is_valid(self, candidate):  # determine if candidate is valid
         if (len(candidate) >= int(self.options['min_length'])) & (len(candidate) <= int(self.options['max_length'])):
             for character in candidate:
