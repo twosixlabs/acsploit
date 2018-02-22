@@ -3,3 +3,4 @@
 .input.cfg
 .idea
 venv
+.DS_Store

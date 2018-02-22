@@ -144,11 +144,10 @@ def parse_operation(atom):
         return None
 
 if __name__ == '__main__':
-    with open('/Users/adam.jacobson/Documents/parsetest.txt') as test:
+    with open('parsetest.txt') as test:
         line = test.readline()
         print 'read line: "%s"' % line
         result = parse_input_line(line)
         result.print_tree()
         expression = result.convert_to_z3()
-        x = z3.solve(0 == expression)
-        print x
+        z3.solve(0 == expression)
