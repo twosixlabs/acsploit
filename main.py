@@ -3,13 +3,14 @@ import inspect
 import re
 import cmd
 import input
+import os
+import importlib
 
 BLUE = '\033[94m'
 GREEN = '\033[92m'
 YELLOW = '\033[93m'
 RED = '\033[91m'
 ENDC = '\033[0m'
-
 
 class CmdLine(cmd.Cmd):
     # intro = colored("\n**********ACsploit**********\n", 'red')
@@ -23,8 +24,9 @@ class CmdLine(cmd.Cmd):
     availexps = {}
     
     def init(self):
-        d = dict()
-        d = self.recurse(exploits, d)
+#        d = dict()
+#        d = self.recurse(exploits, d)
+        d = self.get_exploits()
         for name in d:
             obj = d[name]
             try:
@@ -41,6 +43,24 @@ class CmdLine(cmd.Cmd):
                 self.recurse(obj, d)
         for name, obj in inspect.getmembers(module, inspect.isclass):
             if str(type(obj)) == "<type 'classobj'>":
+                d[name] = obj
+        return d
+
+    def get_exploits(self):
+        files = []
+        d = dict()
+        for dirname, subdirlist, filelist in os.walk('exploits'):
+            for f in filelist:
+                if f != "__init__.py" and os.path.splitext(f)[1] == ".py":
+                    files.append(os.path.join(dirname, f))
+
+        #TODO make more pythonic/use os if possible. make cross-platform
+        for i in range(len(files)):
+            files[i] = files[i].replace('/', '.')[:-3]
+
+        for i in range(len(files)):
+            module = importlib.import_module(files[i])
+            for name, obj in inspect.getmembers(module, inspect.isclass):
                 d[name] = obj
         return d
 
