@@ -83,9 +83,10 @@ class StringGenerator(object):
 
     def get_random_regex_list(self,regex,numvalues):
         regex_matches=[]
-        for i in xrange(0,numvalues): #doesn't check for duplicates right now
+        while len(regex_matches)<numvalues:
             candidate=self.get_random_regex(regex)
-            regex_matches.append(candidate)
+            if candidate not in regex_matches:
+                regex_matches.append(candidate)
         return regex_matches
 
     def get_list_of_values(self, numvalues):  # returns a list of valid numbers starting from min_value.
