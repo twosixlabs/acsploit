@@ -39,6 +39,7 @@ class Node(object):
         self.operation = operation
         self.left = left
         self.right = right
+        self._converted_to_z3 = False
 
     def __str__(self):
         s = 'Node: %i ' % id(self)
@@ -59,10 +60,13 @@ class Node(object):
             self.right.print_tree()
 
     def convert_to_z3(self):
+        self._converted_to_z3 = True
         if self.operation == Node.CONSTANT:
-            return self.left  # return for use by caller
+            return self.left
         elif self.operation == Node.VARIABLE:
-            return z3.BitVec(self.left, Node.VARIABLE_WIDTH)
+            # NB: this makes convert_to_z3() non-idempotent...
+            self.left = z3.BitVec(self.left, Node.VARIABLE_WIDTH)
+            return self.left
         else:  # operation
             left = self.left.convert_to_z3()
             right = self.right.convert_to_z3()
@@ -82,7 +86,22 @@ class Node(object):
                 return left & right
             elif self.operation == Node.OR:
                 return left | right
-            raise LookupError('Unknown operation: %s' % str(self.operation))
+        self._converted_to_z3 = False
+        raise LookupError('Unknown operation: %s' % str(self.operation))
+
+    def get_z3_vars(self):
+        if not self._converted_to_z3:
+            return []
+        elif self.operation == Node.VARIABLE:
+            return [self.left]
+        elif self.operation == Node.CONSTANT:
+            return []
+        else:  # operation
+            z3_vars = self.left.get_z3_vars()
+            for var in self.right.get_z3_vars():
+                z3_vars.append(var)
+            return z3_vars
+
 
     @staticmethod
     def make_constant(value):
@@ -148,6 +167,16 @@ if __name__ == '__main__':
         line = test.readline()
         print 'read line: "%s"' % line
         result = parse_input_line(line)
-        result.print_tree()
+        print 'parsed line'
         expression = result.convert_to_z3()
-        z3.solve(0 == expression)
+        z3_vars = result.get_z3_vars()
+        solver = z3.Solver()
+        solver.add(0 == expression)
+
+        count = 0
+        while solver.check() == z3.sat and count < 4:
+            solution = solver.model()
+            print 'got solution: %r' % solution
+            count += 1
+            # prevent duplicate solutions
+            solver.add(z3.Or(*[var != solution[var] for var in z3_vars]))
