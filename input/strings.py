@@ -1,6 +1,6 @@
 from .chars import CharGenerator
 import random
-from xeger import Xeger
+import exrex
 import re
 
 class StringGenerator(object):
@@ -76,11 +76,17 @@ class StringGenerator(object):
         return ''.join(value)
 
     def get_random_regex(self,regex):
-        x=Xeger()
-        y=x.xeger(regex)
+        y=str(exrex.getone(regex))
         while self.is_valid(y)==False or re.match(regex,y)==False:
-            y=x.xeger(regex)
+            y=str(exrex.getone(regex))
         return y
+
+    def get_random_regex_list(self,regex,numvalues):
+        regex_matches=[]
+        for i in xrange(0,numvalues): #doesn't check for duplicates right now
+            candidate=self.get_random_regex(regex)
+            regex_matches.append(candidate)
+        return regex_matches
 
     def get_list_of_values(self, numvalues):  # returns a list of valid numbers starting from min_value.
         list_of_values = []
