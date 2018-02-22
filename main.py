@@ -25,9 +25,7 @@ class cmdline(cmd.Cmd):
     def init(self):
         d = dict()
         d = self.recurse(exploits, d)
-        print len(d)
         for name in d:
-            print name, d[name]
             obj = d[name]
             try:
                 path = inspect.getfile(obj).split("/")
@@ -43,7 +41,6 @@ class cmdline(cmd.Cmd):
                 self.recurse(obj, d)
         for name, obj in inspect.getmembers(module, inspect.isclass):
             if str(type(obj)) == "<type 'classobj'>":
-                print "Adding " + str(name) + ", " + str(obj) + " to d"
                 d[name] = obj
         return d
             
