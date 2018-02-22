@@ -77,13 +77,13 @@ class StringGenerator(object):
 
     def get_random_regex(self,regex):
         y=str(exrex.getone(regex))
-        while self.is_valid(y)==False or re.match(regex,y)==False:
+        while self.is_valid(y)==False or re.match(regex,y)==False: #infinite loop, bad
             y=str(exrex.getone(regex))
         return y
 
     def get_random_regex_list(self,regex,numvalues):
         regex_matches=[]
-        while len(regex_matches)<numvalues:
+        while len(regex_matches)<numvalues:  #infinite loop, bad
             candidate=self.get_random_regex(regex)
             if candidate not in regex_matches:
                 regex_matches.append(candidate)
