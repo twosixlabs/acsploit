@@ -24,8 +24,6 @@ class CmdLine(cmd.Cmd):
     availexps = {}
     
     def init(self):
-#        d = dict()
-#        d = self.recurse(exploits, d)
         d = self.get_exploits()
         for name in d:
             obj = d[name]
@@ -36,15 +34,6 @@ class CmdLine(cmd.Cmd):
                 self.availexps[fullname] = obj
             except TypeError:
                 pass
-
-    def recurse(self, module, d):
-        if module.__file__.split('/')[-1] == "__init__.py":
-            for name, obj in inspect.getmembers(module, inspect.ismodule):
-                self.recurse(obj, d)
-        for name, obj in inspect.getmembers(module, inspect.isclass):
-            if str(type(obj)) == "<type 'classobj'>":
-                d[name] = obj
-        return d
 
     def get_exploits(self):
         files = []
@@ -59,9 +48,12 @@ class CmdLine(cmd.Cmd):
             files[i] = files[i].replace('/', '.')[:-3]
 
         for i in range(len(files)):
-            module = importlib.import_module(files[i])
-            for name, obj in inspect.getmembers(module, inspect.isclass):
-                d[name] = obj
+            try:
+                eval(files[i] + '.' + files[i].split('.')[-1] + '.options')
+                eval(files[i] + '.' + files[i].split('.')[-1] + '.descriptions')
+                d[files[i].split('.')[-1]] = eval(files[i] + '.' + files[i].split('.')[-1])
+            except:
+                print("something got fucked up")
         return d
 
     def do_exit(self, args):
