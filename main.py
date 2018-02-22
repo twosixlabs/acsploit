@@ -23,7 +23,12 @@ class cmdline(cmd.Cmd):
     availexps = {}
     
     def init(self):
-        for name, obj in inspect.getmembers(exploits, inspect.isclass):
+        d = dict()
+        d = self.recurse(exploits, d)
+        print len(d)
+        for name in d:
+            print name, d[name]
+            obj = d[name]
             try:
                 path = inspect.getfile(obj).split("/")
                 i = path.index('exploits')
@@ -31,6 +36,17 @@ class cmdline(cmd.Cmd):
                 self.availexps[fullname] = obj
             except TypeError:
                 pass
+
+    def recurse(self, module, d):
+        if module.__file__.split('/')[-1] == "__init__.py":
+            for name, obj in inspect.getmembers(module, inspect.ismodule):
+                self.recurse(obj, d)
+        for name, obj in inspect.getmembers(module, inspect.isclass):
+            if str(type(obj)) == "<type 'classobj'>":
+                print "Adding " + str(name) + ", " + str(obj) + " to d"
+                d[name] = obj
+        return d
+            
 
     def do_exit(self, args):
         """Exits ACsploit."""
