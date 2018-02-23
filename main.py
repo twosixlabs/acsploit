@@ -5,16 +5,27 @@ import input
 import os
 import sys
 
-BLUE = '\033[94m'
-GREEN = '\033[92m'
-YELLOW = '\033[93m'
-RED = '\033[91m'
-ENDC = '\033[0m'
+
+def color(s, c):
+    endc = '\033[0m'
+    colors = {
+        'blue': '\033[94m',
+        'green': '\033[92m',
+        'yellow': '\033[93m',
+        'red': '\033[91m'
+    }
+
+    if c not in colors:
+        print(colors['red'] + "{} is not a supported color".format(c) + endc)
+        return s
+
+    return colors[c] + s + endc
+
 
 class CmdLine(cmd.Cmd):
     # intro = colored("\n**********ACsploit**********\n", 'red')
     intro = "\n**********ACsploit**********\n"
-    prompt = BLUE + "(acsploit) " + ENDC
+    prompt = color('(acsploit) ', 'blue')
     origpromptlen = len(prompt)
     options = {"input": 'string'}
     descriptions = {"input": "One of int, char, str."}
@@ -60,29 +71,29 @@ class CmdLine(cmd.Cmd):
         if len(args.split()) == 0:
             print("")
             for key, option in self.options.items():
-                print GREEN + "  " + key + ": " + ENDC + str(option)
+                print color("  " + key + ": ", 'green') + str(option)
             if self.currexp is not None:
-                print GREEN + "\n  Exploit options" + ENDC
+                print color("\n  Exploit options", 'green')
                 for key, option in self.currexp.options.items():
-                    print GREEN + "    " + key + ": " + ENDC + str(option)
+                    print color("    " + key + ": ", 'green') + str(option)
             if self.currinputgen is not None:
-                print GREEN + "\n  Input options" + ENDC
+                print color("\n  Input options", 'green')
                 for key, option in self.currinputgen.options.items():
-                    print GREEN + "    " + key + ": " + ENDC + str(option)
+                    print color("    " + key + ": ", 'green') + str(option)
             print("")
         else:
             if args.split()[0] == "describe":
                 print("")
                 for key, desc in self.descriptions.items():
-                    print GREEN + "  " + key + ": " + ENDC + str(desc)
+                    print color("  " + key + ": ", 'green') + str(desc)
                 if self.currexp is not None:
-                    print GREEN + "\n  Exploit options" + ENDC
+                    print color("\n  Exploit options", 'green')
                     for key, desc in self.currexp.descriptions.items():
-                        print GREEN + "    " + key + ": " + ENDC + str(desc)
+                        print color("    " + key + ": ", 'green') + str(desc)
                 if self.currinputgen is not None:
-                    print GREEN + "\n  Input options" + ENDC
+                    print color("\n  Input options", 'green')
                     for key, desc in self.currinputgen.descriptions.items():
-                        print GREEN + "    " + key + ": " + ENDC + str(desc)
+                        print color("    " + key + ": ", 'green') + str(desc)
                 print("")
 
     def do_set(self, args):
@@ -106,7 +117,7 @@ class CmdLine(cmd.Cmd):
                 self.currinputgen = input.StringGenerator()
                 self.options["input"] = val
             else:
-                print RED + "Input " + val + " does not exist." + ENDC
+                print color("Input " + val + " does not exist.", 'red')
                 return
         elif self.currexp is not None and key in self.currexp.options:
             # TODO check input type is what is expected
@@ -118,9 +129,9 @@ class CmdLine(cmd.Cmd):
             if val == "time" or val == "memory":
                 self.options["attack"] = val
             else:
-                print RED + "No " + val + " attack exists." + ENDC
+                print color("No " + val + " attack exists.", 'red')
         else:
-            print(RED + "Option "+ key+ " does not exist." + ENDC)
+            print(color("Option "+ key+ " does not exist.", 'red'))
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
@@ -129,9 +140,9 @@ class CmdLine(cmd.Cmd):
 
     def do_show(self, args):
         """Lists all available exploits."""
-        print GREEN + "\nAvailable exploits:" + ENDC
+        print color("\nAvailable exploits:", 'green')
         for key in sorted(self.availexps):
-            print GREEN + "    " + key + ENDC
+            print color("    " + key, 'green')
         print("")
 
     def update_exploit(self, expname):
@@ -139,15 +150,15 @@ class CmdLine(cmd.Cmd):
             self.prompt = self.prompt[:self.origpromptlen - 6] + " : "+expname+") " + '\033[0m'
             self.currexp = self.availexps[expname]
         else:
-            print(RED + "Exploit " + expname + " does not exist." + ENDC)
+            print(color("Exploit " + expname + " does not exist.", 'red'))
             pass
 
     def do_run(self, args):
         """Runs exploit with given options."""
         if self.currexp is None:
-            print RED + "No exploit set, nothing to do. See options." + ENDC
+            print color("No exploit set, nothing to do. See options.", 'red')
         elif self.currinputgen is None:
-            print RED + "No input specified, nothing to do. See options." + ENDC
+            print color("No input specified, nothing to do. See options.", 'red')
         else:
             self.currexp().run(self.currinputgen) 
 
