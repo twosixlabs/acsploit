@@ -1,16 +1,13 @@
 import random
+from options import Options
 
 
 class CharGenerator(object):
 
-    options = {
-        'min_value': 0x61,
-        'max_value': 0x7A,
-        'restrictions': ''}
-    descriptions = {
-        'min_value': 'Minimum ASCII value to use.',
-        'max_value': 'Maximum ASCII value to use.',
-        'restrictions': 'String of characters to exclude.'}
+    options = Options()
+    options.add_option('min_value', 0x61, 'Minimum ASCII value to use')
+    options.add_option('max_value', 0x7A, 'Maximum ASCII value to use')
+    options.add_option('restrictions', '', 'String of characters to exclude')
 
     # min cannot equal max
     def __init__(self):

@@ -1,14 +1,12 @@
 import random
+from options import Options
 
 
 class IntGenerator(object):
 
-    options = {
-        'max_value': 255,
-        'min_value': 0}
-    descriptions = {
-        'max_value': 'Maximum integer allowed.',
-        'min_value': 'Minimum integer allowed.'}
+    options = Options()
+    options.add_option('min_value', 0, 'Minimum integer allowed')
+    options.add_option('max_value', 255, 'Maximum integer allowed')
 
     def __init__(self):
         self.max = int(self.options['max_value'])

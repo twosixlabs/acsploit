@@ -1,21 +1,18 @@
-from .chars import CharGenerator
 import random
 import exrex
 import re
+from chars import CharGenerator
+from options import Options
+
 
 class StringGenerator(object):
 
-    options = {'min_length': 1,
-               'max_length': 10,
-               'min_value': 0x61,
-               'max_value': 0x7A,
-               'restrictions': ''}
-    descriptions = {
-        'min_length': 'Minimum length of string.',
-        'max_length': 'Maximum length of string.',
-        'min_value': 'Minimum ASCII character to use.',
-        'max_value': 'Maximum ASCII character to use.',
-        'restrictions': 'String of characters to exclude.'}
+    options = Options()
+    options.add_option('min_length', 1, 'Minimum string length')
+    options.add_option('max_length', 10, 'Maximum string length')
+    options.add_option('min_value', 0x61, 'Minimum ASCII character to use')
+    options.add_option('max_value', 0x7A, 'Maximum ASCII character to use')
+    options.add_option('restrictions', '', 'String of characters to exclude')
 
     def __init__(self):
         self.char_gen = CharGenerator()
