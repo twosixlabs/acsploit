@@ -35,27 +35,20 @@ class CmdLine(cmd.Cmd):
                 pass
 
     def get_exploits(self):
-        files = []
         d = dict()
         for dirname, subdirlist, filelist in os.walk('exploits'):
             for f in filelist:
                 if f != "__init__.py" and os.path.splitext(f)[1] == ".py":
-                    files.append(os.path.join(dirname, f))
-
-        #TODO make more pythonic/use os if possible. make cross-platform
-        for i in range(len(files)):
-            files[i] = files[i].replace('/', '.')[:-3]
-
-        for i in range(len(files)):
-            try:
-                eval(files[i] + '.' + files[i].split('.')[-1] + '.options')
-                eval(files[i] + '.' + files[i].split('.')[-1] + '.descriptions')
-                d[files[i].split('.')[-1]] = eval(files[i] + '.' + files[i].split('.')[-1])
-            except AttributeError:
-                print("Found .py in exploits/ that does not satisfy requirements, exiting.")
-                #TODO - in the future we probably want to handle this appropriately, rather than exit
-                sys.exit(1)
-
+                    f = os.path.join(dirname, f).replace(os.path.sep, '.')[:-3]  # -3 to strip '.py' extension
+                    try:  # test for existence of `options` and `descriptions` in the file before adding
+                        f_compound = f + '.' + f.split('.')[-1]
+                        eval(f_compound + '.options')
+                        eval(f_compound + '.descriptions')
+                        d[f.split('.')[-1]] = eval(f_compound)
+                    except AttributeError:
+                        print("Found .py in exploits/ that does not satisfy requirements, exiting.")
+                        # TODO - in the future we probably want to handle this appropriately, rather than exit
+                        sys.exit(1)
         return d
 
     def do_exit(self, args):
