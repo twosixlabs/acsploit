@@ -4,6 +4,7 @@ import cmd
 import input
 import os
 import sys
+import logging
 
 
 def color(s, c):
@@ -56,7 +57,7 @@ class CmdLine(cmd.Cmd):
                         # eval(f_compound + '.descriptions')
                         d[f.split('.')[-1]] = eval(f_compound)
                     except AttributeError:
-                        print("Found .py in exploits/ that does not satisfy requirements, exiting.")
+                        logging.error("Found .py in exploits/ that does not satisfy requirements, exiting.")
                         # TODO - in the future we probably want to handle this appropriately, rather than exit
                         sys.exit(1)
         return d
