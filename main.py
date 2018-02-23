@@ -23,7 +23,6 @@ def color(s, c):
 
 
 class CmdLine(cmd.Cmd):
-    # intro = colored("\n**********ACsploit**********\n", 'red')
     intro = "\n**********ACsploit**********\n"
     prompt = color('(acsploit) ', 'blue')
     origpromptlen = len(prompt)
@@ -135,8 +134,7 @@ class CmdLine(cmd.Cmd):
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
-        args = args.split()
-        self.update_exploit(args[0])
+        self.update_exploit(args.split[0])
 
     def do_show(self, args):
         """Lists all available exploits."""
@@ -162,8 +160,8 @@ class CmdLine(cmd.Cmd):
         else:
             self.currexp().run(self.currinputgen) 
 
+
 if __name__ == '__main__':
-    # TODO: work out what's going on here and why?
     cmdlineobj = CmdLine()
     cmdlineobj.init()
-    CmdLine().cmdloop()
+    cmdlineobj.cmdloop()
