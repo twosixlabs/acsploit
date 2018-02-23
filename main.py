@@ -1,10 +1,9 @@
 import exploits
 import inspect
-import re
 import cmd
 import input
 import os
-import importlib
+import sys
 
 BLUE = '\033[94m'
 GREEN = '\033[92m'
@@ -52,8 +51,11 @@ class CmdLine(cmd.Cmd):
                 eval(files[i] + '.' + files[i].split('.')[-1] + '.options')
                 eval(files[i] + '.' + files[i].split('.')[-1] + '.descriptions')
                 d[files[i].split('.')[-1]] = eval(files[i] + '.' + files[i].split('.')[-1])
-            except:
-                print("something got fucked up")
+            except AttributeError:
+                print("Found .py in exploits/ that does not satisfy requirements, exiting.")
+                #TODO - in the future we probably want to handle this appropriately, rather than exit
+                sys.exit(1)
+
         return d
 
     def do_exit(self, args):
