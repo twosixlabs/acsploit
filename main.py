@@ -6,6 +6,9 @@ import os
 import sys
 import logging
 
+from options import Options
+
+
 
 def color(s, c):
     endc = '\033[0m'
@@ -17,18 +20,27 @@ def color(s, c):
     }
 
     if c not in colors:
-        print(colors['red'] + "{} is not a supported color".format(c) + endc)
         return s
 
     return colors[c] + s + endc
+
+
+def print_options(options, describe=False, indent_level=0):
+    indent = '  ' * indent_level
+    for key in options.get_option_names():
+        line = color(str(key) + ': ', 'green') + str(options[key])
+        if describe:
+            line += ' (' + options.get_description(key) + ')'
+        print indent + line
 
 
 class CmdLine(cmd.Cmd):
     intro = "\n**********ACsploit**********\n"
     prompt = color('(acsploit) ', 'blue')
     origpromptlen = len(prompt)
-    options = {"input": 'string'}
-    descriptions = {"input": "One of int, char, str."}
+    options = Options()
+    options.add_option('input', 'string', 'One of int, char, string')
+
     currexp = None
     currinputgen = input.StringGenerator()
     availexps = {}
@@ -68,70 +80,55 @@ class CmdLine(cmd.Cmd):
 
     def do_options(self, args):
         """Displays current options, more of which appear after 'input' and 'exploit' are set. Use 'options describe' to see descriptions of each."""
-        if len(args.split()) == 0:
-            print("")
-            for key, option in self.options.items():
-                print color("  " + key + ": ", 'green') + str(option)
-            if self.currexp is not None:
-                print color("\n  Exploit options", 'green')
-                for key, option in self.currexp.options.items():
-                    print color("    " + key + ": ", 'green') + str(option)
-            if self.currinputgen is not None:
-                print color("\n  Input options", 'green')
-                for key, option in self.currinputgen.options.items():
-                    print color("    " + key + ": ", 'green') + str(option)
-            print("")
-        else:
-            if args.split()[0] == "describe":
-                print("")
-                for key, desc in self.descriptions.items():
-                    print color("  " + key + ": ", 'green') + str(desc)
-                if self.currexp is not None:
-                    print color("\n  Exploit options", 'green')
-                    for key, desc in self.currexp.descriptions.items():
-                        print color("    " + key + ": ", 'green') + str(desc)
-                if self.currinputgen is not None:
-                    print color("\n  Input options", 'green')
-                    for key, desc in self.currinputgen.descriptions.items():
-                        print color("    " + key + ": ", 'green') + str(desc)
-                print("")
+        if args not in ['', 'describe']:
+            print color('Unsupported argument to options', 'red')
+            self.do_help('options')
+            return
+
+        describe = args == 'describe'
+
+        print
+        print_options(self.options, describe, indent_level=1)
+        if self.currexp is not None:
+            print color("\n  Exploit options", 'green')
+            print_options(self.currexp.options, describe, indent_level=2)
+        if self.currinputgen is not None:
+            print color("\n  Input options", 'green')
+            print_options(self.currinputgen.options, describe, indent_level=2)
+        print
 
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
-        args = args.split()
-        if len(args) != 2:
+        try:
+            key, val = args.split(' ', 1)
+        except ValueError:
             print "Usage: set [option_name] [value]"
             return
 
-        key = args[0]
-        val = args[1]
-
         if key == "input":
-            if val == "int":
-                self.currinputgen = input.IntGenerator()
-                self.options["input"] = val
-            elif val == "char":
-                self.currinputgen = input.CharGenerator()
-                self.options["input"] = val
-            elif val == "string":
-                self.currinputgen = input.StringGenerator()
-                self.options["input"] = val
-            else:
+            input_map = {
+                'int': input.IntGenerator(),
+                'char': input.CharGenerator(),
+                'string': input.StringGenerator()
+            }
+
+            if val not in input_map:
                 print color("Input " + val + " does not exist.", 'red')
                 return
-        elif self.currexp is not None and key in self.currexp.options:
+
+            self.currinputgen = input_map[val]
+            self.options[key] = val
+
+        elif self.currexp is not None and key in self.currexp.options.get_option_names():
             # TODO check input type is what is expected
             self.currexp.options[key] = val
-        elif self.currinputgen is not None and key in self.currinputgen.options:
+
+        elif self.currinputgen is not None and key in self.currinputgen.options.get_option_names():
             # TODO check input type is what is expected
             self.currinputgen.options[key] = val
-        elif key == "attack":
-            if val == "time" or val == "memory":
-                self.options["attack"] = val
-            else:
-                print color("No " + val + " attack exists.", 'red')
+
         else:
-            print(color("Option "+ key+ " does not exist.", 'red'))
+            print color("Option " + key + " does not exist.", 'red')
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
