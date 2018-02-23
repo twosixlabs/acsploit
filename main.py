@@ -53,7 +53,7 @@ class CmdLine(cmd.Cmd):
                     try:  # test for existence of `options` and `descriptions` in the file before adding
                         f_compound = f + '.' + f.split('.')[-1]
                         eval(f_compound + '.options')
-                        eval(f_compound + '.descriptions')
+                        # eval(f_compound + '.descriptions')
                         d[f.split('.')[-1]] = eval(f_compound)
                     except AttributeError:
                         print("Found .py in exploits/ that does not satisfy requirements, exiting.")
