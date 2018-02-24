@@ -5,6 +5,7 @@ import input
 import os
 import sys
 import logging
+import pkgutil
 
 from options import Options
 
@@ -46,33 +47,18 @@ class CmdLine(cmd.Cmd):
     availexps = {}
     
     def init(self):
-        d = self.get_exploits()
-        for name in d:
-            obj = d[name]
-            try:
-                path = inspect.getfile(obj).split("/")
-                i = path.index('exploits')
-                fullname = '/'.join(path[i+1:]).split('.')[0]
-                self.availexps[fullname] = obj
-            except TypeError:
-                pass
+        self.availexps = self.get_exploits()
 
     def get_exploits(self):
-        d = dict()
-        for dirname, subdirlist, filelist in os.walk('exploits'):
-            for f in filelist:
-                if f != "__init__.py" and os.path.splitext(f)[1] == ".py":
-                    f = os.path.join(dirname, f).replace(os.path.sep, '.')[:-3]  # -3 to strip '.py' extension
-                    try:  # test for existence of `options` and `descriptions` in the file before adding
-                        f_compound = f + '.' + f.split('.')[-1]
-                        eval(f_compound + '.options')
-                        # eval(f_compound + '.descriptions')
-                        d[f.split('.')[-1]] = eval(f_compound)
-                    except AttributeError:
-                        logging.error("Found .py in exploits/ that does not satisfy requirements, exiting.")
-                        # TODO - in the future we probably want to handle this appropriately, rather than exit
-                        sys.exit(1)
-        return d
+        results = {}
+        for loader, name, ispkg in pkgutil.walk_packages(exploits.__path__):
+            m = loader.find_module(name).load_module(name)
+
+            if not ispkg and hasattr(m, 'options') and hasattr(m, 'run'):
+                exploit = m.name if hasattr(m, 'name') else name
+                results[exploit] = m
+
+        return results
 
     def do_exit(self, args):
         """Exits ACsploit."""
@@ -132,7 +118,7 @@ class CmdLine(cmd.Cmd):
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
-        self.update_exploit(args.split[0])
+        self.update_exploit(args.split()[0])
 
     def do_show(self, args):
         """Lists all available exploits."""
@@ -156,7 +142,7 @@ class CmdLine(cmd.Cmd):
         elif self.currinputgen is None:
             print color("No input specified, nothing to do. See options.", 'red')
         else:
-            self.currexp().run(self.currinputgen) 
+            self.currexp.run(self.currinputgen)
 
 
 if __name__ == '__main__':
