@@ -10,7 +10,6 @@ import pkgutil
 from options import Options
 
 
-
 def color(s, c):
     endc = '\033[0m'
     colors = {
@@ -55,7 +54,7 @@ class CmdLine(cmd.Cmd):
             m = loader.find_module(name).load_module(name)
 
             if not ispkg and hasattr(m, 'options') and hasattr(m, 'run'):
-                exploit = m.name if hasattr(m, 'name') else name
+                exploit = m.exploit_name if hasattr(m, 'exploit_name') else name
                 results[exploit] = m
 
         return results
