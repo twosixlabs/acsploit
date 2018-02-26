@@ -10,7 +10,6 @@ import logging
 from options import Options
 
 
-
 def color(s, c):
     endc = '\033[0m'
     colors = {
@@ -121,6 +120,10 @@ class CmdLine(cmd.Cmd):
 
             self.currinputgen = input_map[val]
             self.options[key] = val
+
+        elif key == "output":
+            #TODO
+            print color("Changing output type is not yet supported", 'red')
 
         elif self.currexp is not None and key in self.currexp.options.get_option_names():
             # TODO check input type is what is expected
