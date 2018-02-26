@@ -31,6 +31,9 @@ class Options(object):
     def get_value(self, name):
         return self._options[name][VALUE]
 
+    def get_acceptable_values(self, name):
+        return self._options[name][VALUES] if VALUES in self._options[name] else None
+
     def set_value(self, name, value):
         # type conversions for non-str values
         if type(self._options[name][VALUE]) is bool:
