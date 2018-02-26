@@ -1,4 +1,28 @@
 import z3
+from options import Options
+
+options = Options()
+options.add_option('hash', '+ * x y z', 'The hash function to use, in prefix notation')
+options.add_option('target_value', 0, 'The target value to solve the inputs to the hash function for')
+options.add_option('n_inputs', 10, 'The number of inputs to solve for')
+
+
+def run(generator, output):
+    ast = parse_input(options['hash'])
+    z3_expression = ast.convert_to_z3()
+    vars = ast.get_z3_vars()
+
+    solver = z3.Solver()
+    solver.add(options['target_value'] == z3_expression)
+
+    solutions = []
+    while solver.check() == z3.sat and len(solutions) < options['n_inputs']:
+        solution = solver.model()
+        solutions.append(solution)
+        # prevent duplicate solutions
+        solver.add(z3.Or(*[var != solution[var] for var in vars]))
+
+    output.output(solutions)
 
 
 class Node(object):
@@ -19,6 +43,9 @@ class Node(object):
     OR = 31
 
     VARIABLE_WIDTH = 8  # each variable is one byte
+    TARGET_WIDTH = 32  # bit width of target values
+    PADDING_WIDTH = TARGET_WIDTH - VARIABLE_WIDTH
+    assert(PADDING_WIDTH >= 0)
 
     CONSTANT_CHARS = range(0, 10)
     VARIABLE_CHARS = [chr(x) for x in range(97, 123)]  # lowercase ASCII
@@ -68,8 +95,8 @@ class Node(object):
             self.left = z3.BitVec(self.left, Node.VARIABLE_WIDTH)
             return self.left
         else:  # operation
-            left = self.left.convert_to_z3()
-            right = self.right.convert_to_z3()
+            left = self.pad_to_target_width(self.left.convert_to_z3())
+            right = self.pad_to_target_width(self.right.convert_to_z3())
             if self.operation == Node.ADDITION:
                 return left + right
             elif self.operation == Node.SUBTRACTION:
@@ -89,6 +116,9 @@ class Node(object):
         self._converted_to_z3 = False
         raise LookupError('Unknown operation: %s' % str(self.operation))
 
+    def pad_to_target_width(self, var):
+        return z3.ZeroExt(Node.PADDING_WIDTH, var) if var.size() < Node.TARGET_WIDTH else var
+
     def get_z3_vars(self):
         if not self._converted_to_z3:
             return []
@@ -101,7 +131,6 @@ class Node(object):
             for var in self.right.get_z3_vars():
                 z3_vars.append(var)
             return z3_vars
-
 
     @staticmethod
     def make_constant(value):
@@ -116,8 +145,8 @@ class Node(object):
         return Node(operation, left, right)
 
 
-def parse_input_line(input_line):
-    atoms = input_line.split(' ')
+def parse_input(input):
+    atoms = input.split(' ')
     tree, atoms = parse_atom(atoms)
     assert len(atoms) == 0
     return tree
@@ -161,22 +190,3 @@ def parse_operation(atom):
         return Node.OPERATION_CHARS[atom]
     except KeyError:
         return None
-
-if __name__ == '__main__':
-    with open('parsetest.txt') as test:
-        line = test.readline()
-        print 'read line: "%s"' % line
-        result = parse_input_line(line)
-        print 'parsed line'
-        expression = result.convert_to_z3()
-        z3_vars = result.get_z3_vars()
-        solver = z3.Solver()
-        solver.add(0 == expression)
-
-        count = 0
-        while solver.check() == z3.sat and count < 4:
-            solution = solver.model()
-            print 'got solution: %r' % solution
-            count += 1
-            # prevent duplicate solutions
-            solver.add(z3.Or(*[var != solution[var] for var in z3_vars]))
