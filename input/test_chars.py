@@ -13,7 +13,7 @@ def test_get_random():
 
 def test_get_list_of_values():
     characterGen=CharGenerator()
-    for char in characterGen.get_list_of_values(1): # if we change the defaults, we may want to test more than 10
+    for char in characterGen.get_list_of_values(10): # if we change the defaults, we may want to test more than 10
         assert char in characterGen.characters
         assert characterGen.is_valid(char)
 
