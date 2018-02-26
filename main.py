@@ -132,7 +132,7 @@ class CmdLine(cmd.Cmd):
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
-        self.update_exploit(args.split[0])
+        self.update_exploit(args.split()[0])
 
     def do_show(self, args):
         """Lists all available exploits."""
