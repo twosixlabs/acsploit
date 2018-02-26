@@ -41,7 +41,7 @@ class CmdLine(cmd.Cmd):
     origpromptlen = len(prompt)
     options = Options()
     options.add_option('input', 'string', 'One of int, char, string')
-    options.add_option('output', 'stdout', 'TBD')
+    options.add_option('output', 'stdout', 'file', 'TBD')
 
     currexp = None
     currinputgen = input.StringGenerator()
