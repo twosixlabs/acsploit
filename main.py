@@ -2,6 +2,7 @@ import exploits
 import inspect
 import cmd
 import input
+import output
 import os
 import sys
 import logging
@@ -40,9 +41,11 @@ class CmdLine(cmd.Cmd):
     origpromptlen = len(prompt)
     options = Options()
     options.add_option('input', 'string', 'One of int, char, string')
+    options.add_option('output', 'stdout', 'TBD')
 
     currexp = None
     currinputgen = input.StringGenerator()
+    curroutput = output.Stdout()
     availexps = {}
     
     def init(self):
@@ -89,12 +92,12 @@ class CmdLine(cmd.Cmd):
 
         print
         print_options(self.options, describe, indent_level=1)
-        if self.currexp is not None:
-            print color("\n  Exploit options", 'green')
-            print_options(self.currexp.options, describe, indent_level=2)
         if self.currinputgen is not None:
             print color("\n  Input options", 'green')
             print_options(self.currinputgen.options, describe, indent_level=2)
+        if self.currexp is not None:
+            print color("\n  Exploit options", 'green')
+            print_options(self.currexp.options, describe, indent_level=2)
         print
 
     def do_set(self, args):
@@ -156,7 +159,10 @@ class CmdLine(cmd.Cmd):
         elif self.currinputgen is None:
             print color("No input specified, nothing to do. See options.", 'red')
         else:
-            self.currexp().run(self.currinputgen) 
+            self.currexp().run(self.currinputgen)
+            #outputs = self.currexp().run(self.currinputgen)
+            #curroutput.output(outputs)
+
 
 
 if __name__ == '__main__':
