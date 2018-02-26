@@ -159,10 +159,7 @@ class CmdLine(cmd.Cmd):
         elif self.currinputgen is None:
             print color("No input specified, nothing to do. See options.", 'red')
         else:
-            self.currexp().run(self.currinputgen)
-            #outputs = self.currexp().run(self.currinputgen)
-            #curroutput.output(outputs)
-
+            self.currexp().run(self.currinputgen, self.curroutput)
 
 
 if __name__ == '__main__':
