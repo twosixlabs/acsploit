@@ -32,11 +32,11 @@ class IntGenerator(object):
         return random.randint(int(self.options['min_value']), int(self.options['max_value']))
 
     def is_valid(self, value):  # Checks if a candidate value is valid, can be made stronger in the future
-        return (value >= self.options['min_value'] & value <= self.options['max_value'])
+        return value >= self.options['min_value'] & value <= self.options['max_value']
 
     def get_list_of_values(self, numvalues):  # returns a list of valid numbers starting from min_value.
         list_of_values = []
-        if (numvalues > 0):
+        if numvalues > 0:
             candidate = self.options['min_value']
             while len(list_of_values) < numvalues:
                 if self.is_valid(candidate):

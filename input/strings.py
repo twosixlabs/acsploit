@@ -88,7 +88,7 @@ class StringGenerator(object):
 
     def get_list_of_values(self, numvalues):  # returns a list of valid numbers starting from min_value.
         list_of_values = []
-        if (numvalues > 0):
+        if numvalues > 0:
             candidate = self.get_min_value()
             while len(list_of_values) < numvalues:
                 if self.is_valid(candidate):
