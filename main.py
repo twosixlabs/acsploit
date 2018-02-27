@@ -85,6 +85,9 @@ class CmdLine(cmd.Cmd):
         if self.currinputgen is not None:
             print color("\n  Input options", 'green')
             print_options(self.currinputgen.options, describe, indent_level=2)
+        if self.curroutput is not None:
+            print color("\n  Output options", "green")
+            print_options(self.curroutput.options, describe, indent_level=2)
         if self.currexp is not None:
             print color("\n  Exploit options", 'green')
             print_options(self.currexp.options, describe, indent_level=2)
@@ -132,6 +135,9 @@ class CmdLine(cmd.Cmd):
         elif self.currinputgen is not None and key in self.currinputgen.options.get_option_names():
             # TODO check input type is what is expected
             self.currinputgen.options[key] = val
+
+        elif self.curroutput is not None and key in self.curroutput.options.get_option_names():
+            self.curroutput.options[key] = val
 
         else:
             print color("Option " + key + " does not exist.", 'red')
