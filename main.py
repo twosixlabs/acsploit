@@ -39,7 +39,16 @@ def print_options(options, describe=False, indent_level=0):
 
 
 class CmdLine(cmd.Cmd):
-    intro = "\n**********ACsploit**********\n"
+    intro = r"""
+                             .__         .__  __
+_____    ____   ____________ |  |   ____ |__|/  |_
+\__  \ _/ ___\ /  ___/\____ \|  |  /  _ \|  \   __\
+ / __ \\  \___ \___ \ |  |_> >  |_(  <_> )  ||  |
+(____  /\___  >____  >|   __/|____/\____/|__||__|
+     \/     \/     \/ |__|
+
+"""
+
     prompt = color('(acsploit) ', 'blue')
     origpromptlen = len(prompt)
     options = Options()
