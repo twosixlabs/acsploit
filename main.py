@@ -61,6 +61,8 @@ class CmdLine(cmd.Cmd):
 
             if not ispkg and hasattr(m, 'options') and hasattr(m, 'run'):
                 exploit = m.exploit_name if hasattr(m, 'exploit_name') else name
+                #TODO - if we were using "name" above, we'd require exploit contributors to have "name" be the *full* path...
+                exploit = exploit.replace('.', '/')
                 results[exploit] = m
 
         return results
