@@ -24,12 +24,12 @@ class Stdout(object):
     def output(self, output_list):
         separator = Stdout._SEPARATORS[self.options['separator']]
         line = separator.join([self.convert_item(item) for item in output_list])
+        line += os.linesep
         sys.stdout.write(line)
-        sys.stdout.write(os.linesep)
 
     def convert_item(self, item):
         if type(item) is int:
-            if self.options['number_format'] == 'hexdecimal':
+            if self.options['number_format'] == 'hexadecimal':
                 item = hex(item)
             elif self.options['number_format'] == 'octal':
                 item = oct(item)
