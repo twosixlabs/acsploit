@@ -5,13 +5,23 @@ from options import Options
 
 class Stdout(object):
 
-    OUTPUT_NAME = "stdout" #exploits can use this internally to whitelist/blacklist supported output formats
-    #TODO - have an option for decimal, hex, etc
+    OUTPUT_NAME = "stdout"  # exploits can use this internally to whitelist/blacklist supported output formats
+
+    _SEPARATORS = {
+        'newline': '\n',
+        'comma': ',',
+        'space': ' ',
+        'tab': '\t',
+        'os_newline': os.linesep
+    }
 
     def __init__(self):
         self.options = Options()
+        self.options.add_option('separator', 'newline', 'Separator between elements', ['newline', 'comma', 'space',
+                                                                                       'tab', 'os_newline'])
 
     def output(self, output_list):
-        for element in output_list:
-            sys.stdout.write(str(element))
-            sys.stdout.write(os.linesep)
+        separator = Stdout._SEPARATORS[self.options['separator']]
+        line = separator.join([str(item) for item in output_list])
+        sys.stdout.write(line)
+        sys.stdout.write(os.linesep)
