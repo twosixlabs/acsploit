@@ -15,15 +15,23 @@ Contributing Exploits
 
 Requirements for exploit contribution:
 
-- Create a python class titled [yourExploitType]Exploit. Name this file something appropriate and place it in the "exploits" directory.
-- The class must include an attribute titled "options", which is a dictionary of all the options specific to your exploit. For now, assume that when a user sets an option, it will be a string and you will be responsible for parsing it into the appropriate data type. Eventually this will be taken care of for you.
-- The class must include an attribute titled "descriptions", which is a dictionary with all the same keys as "options", but with descriptions of each option as values.
-- The class must include a function "run(self, generator)" that takes an ACsploit input generator as an argument.
-- Add the approptiate line to `exploits/__init__.py`
+- Create a python module for your exploit in the appropriate directory. New directories may be created so long as an empty `__init__.py` files is created for each new directory.
+  - Use lower case, underscore-separated filenames for your exploit. Make it descriptive, yet brief.
+
+- Your module must have an `Options` object. Use the `add_option` method to add exploit-specific options.
+
+- Your module must have a method `run(generator, output)`. This is what gets called when your exploit is used.
+  - `generator` is where your input is coming from, and `output` is how your exploit outputs data. You may want to whitelist/blacklist certain generators and output formats.
+  - Your `run` method will typically end with `output.output(exploit_results)`, where `exploit_results` is a list of your output.
 
 Beyond the above requirements, your exploit can be written however you'd like.
 
 Contributing Input Generators
 -----------------------------
+
+TODO.
+
+Contributing Output Generators
+------------------------------
 
 TODO.
