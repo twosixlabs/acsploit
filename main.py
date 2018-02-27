@@ -43,8 +43,8 @@ class CmdLine(cmd.Cmd):
     prompt = color('(acsploit) ', 'blue')
     origpromptlen = len(prompt)
     options = Options()
-    options.add_option('input', 'string', 'One of int, char, string')
-    options.add_option('output', 'stdout', 'file', 'TBD')
+    options.add_option('input', 'string', 'One of int, char, string', ['int', 'char', 'string'])
+    options.add_option('output', 'stdout', 'One of stdout or file', ['stdout', 'file'])
 
     currexp = None
     currinputgen = input.StringGenerator()
@@ -113,8 +113,17 @@ class CmdLine(cmd.Cmd):
             self.options[key] = val
 
         elif key == "output":
-            #TODO
-            print color("Changing output type is not yet supported", 'red')
+            output_map = {
+                'stdout': output.Stdout(),
+                'file': output.File()
+            }
+
+            if val not in output_map:
+                print color("Output " + val + " does not exist.", 'red')
+                return
+
+            self.curroutput = output_map[val]
+            self.options[key] = val
 
         elif self.currexp is not None and key in self.currexp.options.get_option_names():
             # TODO check input type is what is expected

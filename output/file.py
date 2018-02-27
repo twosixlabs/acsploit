@@ -8,7 +8,7 @@ class File(object):
 
     def __init__(self):
         self.options = Options()
-        self.options.add_option('filename', 'output.txt', 'The name of the file to write to')
+        self.options.add_option('filename', 'acsploit_output.txt', 'The name of the file to write to')
 
     def output(self, output_list):
         with open(self.options['filename'], 'w') as output_file:
