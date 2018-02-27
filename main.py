@@ -32,6 +32,9 @@ def print_options(options, describe=False, indent_level=0):
         line = color(str(key) + ': ', 'green') + str(options[key])
         if describe:
             line += ' (' + options.get_description(key) + ')'
+            values = options.get_acceptable_values(key)
+            if values is not None:
+                line += ' (Acceptable Values: ' + str(values) + ')'
         print indent + line
 
 
@@ -41,7 +44,7 @@ class CmdLine(cmd.Cmd):
     origpromptlen = len(prompt)
     options = Options()
     options.add_option('input', 'string', 'One of int, char, string')
-    options.add_option('output', 'stdout', 'TBD')
+    options.add_option('output', 'stdout', 'file', 'TBD')
 
     currexp = None
     currinputgen = input.StringGenerator()
