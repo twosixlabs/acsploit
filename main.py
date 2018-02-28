@@ -32,16 +32,28 @@ def print_options(options, describe=False, indent_level=0):
         line = color(str(key) + ': ', 'green') + str(options[key])
         if describe:
             line += ' (' + options.get_description(key) + ')'
+            values = options.get_acceptable_values(key)
+            if values is not None:
+                line += ' (Acceptable Values: ' + str(values) + ')'
         print indent + line
 
 
 class CmdLine(cmd.Cmd):
-    intro = "\n**********ACsploit**********\n"
+    intro = r"""
+                             .__         .__  __
+_____    ____   ____________ |  |   ____ |__|/  |_
+\__  \ _/ ___\ /  ___/\____ \|  |  /  _ \|  \   __\
+ / __ \\  \___ \___ \ |  |_> >  |_(  <_> )  ||  |
+(____  /\___  >____  >|   __/|____/\____/|__||__|
+     \/     \/     \/ |__|
+
+"""
+
     prompt = color('(acsploit) ', 'blue')
     origpromptlen = len(prompt)
     options = Options()
-    options.add_option('input', 'string', 'One of int, char, string')
-    options.add_option('output', 'stdout', 'TBD')
+    options.add_option('input', 'string', 'One of int, char, string', ['int', 'char', 'string'])
+    options.add_option('output', 'stdout', 'One of stdout or file', ['stdout', 'file'])
 
     currexp = None
     currinputgen = input.StringGenerator()
@@ -58,6 +70,8 @@ class CmdLine(cmd.Cmd):
 
             if not ispkg and hasattr(m, 'options') and hasattr(m, 'run'):
                 exploit = m.exploit_name if hasattr(m, 'exploit_name') else name
+                #TODO - if we were using "name" above, we'd require exploit contributors to have "name" be the *full* path...
+                exploit = exploit.replace('.', '/')
                 results[exploit] = m
 
         return results
@@ -80,6 +94,9 @@ class CmdLine(cmd.Cmd):
         if self.currinputgen is not None:
             print color("\n  Input options", 'green')
             print_options(self.currinputgen.options, describe, indent_level=2)
+        if self.curroutput is not None:
+            print color("\n  Output options", "green")
+            print_options(self.curroutput.options, describe, indent_level=2)
         if self.currexp is not None:
             print color("\n  Exploit options", 'green')
             print_options(self.currexp.options, describe, indent_level=2)
@@ -108,8 +125,17 @@ class CmdLine(cmd.Cmd):
             self.options[key] = val
 
         elif key == "output":
-            #TODO
-            print color("Changing output type is not yet supported", 'red')
+            output_map = {
+                'stdout': output.Stdout(),
+                'file': output.File()
+            }
+
+            if val not in output_map:
+                print color("Output " + val + " does not exist.", 'red')
+                return
+
+            self.curroutput = output_map[val]
+            self.options[key] = val
 
         elif self.currexp is not None and key in self.currexp.options.get_option_names():
             # TODO check input type is what is expected
@@ -118,6 +144,9 @@ class CmdLine(cmd.Cmd):
         elif self.currinputgen is not None and key in self.currinputgen.options.get_option_names():
             # TODO check input type is what is expected
             self.currinputgen.set_option(key, val)
+
+        elif self.curroutput is not None and key in self.curroutput.options.get_option_names():
+            self.curroutput.options[key] = val
 
         else:
             print color("Option " + key + " does not exist.", 'red')
