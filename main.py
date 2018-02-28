@@ -1,6 +1,6 @@
 import exploits
 import inspect
-import cmd
+import cmd2
 import input
 import output
 import os
@@ -38,7 +38,7 @@ def print_options(options, describe=False, indent_level=0):
         print indent + line
 
 
-class CmdLine(cmd.Cmd):
+class ACsploit(cmd2.Cmd):
     intro = r"""
                              .__         .__  __
 _____    ____   ____________ |  |   ____ |__|/  |_
@@ -59,7 +59,21 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     currinputgen = input.StringGenerator()
     curroutput = output.Stdout()
     availexps = {}
-    
+
+    def __init__(self):
+        #delete unused commands that are baked-into cmd2
+        del cmd2.Cmd.do_py
+        del cmd2.Cmd.do_edit
+        del cmd2.Cmd.do_load
+        del cmd2.Cmd.do_shortcuts
+        del cmd2.Cmd.do_shell
+        del cmd2.Cmd.do_pyscript
+        del cmd2.Cmd.do_set
+        cmd2.Cmd.abbrev = True
+        cmd2.Cmd.__init__(self)
+
+
+
     def init(self):
         self.availexps = self.get_exploits()
 
@@ -75,10 +89,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 results[exploit] = m
 
         return results
-
-    def do_exit(self, args):
-        """Exits ACsploit."""
-        return True
 
     def do_options(self, args):
         """Displays current options, more of which appear after 'input' and 'exploit' are set. Use 'options describe' to see descriptions of each."""
@@ -154,7 +164,11 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
-        self.update_exploit(args.split()[0])
+        if len(args) > 0:
+            self.update_exploit(args.split()[0])
+        else:
+            print color("Usage: use [exploit_name]", 'red')
+            return
 
     def do_show(self, args):
         """Lists all available exploits."""
@@ -182,6 +196,11 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
 
 if __name__ == '__main__':
-    cmdlineobj = CmdLine()
+
+    history_file = '~/.acsploit.history'
+
+    #cmdlineobj = ACsploit(hist_file=history_file) #TODO - Wait for cmd2 version 0.8.1 to be on pip for this...
+    cmdlineobj = ACsploit()
+    cmdlineobj.debug = True #TODO - eventually not have this
     cmdlineobj.init()
     cmdlineobj.cmdloop()

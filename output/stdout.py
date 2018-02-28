@@ -28,6 +28,7 @@ class Stdout(object):
         sys.stdout.write(line)
 
     def convert_item(self, item):
+        # NB: this doesn't recur onto lists
         if type(item) is int:
             if self.options['number_format'] == 'hexadecimal':
                 item = hex(item)
