@@ -1,8 +1,7 @@
 import os
 import sys
 from mock import patch
-from stdout import Stdout
-
+from output import Stdout
 
 def test_output_defaults():
     with patch.object(sys, 'stdout') as mock_stdout:

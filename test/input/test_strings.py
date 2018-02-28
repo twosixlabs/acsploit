@@ -1,5 +1,4 @@
-from strings import StringGenerator
-
+from input import StringGenerator
 
 def test_constructor():
     sg = StringGenerator()

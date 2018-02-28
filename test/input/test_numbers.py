@@ -1,5 +1,4 @@
-from numbers import IntGenerator
-
+from input import IntGenerator
 
 def test_constructor():
     ig = IntGenerator()

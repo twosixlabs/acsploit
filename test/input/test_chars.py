@@ -1,4 +1,4 @@
-from chars import CharGenerator
+from input import CharGenerator
 
 
 def test_constructor():
