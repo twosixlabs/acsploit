@@ -3,6 +3,7 @@ import sys
 from mock import patch
 from output import Stdout
 
+
 def test_output_defaults():
     with patch.object(sys, 'stdout') as mock_stdout:
         s = Stdout()
