@@ -1,49 +1,54 @@
 import random
+import math
 from options import Options
 
 
 class IntGenerator(object):
 
-    options = Options()
-    options.add_option('min_value', 0, 'Minimum integer allowed')
-    options.add_option('max_value', 255, 'Maximum integer allowed')
-
     def __init__(self):
-        self.max = int(self.options['max_value'])
-        self.min = int(self.options['min_value'])
+        self._options = Options()
+        self._options.add_option('min_value', 0, 'Minimum integer allowed')
+        self._options.add_option('max_value', 255, 'Maximum integer allowed')
+
+        self.min = 0
+        self.max = 0
+        self.update()
+
+    def set_option(self, key, value):
+        self._options[key] = value
+        self.update()
+
+    def update(self):
+        self.min = self._options['min_value']
+        self.max = self._options['max_value']
 
     def get_less_than(self, value):
-        if value == int(self.options['min_value']):
-            return int(self.options['min_value'])
-        return value - 1
+        # return closest int less than value
+        # this can be simplified if we know value is an int
+        if value <= self.min:
+            raise ValueError('No valid values less than {}'.format(value))
+        return int(math.ceil(value) - 1)
 
     def get_greater_than(self, value):
-        if value == int(self.options['max_value']):
-            return int(self.options['max_value'])
-        return value + 1
+        # return closest int greater than value
+        # this can be simplified if we know value is an int
+        if value >= self.max:
+            raise ValueError('No valid values greater than {}'.format(value))
+        return int(math.floor(value) + 1)
 
     def get_max_value(self):
-        return int(self.options['max_value'])
+        return self.max
 
     def get_min_value(self):
-        return int(self.options['min_value'])
+        return self.min
 
     def get_random(self):
-        return random.randint(int(self.options['min_value']), int(self.options['max_value']))
+        return random.randint(self.min, self.max)
 
     def is_valid(self, value):  # Checks if a candidate value is valid, can be made stronger in the future
-        return (value >= self.options['min_value'] & value <= self.options['max_value'])
+        return self.min <= value <= self.max and int(value) == value
 
-    def get_list_of_values(self, numvalues):  # returns a list of valid numbers starting from min_value.
-        list_of_values = []
-        if (numvalues > 0):
-            candidate = self.options['min_value']
-            while len(list_of_values) < numvalues:
-                if self.is_valid(candidate):
-                    list_of_values.append(candidate)
-                if candidate > self.get_max_value():
-                    print "Candidate larger than maximum, aborting"
-                    break
-                candidate = self.get_greater_than(candidate)
-
-            return list_of_values
+    def get_list_of_values(self, num_values):  # returns a list of valid numbers starting from min_value
+        if self.min + num_values - 1 > self.max:
+            raise ValueError('Fewer than {} unique values'.format(num_values))
+        return [self.min + i for i in range(num_values)]

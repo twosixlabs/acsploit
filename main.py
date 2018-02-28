@@ -117,7 +117,7 @@ class CmdLine(cmd.Cmd):
 
         elif self.currinputgen is not None and key in self.currinputgen.options.get_option_names():
             # TODO check input type is what is expected
-            self.currinputgen.options[key] = val
+            self.currinputgen.set_option(key, val)
 
         else:
             print color("Option " + key + " does not exist.", 'red')

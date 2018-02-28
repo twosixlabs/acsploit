@@ -1,86 +1,65 @@
 import random
+import string
 from options import Options
 
 
 class CharGenerator(object):
-
-    options = Options()
-    options.add_option('min_value', 0x61, 'Minimum ASCII value to use')
-    options.add_option('max_value', 0x7A, 'Maximum ASCII value to use')
-    options.add_option('restrictions', '', 'String of characters to exclude')
-
     # min cannot equal max
     def __init__(self):
-        self.characters = []
-        self.init_characters()
-        # TODO: When there are a lot of restrictions, the char/string generators breaks - needs fix
-        self.add_restrictions(self.options['restrictions'])
+        self._options = Options()
+        self._options.add_option('min_value', 'a', 'Minimum ASCII character to use')
+        self._options.add_option('max_value', 'z', 'Maximum ASCII character to use')
+        self._options.add_option('restrictions', '', 'String of characters to exclude')
 
-    def init_characters(self):
-        chars = []
-        for i in range(int(self.options['min_value']), int(self.options['max_value']) + 1):
-            chars.append(chr(i))
-        self.characters = chars
+        self.char_set = []  # char_set will be a sorted valid set of characters given the constraints set in _options
+        self.update()
 
-    def get_less_than(self, value):
-        tempmin = int(self.options['min_value'])
-        while chr(tempmin) not in self.characters:
-            tempmin += 1
-
-        if ord(value) == tempmin:
-            return value
-        value = chr(ord(value) - 1)
-        while chr(ord(value)) not in self.characters:
-            if ord(value) - 1 < 0:
-                return value
-            value = chr(ord(value) - 1)
-        return value
-
-    def get_greater_than(self, value):
-        tempmax = int(self.options['max_value'])
-        while chr(tempmax) not in self.characters:
-            tempmax -= 1
-
-        if ord(value) == tempmax:
-            return value
-        value = chr(ord(value) + 1)
-        while chr(ord(value)) not in self.characters:
-            value = chr(ord(value) + 1)
-        return value
-
-    def get_max_value(self):
-        return chr(int(self.options['max_value']))
+    def set_option(self, key, value):
+        self._options[key] = value
+        self.update()
 
     def get_min_value(self):
-        return chr(int(self.options['min_value']))
+        return self.char_set[0]  # options[min_value] could be in restrictions, so we don't just return that
 
-    def get_random(self):
-        self.init_characters()  # in case options have been changed
-        self.add_restrictions(self.options['restrictions'])
-        return random.choice(self.characters)
+    def get_max_value(self):
+        return self.char_set[-1]  # options[max_value] could be in restrictions, so we don't just return that
 
     def is_valid(self, candidate):
-        return (candidate >= self.get_min_value()) & (candidate <= self.get_max_value())
+        min_val = self._options['min_value']
+        max_val = self._options['max_value']
+        restrictions = self._options['restrictions']
+        return min_val <= candidate <= max_val and candidate not in restrictions
 
-    def add_restrictions(self, restrictions):
-        for restriction in restrictions:
-            try:
-                self.characters.remove(restriction)
-            except ValueError:
-                pass  # Error doesn't need to be dealt with
+    def update(self):
+        self.char_set = [c for c in string.printable if self.is_valid(c)]
+        self.char_set.sort()
 
-    def get_list_of_values(self, numvalues):  # returns a list of valid numbers starting from min_value.
-        list_of_values = []
-        if (numvalues > 0):
-            candidate = chr(self.options['min_value'])
-            while len(list_of_values) < numvalues:
-                if self.is_valid(candidate):
-                    list_of_values.append(candidate)
-                if candidate > self.get_max_value():
-                    print "Candidate larger than maximum, aborting"
-                    break
-                candidate = self.get_greater_than(candidate)
-            return list_of_values
+    def get_less_than(self, value):
+        result = None
+        for c in self.char_set:
+            if c >= value:
+                break
+            result = c
+        if result is None:
+            #TODO: how do we actually want to handle errors?
+            raise ValueError('No valid value exists less than {}'.format(value))
+        return result
 
+    def get_greater_than(self, value):
+        for c in self.char_set:
+            if c > value:
+                return c
 
+        raise ValueError('No valid value exists greater than {}'.format(value))
 
+    def get_random(self):
+        return random.choice(self.char_set)
+
+    def get_char_set(self):
+        return self.char_set
+
+    def get_list_of_values(self, num_values):  # returns a list of valid numbers starting from min_value.
+        if num_values > len(self.char_set):
+            raise ValueError('Fewer than {} unique values'.format(num_values))
+
+        return self.char_set[:num_values]
