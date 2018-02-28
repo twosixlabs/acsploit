@@ -18,6 +18,9 @@ class IntGenerator(object):
         self._options[key] = value
         self.update()
 
+    def get_options(self):
+        return self._options
+
     def update(self):
         self.min = self._options['min_value']
         self.max = self._options['max_value']

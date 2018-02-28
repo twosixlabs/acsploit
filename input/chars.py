@@ -18,6 +18,9 @@ class CharGenerator(object):
         self._options[key] = value
         self.update()
 
+    def get_options(self):
+        return self._options
+
     def get_min_value(self):
         return self.char_set[0]  # options[min_value] could be in restrictions, so we don't just return that
 

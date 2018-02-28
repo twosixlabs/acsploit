@@ -52,8 +52,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     prompt = color('(acsploit) ', 'blue')
     origpromptlen = len(prompt)
     options = Options()
-    options.add_option('input', 'string', 'One of int, char, string', ['int', 'char', 'string'])
-    options.add_option('output', 'stdout', 'One of stdout or file', ['stdout', 'file'])
+    options.add_option('input', 'string', 'Input generator to use with exploits', ['int', 'char', 'string', 'regex'])
+    options.add_option('output', 'stdout', 'Output generator to use with exploits', ['stdout', 'file'])
 
     currexp = None
     currinputgen = input.StringGenerator()
@@ -93,7 +93,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         print_options(self.options, describe, indent_level=1)
         if self.currinputgen is not None:
             print color("\n  Input options", 'green')
-            print_options(self.currinputgen.options, describe, indent_level=2)
+            print_options(self.currinputgen.get_options(), describe, indent_level=2)
         if self.curroutput is not None:
             print color("\n  Output options", "green")
             print_options(self.curroutput.options, describe, indent_level=2)
@@ -114,7 +114,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             input_map = {
                 'int': input.IntGenerator(),
                 'char': input.CharGenerator(),
-                'string': input.StringGenerator()
+                'string': input.StringGenerator(),
+                'regex': input.RegexMatchGenerator()
             }
 
             if val not in input_map:
@@ -141,7 +142,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             # TODO check input type is what is expected
             self.currexp.options[key] = val
 
-        elif self.currinputgen is not None and key in self.currinputgen.options.get_option_names():
+        elif self.currinputgen is not None and key in self.currinputgen.get_options().get_option_names():
             # TODO check input type is what is expected
             self.currinputgen.set_option(key, val)
 
