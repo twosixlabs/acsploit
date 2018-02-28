@@ -3,20 +3,20 @@ from chars import CharGenerator
 
 def test_constructor():
     cg = CharGenerator()
-    assert cg.get_min_value() in cg.char_set  # check if minimum and maximum characters are in
-    assert cg.get_max_value() in cg.char_set # the character set
+    assert cg.get_min_value() in cg.get_char_set()  # check if minimum and maximum characters are in
+    assert cg.get_max_value() in cg.get_char_set() # the character set
 
 
 def test_get_random():
     cg = CharGenerator()
     assert cg.is_valid(cg.get_random())  # generate a random character and see if it is valid
-    assert cg.get_random() in cg.char_set  # generate a random character and test if in char set
+    assert cg.get_random() in cg.get_char_set()  # generate a random character and test if in char set
 
 
 def test_get_list_of_values():
     cg = CharGenerator()
     for char in cg.get_list_of_values(10):  # if we change the defaults, we may want to test more than 10
-        assert char in cg.char_set
+        assert char in cg.get_char_set()
         assert cg.is_valid(char)
 
 
