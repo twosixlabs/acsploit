@@ -1,2 +1,2 @@
-from .file import File
+from .files import File
 from .stdout import Stdout
