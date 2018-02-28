@@ -25,6 +25,9 @@ class StringGenerator(object):
         if key in ['min_value', 'max_value', 'restrictions']:
             self.update(key, value)
 
+    def get_options(self):
+        return self._options
+
     def update(self, key, value):
         self.char_gen.set_option(key, value)
 

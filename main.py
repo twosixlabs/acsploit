@@ -93,7 +93,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         print_options(self.options, describe, indent_level=1)
         if self.currinputgen is not None:
             print color("\n  Input options", 'green')
-            print_options(self.currinputgen.options, describe, indent_level=2)
+            print_options(self.currinputgen.get_options(), describe, indent_level=2)
         if self.curroutput is not None:
             print color("\n  Output options", "green")
             print_options(self.curroutput.options, describe, indent_level=2)
@@ -141,7 +141,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             # TODO check input type is what is expected
             self.currexp.options[key] = val
 
-        elif self.currinputgen is not None and key in self.currinputgen.options.get_option_names():
+        elif self.currinputgen is not None and key in self.currinputgen.get_options().get_option_names():
             # TODO check input type is what is expected
             self.currinputgen.set_option(key, val)
 
