@@ -52,8 +52,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     prompt = color('(acsploit) ', 'blue')
     origpromptlen = len(prompt)
     options = Options()
-    options.add_option('input', 'string', 'One of int, char, string', ['int', 'char', 'string'])
-    options.add_option('output', 'stdout', 'One of stdout or file', ['stdout', 'file'])
+    options.add_option('input', 'string', 'Input generator to use with exploits', ['int', 'char', 'string', 'regex'])
+    options.add_option('output', 'stdout', 'Output generator to use with exploits', ['stdout', 'file'])
 
     currexp = None
     currinputgen = input.StringGenerator()
@@ -114,7 +114,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             input_map = {
                 'int': input.IntGenerator(),
                 'char': input.CharGenerator(),
-                'string': input.StringGenerator()
+                'string': input.StringGenerator(),
+                'regex': input.RegexMatchGenerator()
             }
 
             if val not in input_map:
