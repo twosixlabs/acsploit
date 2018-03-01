@@ -40,6 +40,8 @@ class Options(object):
             value = value in [True, 'True', 'true', 'Yes', 'yes', 'Y', 'y']
         if type(self._options[name][VALUE]) is int:
             value = int(value)
+        if type(self._options[name][VALUE]) is float:
+            value = float(value)
         if VALUES in self._options[name] and value not in self._options[name][VALUES]:
             raise ValueError('%r is not an acceptable value for %s' % (value, name))
         self._options[name][VALUE] = value
