@@ -5,6 +5,9 @@ from options import Options
 
 class IntGenerator(object):
 
+    INPUT_NAME = "int"
+
+
     def __init__(self):
         self._options = Options()
         self._options.add_option('min_value', 0, 'Minimum integer allowed')

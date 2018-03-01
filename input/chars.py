@@ -4,6 +4,9 @@ from options import Options
 
 
 class CharGenerator(object):
+
+    INPUT_NAME = "char"
+
     # min cannot equal max
     def __init__(self):
         self._options = Options()

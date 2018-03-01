@@ -5,6 +5,9 @@ from options import Options
 
 class RegexMatchGenerator(object):
 
+    INPUT_NAME = "regex"
+
+
     def __init__(self):
         self._options = Options()
         self._options.add_option('regex', '.*', 'Regular expression to match strings against')
