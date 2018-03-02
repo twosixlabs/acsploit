@@ -66,13 +66,13 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         del cmd2.Cmd.do_edit
         del cmd2.Cmd.do_load
         del cmd2.Cmd.do_shortcuts
-        del cmd2.Cmd.do_shell
+        #del cmd2.Cmd.do_shell # we still include it to get !-style bash execution
         del cmd2.Cmd.do_pyscript
         del cmd2.Cmd.do_set
         cmd2.Cmd.abbrev = True
+        self.exclude_from_help.append('do_shell')
+        self.shortcuts.update({"sh": "show"}) # don't want "sh" to trigger the hidden "shell" command
         cmd2.Cmd.__init__(self)
-
-
 
     def init(self):
         self.availexps = self.get_exploits()
