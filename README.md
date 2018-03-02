@@ -12,7 +12,16 @@ creating an API, and hooking into running programs to feed worst-case input dire
 Usage
 -----
 
-TODO: write usage.
+Start ACsploit with `python acsploit.py`. From there, you can use the `help` command to see what commands are available.
+You can call `help` on any of them to learn more about how to use that command, such as `help set`.
+
+To see the available exploits, use the `show` command. To stage one for use, use `use [exploit_name]`. At any point, you
+can run `options` to see the current input, output, and exploit options, and then use `set [option_name] [value]` to set
+an options. To see detailed descriptions of the options, use `options describe`.
+
+Finally, just use `run` to obtain the output from the exploit.
+
+ACsploit supports abbreviated commands, bash commands using `!`, CTRL+R history search, and more.
 
 Contributing Exploits
 ---------------------
