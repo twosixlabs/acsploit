@@ -7,7 +7,6 @@ class IntGenerator(object):
 
     INPUT_NAME = "int"
 
-
     def __init__(self):
         self._options = Options()
         self._options.add_option('min_value', 0, 'Minimum integer allowed')
@@ -31,6 +30,8 @@ class IntGenerator(object):
     def get_less_than(self, value):
         # return closest int less than value
         # this can be simplified if we know value is an int
+        if value > self.max:
+            return self.max
         if value <= self.min:
             raise ValueError('No valid values less than {}'.format(value))
         return int(math.ceil(value) - 1)
@@ -38,6 +39,8 @@ class IntGenerator(object):
     def get_greater_than(self, value):
         # return closest int greater than value
         # this can be simplified if we know value is an int
+        if value < self.min:
+            return self.min
         if value >= self.max:
             raise ValueError('No valid values greater than {}'.format(value))
         return int(math.floor(value) + 1)
