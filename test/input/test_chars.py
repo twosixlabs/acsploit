@@ -114,6 +114,7 @@ def test_get_less_than_min(min_value, restrictions, too_small):
     with pytest.raises(ValueError):
         cg.get_less_than(too_small)
 
+
 @pytest.mark.parametrize("min_value, max_value, restrictions, valid", [
     ('a', 'j', '', 'abcdefghij'),
     ('D', 'K', 'KFI', 'DEGHJ'),
