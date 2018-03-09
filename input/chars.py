@@ -64,7 +64,7 @@ class CharGenerator(object):
     def get_char_set(self):
         return self.char_set
 
-    def get_list_of_values(self, num_values):  # returns a list of valid numbers starting from min_value.
+    def get_list_of_values(self, num_values):  # returns a string with length num_values starting from min_value
         if num_values > len(self.char_set):
             raise ValueError('Fewer than {} unique values'.format(num_values))
 
