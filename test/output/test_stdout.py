@@ -27,6 +27,7 @@ def test_output_separator_number_format():
         s.output([15, 'hello', 'c', [1, 2, 3]])
         mock_stdout.write.assert_called_once_with('017,hello,c,[1, 2, 3]' + os.linesep)
 
+
 def test_convert_item_ints_decimal():
     s = Stdout()
     s.options.set_value('number_format', 'decimal')

@@ -50,9 +50,9 @@ def test_get_list_of_too_many_values():
 
 @pytest.mark.parametrize("min_value, max_value, value, expected", [
     (1, 100, 10, 11),  # greater than min
-    (1, 100, 8.3, 9), # float value
-    (1, 100, 99, 100), # value == max - 1
-    (1, 100, 99.9, 100), # max - 1 < value < max
+    (1, 100, 8.3, 9),  # float value
+    (1, 100, 99, 100),  # value == max - 1
+    (1, 100, 99.9, 100),  # max - 1 < value < max
     (-10, 100, -8, -7),  # negative min
     (-10, 100, -8.3, -8),  # negative float value
     (-10, 100, -0.3, 0),  # -1 < value < 0
@@ -85,9 +85,9 @@ def test_get_greater_than_max(min_value, max_value, too_large):
 
 @pytest.mark.parametrize("min_value, max_value, value, expected", [
     (1, 100, 10, 9),  # less than max
-    (1, 100, 8.3, 8), # float value
-    (1, 100, 2, 1), # value == min + 1
-    (1, 100, 1.1, 1), # min < value < min + 1
+    (1, 100, 8.3, 8),  # float value
+    (1, 100, 2, 1),  # value == min + 1
+    (1, 100, 1.1, 1),  # min < value < min + 1
     (-100, -10, -18, -19),  # negative max
     (-100, -10, -43.22, -44),  # negative float value
     (-10, 100, -0.3, -1),  # -1 < value < 0
