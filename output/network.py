@@ -30,7 +30,7 @@ class Network(object):
         self.options.add_option('ip_version', 'IPv4', 'Version of IP to use', ['IPv4', 'IPv6'])
         self.options.add_option('separator', 'newline', 'Separator between elements', ['newline', 'comma', 'space',
                                                                                        'tab', 'os_newline', 'CRLF'])
-        self.options.add_option('final_separator', True, 'Whether to end output with an instance of the separator')
+        self.options.add_option('final_separator', False, 'Whether to end output with an instance of the separator')
         self.options.add_option('await_banner', False, 'Receive a banner message from the server before sending data')
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
