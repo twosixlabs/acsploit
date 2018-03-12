@@ -45,7 +45,7 @@ class File(object):
             output_file.write(separator.join([self.convert_item(item) for item in output_list]))
 
     def convert_item(self, item):
-        # NB: this doesn't recur onto lists
+        # NB: this doesn't recurse onto lists
         if type(item) is int:
             if self.options['number_format'] == 'hexadecimal':
                 item = hex(item)

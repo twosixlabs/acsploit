@@ -1,11 +1,11 @@
-import sys
 import os
+import sys
 from options import Options
 
 
 class Stdout(object):
 
-    OUTPUT_NAME = "stdout"  # exploits can use this internally to whitelist/blacklist supported output formats
+    OUTPUT_NAME = 'stdout'  # exploits can use this internally to whitelist/blacklist supported output formats
 
     _SEPARATORS = {
         'newline': '\n',
@@ -28,7 +28,7 @@ class Stdout(object):
         sys.stdout.write(line)
 
     def convert_item(self, item):
-        # NB: this doesn't recur onto lists
+        # NB: this doesn't recurse onto lists
         if type(item) is int:
             if self.options['number_format'] == 'hexadecimal':
                 item = hex(item)
