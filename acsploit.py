@@ -60,7 +60,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     curroutput = output.Stdout()
     availexps = {}
 
-    def __init__(self):
+    def __init__(self, hist_file):
         #delete unused commands that are baked-into cmd2
         del cmd2.Cmd.do_py
         del cmd2.Cmd.do_edit
@@ -70,9 +70,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         del cmd2.Cmd.do_pyscript
         del cmd2.Cmd.do_set
         cmd2.Cmd.abbrev = True
-        self.exclude_from_help.append('do_shell')
         self.shortcuts.update({"sh": "show"}) # don't want "sh" to trigger the hidden "shell" command
-        cmd2.Cmd.__init__(self)
+        cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
+        self.exclude_from_help.append('do_shell')
 
     def init(self):
         self.availexps = self.get_exploits()
@@ -197,10 +197,11 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
 if __name__ == '__main__':
 
-    history_file = '~/.acsploit.history'
+    history_file = os.path.join(os.path.expanduser("~"), ".acsploit.history")
+    if not os.path.isfile(history_file):
+        open(history_file, 'a').close()
 
-    #cmdlineobj = ACsploit(hist_file=history_file) #TODO - Wait for cmd2 version 0.8.1 to be on pip for this...
-    cmdlineobj = ACsploit()
+    cmdlineobj = ACsploit(hist_file=history_file)
     cmdlineobj.debug = True #TODO - eventually not have this
     cmdlineobj.init()
     cmdlineobj.cmdloop()
