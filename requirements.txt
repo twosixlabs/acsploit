@@ -1,6 +1,6 @@
 exrex==0.10.5
 z3-solver==4.5.1.0.post2
-cmd2-0.8.1
+cmd2==0.8.1
 attrs==17.4.0
 funcsigs==1.0.2
 mock==2.0.0
