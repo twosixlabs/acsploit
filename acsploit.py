@@ -64,7 +64,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         # delete unused commands that are baked-into cmd2
         del cmd2.Cmd.do_py
         del cmd2.Cmd.do_edit
-        del cmd2.Cmd.do_load
         del cmd2.Cmd.do_shortcuts
         # del cmd2.Cmd.do_shell # we still include it to get !-style bash execution
         del cmd2.Cmd.do_pyscript
@@ -73,6 +72,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.shortcuts.update({"sh": "show"})  # don't want "sh" to trigger the hidden "shell" command
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
         self.exclude_from_help.append('do_shell')
+        self.exclude_from_help.append('do_load')
 
     def init(self):
         self.availexps = self.get_exploits()
