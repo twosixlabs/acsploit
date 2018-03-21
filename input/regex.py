@@ -7,7 +7,6 @@ class RegexMatchGenerator(object):
 
     INPUT_NAME = "regex"
 
-
     def __init__(self):
         self._options = Options()
         self._options.add_option('regex', '.*', 'Regular expression to match strings against')
@@ -37,3 +36,15 @@ class RegexMatchGenerator(object):
 
     def is_valid(self, candidate):  # determine if candidate is valid
         return re.match(self._options['regex'], candidate) is not None
+
+    def get_max_value(self):
+        raise NotImplementedError('Regex input generator cannot generate maximum values')
+
+    def get_min_value(self):
+        raise NotImplementedError('Regex input generator cannot generate minimum values')
+
+    def get_greater_than(self, value):
+        raise NotImplementedError('Regex input generator cannot generate relative values')
+
+    def get_less_than(self, value):
+        raise NotImplementedError('Regex input generator cannot generate relative values')

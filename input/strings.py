@@ -9,7 +9,6 @@ class StringGenerator(object):
 
     INPUT_NAME = "string"
 
-
     def __init__(self):
         self._options = Options()
         self._options.add_option('min_length', 1, 'Minimum string length')

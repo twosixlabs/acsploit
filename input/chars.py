@@ -47,7 +47,6 @@ class CharGenerator(object):
                 break
             result = c
         if result is None:
-            #TODO: how do we actually want to handle errors?
             raise ValueError('No valid value exists less than {}'.format(value))
         return result
 
