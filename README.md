@@ -62,7 +62,7 @@ Beyond the above requirements, your exploit can be written however you'd like.
 Input generators must follow the rules below and implement the given API:
 
 - Your generator must have its own file in the `input/` directory.
-  - When adding a new generator, you must add it to the two lists of input generators in `acsploit.py`.
+  - When adding a new generator you must add its class to the list in `input/__init__.py`.
   - Use a lower case, underscore-separated filename for your generator's module. Make it descriptive, yet brief.
 - Your generator must be a class inheriting from `object` (ie a new-style python class).
 
@@ -88,7 +88,7 @@ Input generators must follow the rules below and implement the given API:
 Output formatters must follow the rules below and implement the given API:
 
 - Your formatter must have its own file in the `output/` directory.
-  - When adding a new formatter, you must add its class to the list in `output/__init__.py` and the two lists of output formatters in `acsploit.py`.
+  - When adding a new formatter you must add its class to the list in `output/__init__.py`.
   - Use a lower case, underscore-separated filename for your formatter's module. Make it descriptive, yet brief.
 - Your formatter must be a class inheriting from `object` (ie a new-style python class).
 
@@ -109,3 +109,37 @@ Output formatters must follow the rules below and implement the given API:
 #####Tests:
 - It is strongly recommended that you implement a test suite for your output formatter.
 - If your output formatter is in a file called `output/shiny.py`, you should put its tests in `test/output/shiny.py`.
+
+###Using Options
+
+The `Options` module is used throughout ACsploit for configuration management.
+
+Each configurable component (eg, an exploit, input generator, output formatter, etc) should create an `Options` object and expose it to consumers.
+
+To add options call `options.add_option(option_name, default_value, description, acceptable_values=[])`.
+
+- `option_name` should be in `snake_case`
+- `Options` infers the type of the value from the type of `default_value` and coerces new values to that type.
+  - eg, if `default_value` is `True`, calling `set_value()` with `'false'` will set the option to `False`.
+  - coercion is implemented for `bool`, `int`, and `float`.
+- `description` should be a human-readable description of the option.
+- `acceptable_values` is an optional `list` of values. If provided, attempts to set the option to values not in `acceptable_values` will be rejected.
+
+To get the current value of an option use `options.get_value(option_name)` or `options[option_name]`.
+
+To set the value of an option call `options.set_value(option_name, value)`. If `value` is not in the `acceptable_values` for that option `set_value()` will raise a `ValueError`.
+
+Example:
+
+```
+	from options import Options
+	…
+	class ExampleOutputFormatter(object):
+		…
+		def __init__(self):
+			self.options = Options()
+			self.options.add_option('this_is_the_option_name', 'this_is_the_default_value', 'This is the description of the option', ['this', 'is', 'a', 'list', 'of', 'acceptable', 'values'])
+			self.options.add_option('verbosity', 0, 'How verbose to be')
+			self.options.add_option('encabulate', False, 'Encabulate output')
+			…
+```

@@ -52,8 +52,24 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     prompt = color('(acsploit) ', 'blue')
     origpromptlen = len(prompt)
     options = Options()
-    options.add_option('input', 'string', 'Input generator to use with exploits', ['int', 'char', 'string', 'regex'])
-    options.add_option('output', 'stdout', 'Output generator to use with exploits', ['stdout', 'file'])
+
+    # find all inputs imported in input
+    inputs = {}
+    for obj in vars(input).values():
+        try:
+            inputs[obj.INPUT_NAME] = obj
+        except AttributeError:
+            continue
+    options.add_option('input', 'string', 'Input generator to use with exploits', inputs.keys())
+
+    # find all outputs imported in output
+    outputs = {}
+    for obj in vars(output).values():
+        try:
+            outputs[obj.OUTPUT_NAME] = obj
+        except AttributeError:
+            continue
+    options.add_option('output', 'stdout', 'Output generator to use with exploits', outputs.keys())
 
     currexp = None
     currinputgen = input.StringGenerator()
@@ -84,7 +100,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
             if not ispkg and hasattr(m, 'options') and hasattr(m, 'run'):
                 exploit = m.exploit_name if hasattr(m, 'exploit_name') else name
-                #TODO - if we were using "name" above, we'd require exploit contributors to have "name" be the *full* path...
+                # TODO - if we used "name" above, we'd require exploit contributors to have "name" be the *full* path...
                 exploit = exploit.replace('.', '/')
                 results[exploit] = m
 
@@ -121,31 +137,19 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             return
 
         if key == "input":
-            input_map = {
-                'int': input.IntGenerator(),
-                'char': input.CharGenerator(),
-                'string': input.StringGenerator(),
-                'regex': input.RegexMatchGenerator()
-            }
-
-            if val not in input_map:
+            if val not in ACsploit.inputs:
                 print color("Input " + val + " does not exist.", 'red')
                 return
 
-            self.currinputgen = input_map[val]
+            self.currinputgen = ACsploit.inputs[val]()
             self.options[key] = val
 
         elif key == "output":
-            output_map = {
-                'stdout': output.Stdout(),
-                'file': output.File()
-            }
-
-            if val not in output_map:
+            if val not in ACsploit.outputs:
                 print color("Output " + val + " does not exist.", 'red')
                 return
 
-            self.curroutput = output_map[val]
+            self.curroutput = ACsploit.outputs[val]()
             self.options[key] = val
 
         elif self.currexp is not None and key in self.currexp.options.get_option_names():
@@ -199,7 +203,8 @@ if __name__ == '__main__':
 
     history_file = os.path.join(os.path.expanduser("~"), ".acsploit.history")
     if not os.path.isfile(history_file):
-        open(history_file, 'a').close()
+        with open(history_file, 'w') as f:
+            f.write('_HiStOrY_V2_\n\n')
 
     cmdlineobj = ACsploit(hist_file=history_file)
     cmdlineobj.debug = True #TODO - eventually not have this
