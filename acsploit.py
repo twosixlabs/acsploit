@@ -201,7 +201,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
 if __name__ == '__main__':
 
-    history_file = os.path.join(os.path.expanduser("~"), ".acsploit.history")
+    history_file = os.path.join(os.path.expanduser("~"), ".acsploit_history")
     if not os.path.isfile(history_file):
         with open(history_file, 'w') as f:
             f.write('_HiStOrY_V2_\n\n')
