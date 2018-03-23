@@ -1,7 +1,7 @@
 import random
 import exrex
 import re
-from chars import CharGenerator
+from .chars import CharGenerator
 from options import Options
 
 

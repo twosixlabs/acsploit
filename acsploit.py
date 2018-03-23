@@ -35,7 +35,7 @@ def print_options(options, describe=False, indent_level=0):
             values = options.get_acceptable_values(key)
             if values is not None:
                 line += ' (Acceptable Values: ' + str(values) + ')'
-        print indent + line
+        print(indent + line)
 
 
 class ACsploit(cmd2.Cmd):
@@ -55,21 +55,21 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
     # find all inputs imported in input
     inputs = {}
-    for obj in vars(input).values():
+    for obj in list(vars(input).values()):
         try:
             inputs[obj.INPUT_NAME] = obj
         except AttributeError:
             continue
-    options.add_option('input', 'string', 'Input generator to use with exploits', inputs.keys())
+    options.add_option('input', 'string', 'Input generator to use with exploits', list(inputs.keys()))
 
     # find all outputs imported in output
     outputs = {}
-    for obj in vars(output).values():
+    for obj in list(vars(output).values()):
         try:
             outputs[obj.OUTPUT_NAME] = obj
         except AttributeError:
             continue
-    options.add_option('output', 'stdout', 'Output generator to use with exploits', outputs.keys())
+    options.add_option('output', 'stdout', 'Output generator to use with exploits', list(outputs.keys()))
 
     currexp = None
     currinputgen = input.StringGenerator()
@@ -109,36 +109,36 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def do_options(self, args):
         """Displays current options, more of which appear after 'input' and 'exploit' are set. Use 'options describe' to see descriptions of each."""
         if args not in ['', 'describe']:
-            print color('Unsupported argument to options', 'red')
+            print(color('Unsupported argument to options', 'red'))
             self.do_help('options')
             return
 
         describe = args == 'describe'
 
-        print
+        print()
         print_options(self.options, describe, indent_level=1)
         if self.currinputgen is not None:
-            print color("\n  Input options", 'green')
+            print(color("\n  Input options", 'green'))
             print_options(self.currinputgen.get_options(), describe, indent_level=2)
         if self.curroutput is not None:
-            print color("\n  Output options", "green")
+            print(color("\n  Output options", "green"))
             print_options(self.curroutput.options, describe, indent_level=2)
         if self.currexp is not None:
-            print color("\n  Exploit options", 'green')
+            print(color("\n  Exploit options", 'green'))
             print_options(self.currexp.options, describe, indent_level=2)
-        print
+        print()
 
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
         try:
             key, val = args.split(' ', 1)
         except ValueError:
-            print "Usage: set [option_name] [value]"
+            print("Usage: set [option_name] [value]")
             return
 
         if key == "input":
             if val not in ACsploit.inputs:
-                print color("Input " + val + " does not exist.", 'red')
+                print(color("Input " + val + " does not exist.", 'red'))
                 return
 
             self.currinputgen = ACsploit.inputs[val]()
@@ -146,7 +146,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         elif key == "output":
             if val not in ACsploit.outputs:
-                print color("Output " + val + " does not exist.", 'red')
+                print(color("Output " + val + " does not exist.", 'red'))
                 return
 
             self.curroutput = ACsploit.outputs[val]()
@@ -164,21 +164,21 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             self.curroutput.options[key] = val
 
         else:
-            print color("Option " + key + " does not exist.", 'red')
+            print(color("Option " + key + " does not exist.", 'red'))
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
         if len(args) > 0:
             self.update_exploit(args.split()[0])
         else:
-            print color("Usage: use [exploit_name]", 'red')
+            print(color("Usage: use [exploit_name]", 'red'))
             return
 
     def do_show(self, args):
         """Lists all available exploits."""
-        print color("\nAvailable exploits:", 'green')
+        print(color("\nAvailable exploits:", 'green'))
         for key in sorted(self.availexps):
-            print color("    " + key, 'green')
+            print(color("    " + key, 'green'))
         print("")
 
     def update_exploit(self, expname):
@@ -186,15 +186,15 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             self.prompt = self.prompt[:self.origpromptlen - 6] + " : "+expname+") " + '\033[0m'
             self.currexp = self.availexps[expname]
         else:
-            print(color("Exploit " + expname + " does not exist.", 'red'))
+            print((color("Exploit " + expname + " does not exist.", 'red')))
             pass
 
     def do_run(self, args):
         """Runs exploit with given options."""
         if self.currexp is None:
-            print color("No exploit set, nothing to do. See options.", 'red')
+            print(color("No exploit set, nothing to do. See options.", 'red'))
         elif self.currinputgen is None:
-            print color("No input specified, nothing to do. See options.", 'red')
+            print(color("No input specified, nothing to do. See options.", 'red'))
         else:
             self.currexp.run(self.currinputgen, self.curroutput)
 

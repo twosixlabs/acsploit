@@ -119,9 +119,9 @@ def test_get_less_than_min(min_value, max_value, too_small):
 
 
 @pytest.mark.parametrize("min_value, max_value, valid_values", [
-    (1, 10, range(1, 11)),  # positive min, max
-    (-10, -1, range(-10, 0)),  # negative min, max
-    (-100, 1000, range(-100, 1001))  # negative min, positive max
+    (1, 10, list(range(1, 11))),  # positive min, max
+    (-10, -1, list(range(-10, 0))),  # negative min, max
+    (-100, 1000, list(range(-100, 1001)))  # negative min, positive max
 ])
 def test_valid_values(min_value, max_value, valid_values):
     ig = get_generator(min_value, max_value)

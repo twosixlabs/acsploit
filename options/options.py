@@ -26,7 +26,7 @@ class Options(object):
             self._options[name][VALUES] = values
 
     def get_option_names(self):
-        return self._options.keys()
+        return list(self._options.keys())
 
     def get_value(self, name):
         return self._options[name][VALUE]
