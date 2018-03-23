@@ -84,6 +84,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         # del cmd2.Cmd.do_shell # we still include it to get !-style bash execution
         del cmd2.Cmd.do_pyscript
         del cmd2.Cmd.do_set
+        del cmd2.Cmd.do_alias
+        del cmd2.Cmd.do_unalias
         cmd2.Cmd.abbrev = True
         self.shortcuts.update({"sh": "show"})  # don't want "sh" to trigger the hidden "shell" command
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
