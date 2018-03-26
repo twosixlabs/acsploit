@@ -100,7 +100,7 @@ def test_many_options():
         n.output([15, 'hello', 'c', [1, 2, 3]])
         mock_socket_constructor.assert_called_once_with(socket.AF_INET, socket.SOCK_STREAM)
         mock_socket.connect.assert_called_once_with(('127.0.0.1', 500))
-        mock_socket.sendall.assert_called_once_with('017,hello,c,[1, 2, 3],')
+        mock_socket.sendall.assert_called_once_with('0o17,hello,c,[1, 2, 3],')
         mock_socket.close.assert_called_once_with()
 
 

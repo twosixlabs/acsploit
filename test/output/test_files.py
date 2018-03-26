@@ -8,7 +8,7 @@ TEST_OUTPUT_LINES_STR = ['17', 'hello', 'c', '[1, 20, 3]']
 
 
 def test_output_defaults():
-    with patch('__builtin__.open', mock_open()) as mock_open_f:
+    with patch('builtins.open', mock_open()) as mock_open_f:
         f = File()
         f.output(TEST_OUTPUT_LINES)
         mock_open_f.assert_called_once_with('acsploit_output.dat', 'w')
@@ -16,7 +16,7 @@ def test_output_defaults():
 
 
 def test_output_no_trailing_newline():
-    with patch('__builtin__.open', mock_open()) as mock_open_f:
+    with patch('builtins.open', mock_open()) as mock_open_f:
         f = File()
         f.options.set_value('final_newline', 'No')
         f.output(TEST_OUTPUT_LINES)
@@ -25,7 +25,7 @@ def test_output_no_trailing_newline():
 
 
 def test_output_custom_filename():
-    with patch('__builtin__.open', mock_open()) as mock_open_f:
+    with patch('builtins.open', mock_open()) as mock_open_f:
         f = File()
         f.options.set_value('filename', 'very_suspicious_file.exe')
         f.output(TEST_OUTPUT_LINES)
@@ -34,12 +34,12 @@ def test_output_custom_filename():
 
 
 def test_output_number_format():
-    with patch('__builtin__.open', mock_open()) as mock_open_f:
+    with patch('builtins.open', mock_open()) as mock_open_f:
         f = File()
         f.options.set_value('number_format', 'octal')
         f.output(TEST_OUTPUT_LINES)
         mock_open_f.assert_called_once_with('acsploit_output.dat', 'w')
-        mock_open_f().write.assert_has_calls([call(os.linesep.join(['021', 'hello', 'c', '[1, 20, 3]'])),
+        mock_open_f().write.assert_has_calls([call(os.linesep.join(['0o21', 'hello', 'c', '[1, 20, 3]'])),
                                               call(os.linesep)])
 
 
