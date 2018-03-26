@@ -7,7 +7,9 @@ import os
 import sys
 import logging
 import pkgutil
+import functools
 
+from cmd2 import with_argument_list, index_based_complete
 from options import Options
 
 
@@ -36,6 +38,22 @@ def print_options(options, describe=False, indent_level=0):
             if values is not None:
                 line += ' (Acceptable Values: ' + str(values) + ')'
         print(indent + line)
+
+
+def exploit_path_complete(text, line, begidx, endidx, match_against):
+    split_line = line.split(maxsplit=1)
+    full_text = split_line[1] if len(split_line) == 2 else ''
+    match_begidx = len(full_text) - len(text)
+    result_set = set()
+    for match in match_against:
+        if match.startswith(full_text):
+            match_endidx = match.find('/', match_begidx)
+            if match_endidx != -1:
+                result_set.add(match[match_begidx:match_endidx+1])
+            else:
+                result_set.add(match[match_begidx:])
+
+    return sorted(result_set)
 
 
 class ACsploit(cmd2.Cmd):
@@ -74,7 +92,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     currexp = None
     currinputgen = input.StringGenerator()
     curroutput = output.Stdout()
-    availexps = {}
 
     def __init__(self, hist_file):
         # delete unused commands that are baked-into cmd2
@@ -91,9 +108,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
         self.exclude_from_help.append('do_shell')
         self.exclude_from_help.append('do_load')
-
-    def init(self):
         self.availexps = self.get_exploits()
+        self.complete_use = functools.partial(exploit_path_complete, match_against=self.availexps)
 
     def get_exploits(self):
         results = {}
@@ -210,5 +226,4 @@ if __name__ == '__main__':
 
     cmdlineobj = ACsploit(hist_file=history_file)
     cmdlineobj.debug = True #TODO - eventually not have this
-    cmdlineobj.init()
     cmdlineobj.cmdloop()
