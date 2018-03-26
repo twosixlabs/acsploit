@@ -16,15 +16,19 @@ class StringGenerator(object):
         self._options.add_option('min_value', 'a', 'Minimum ASCII character to use')
         self._options.add_option('max_value', 'z', 'Maximum ASCII character to use')
         self._options.add_option('restrictions', '', 'String of characters to exclude')
+        self._options.add_option('use_whitelist', False, 'If True, only generate characters from the whitelist')
+        self._options.add_option('whitelist', '', 'String of characters to generate from if use_whitelist is True')
 
         self.char_gen = CharGenerator()
         self.update('min_value', self._options['min_value'])
         self.update('max_value', self._options['max_value'])
         self.update('restrictions', self._options['restrictions'])
+        self.update('use_whitelist', self._options['use_whitelist'])
+        self.update('whitelist', self._options['whitelist'])
 
     def set_option(self, key, value):
         self._options[key] = value
-        if key in ['min_value', 'max_value', 'restrictions']:
+        if key in ['min_value', 'max_value', 'restrictions', 'use_whitelist', 'whitelist']:
             self.update(key, value)
 
     def get_options(self):

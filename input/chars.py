@@ -13,6 +13,8 @@ class CharGenerator(object):
         self._options.add_option('min_value', 'a', 'Minimum ASCII character to use')
         self._options.add_option('max_value', 'z', 'Maximum ASCII character to use')
         self._options.add_option('restrictions', '', 'String of characters to exclude')
+        self._options.add_option('use_whitelist', False, 'If True, only generate characters from the whitelist')
+        self._options.add_option('whitelist', '', 'String of characters to generate from if use_whitelist is True')
 
         self.char_set = []  # char_set will be a sorted valid set of characters given the constraints set in _options
         self.update()
@@ -31,10 +33,14 @@ class CharGenerator(object):
         return self.char_set[-1]  # options[max_value] could be in restrictions, so we don't just return that
 
     def is_valid(self, candidate):
-        min_val = self._options['min_value']
-        max_val = self._options['max_value']
-        restrictions = self._options['restrictions']
-        return min_val <= candidate <= max_val and candidate not in restrictions
+        whitelist = self._options['use_whitelist']
+        if whitelist:
+            return candidate in self._options['whitelist']
+        else:
+            min_val = self._options['min_value']
+            max_val = self._options['max_value']
+            restrictions = self._options['restrictions']
+            return min_val <= candidate <= max_val and candidate not in restrictions
 
     def update(self):
         self.char_set = [c for c in string.printable if self.is_valid(c)]

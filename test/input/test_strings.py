@@ -12,6 +12,15 @@ def get_generator(min_length, max_length, min_value, max_value, restrictions):
     return sg
 
 
+def get_generator_whitelist(min_length, max_length, whitelist):
+    sg = StringGenerator()
+    sg.set_option('min_length', min_length)
+    sg.set_option('max_length', max_length)
+    sg.set_option('use_whitelist', True)
+    sg.set_option('whitelist', whitelist)
+    return sg
+
+
 def test_options():
     sg = get_generator(1, 5, 'a', 'c', 'b')
     options = sg.get_options()
@@ -20,8 +29,12 @@ def test_options():
     assert options['min_value'] == 'a'
     assert options['max_value'] == 'c'
     assert options['restrictions'] == 'b'
+    assert options['use_whitelist'] is False
+    assert options['whitelist'] == ''
     sg.set_option('max_length', 10)
     assert options['max_length'] == 10
+    sg.set_option('use_whitelist', 'Y')
+    assert options['use_whitelist'] is True
 
 
 @pytest.mark.parametrize("min_length, min_value, restrictions, expected", [
@@ -33,6 +46,16 @@ def test_options():
 ])
 def test_get_min_value(min_length, min_value, restrictions, expected):
     sg = get_generator(min_length, 10, min_value, 'z', restrictions)
+    assert sg.get_min_value() == expected
+
+
+@pytest.mark.parametrize("min_length, whitelist, expected", [
+    (1, 'abcde', 'a'),
+    (2, 'edcba', 'aa'),
+    (4, 'uibkjky', 'bbbb')
+])
+def test_get_min_value_whitelist(min_length, whitelist, expected):
+    sg = get_generator_whitelist(min_length, 10, whitelist)
     assert sg.get_min_value() == expected
 
 
@@ -48,23 +71,14 @@ def test_get_max_value(max_length, max_value, restrictions, expected):
     assert sg.get_max_value() == expected
 
 
-@pytest.mark.parametrize("min_value, max_value, restrictions, num, expected", [
-    ('a', 'z', '', 5, 'abcde'),  # no restrictions
-    ('a', 'z', 'qrstu', 5, 'abcde'),  # restrictions not affecting result
-    ('p', 'z', 'q', 5, 'prstu'),  # one restriction
-    ('p', 'z', 'qrstu', 3, 'pvw'),  # multiple restrictions
-    ('p', 'z', 'qru', 4, 'pstv'),  # multiple restrictions, non contiguous
-    ('A', 'D', 'A', 3, 'BCD')  # excluding min_value, including max_value
+@pytest.mark.parametrize("max_length, whitelist, expected", [
+    (1, 'abcde', 'e'),
+    (2, 'edcba', 'ee'),
+    (4, 'uibkjky', 'yyyy')
 ])
-def test_get_list_of_values(min_value, max_value, restrictions, num, expected):
-    cg = get_generator(min_value, max_value, restrictions)
-    assert cg.get_list_of_values(num) == list(expected)
-
-
-def test_get_list_of_too_many_values():
-    cg = get_generator('a', 'z', '')
-    with pytest.raises(ValueError):
-        cg.get_list_of_values(27)
+def test_get_max_value_whitelist(max_length, whitelist, expected):
+    sg = get_generator_whitelist(1, max_length, whitelist)
+    assert sg.get_max_value() == expected
 
 
 @pytest.mark.parametrize("value, expected", [
@@ -81,6 +95,19 @@ def test_get_greater_than(value, expected):
     sg = get_generator(1, 5, 'a', 'z', 'bd')
     assert sg.get_greater_than(value) == expected
 
+
+@pytest.mark.parametrize("value, expected", [
+    ('a', 'aa'),
+    ('c', 'ca'),
+    ('aaaaa', 'aaaab'),
+    ('ddfff', 'de'),
+    ('ZZZ', 'a')
+])
+def test_get_greater_than_whitelist(value, expected):
+    sg = get_generator_whitelist(1, 5, 'abcdef')
+    assert sg.get_greater_than(value) == expected
+
+
 @pytest.mark.parametrize("value, expected", [
     ('x', 'xaa'),  # append min_chars until at min_length
     ('cxzzz', 'cya'),  # increment first non max_value char, pad to min_length
@@ -94,6 +121,16 @@ def test_min_max_length_get_greater_than(value, expected):
     assert sg.get_greater_than(value) == expected
 
 
+@pytest.mark.parametrize("value, expected", [
+    ('d', 'daa'),
+    ('ddfff', 'dea'),
+    ('dddddf', 'dddde')
+])
+def test_min_max_length_get_greater_than(value, expected):
+    sg = get_generator_whitelist(3, 5, 'abcdef')
+    assert sg.get_greater_than(value) == expected
+
+
 @pytest.mark.parametrize("max_value, restrictions, too_large", [
     ('z', '', 'zzzzz'),  # equal to max_value * max_length
     ('f', '', 'g'),  # greater than max_value
@@ -101,9 +138,20 @@ def test_min_max_length_get_greater_than(value, expected):
     ('z', 'wxyz', 'vvvvv'),  # nothing greater than value with restrictions
 ])
 def test_get_greater_than_max(max_value, restrictions, too_large):
-    cg = get_generator(1, 5, 'a', max_value, restrictions)
+    sg = get_generator(1, 5, 'a', max_value, restrictions)
     with pytest.raises(ValueError):
-        cg.get_greater_than(too_large)
+        sg.get_greater_than(too_large)
+
+
+@pytest.mark.parametrize("too_large", [
+    'ggggg',
+    'h',
+    'ggggga'
+])
+def test_get_greater_than_max_whitelist(too_large):
+    sg = get_generator_whitelist(1, 5, 'abcdefg')
+    with pytest.raises(ValueError):
+        sg.get_greater_than(too_large)
 
 
 @pytest.mark.parametrize("value, expected", [
@@ -121,11 +169,32 @@ def test_get_less_than(value, expected):
 
 
 @pytest.mark.parametrize("value, expected", [
+    ('aabbb', 'aabba'),
+    ('bbaaa', 'bbaa'),
+    ('be', 'bdfff'),
+    ('ddfff', 'ddffd'),
+    ('~', 'fffff')
+])
+def test_get_less_than_whitelist(value, expected):
+    sg = get_generator_whitelist(1, 5, 'abcdf')
+    assert sg.get_less_than(value) == expected
+
+
+@pytest.mark.parametrize("value, expected", [
     ('xxxayyy', 'xxxay'),  # reduce length if input is beyond max_length
     ('cxa', 'cwzzz'),  # do not remove chars to drop below min_length
 ])
 def test_min_max_length_get_less_than(value, expected):
     sg = get_generator(3, 5, 'a', 'z', 'bd')
+    assert sg.get_less_than(value) == expected
+
+
+@pytest.mark.parametrize("value, expected", [
+    ('dddafff', 'dddaf'),  # reduce length if input is beyond max_length
+    ('cda', 'ccfff'),  # do not remove chars to drop below min_length
+])
+def test_min_max_length_get_less_than_whitelist(value, expected):
+    sg = get_generator_whitelist(3, 5, 'abcdef')
     assert sg.get_less_than(value) == expected
 
 
@@ -136,9 +205,20 @@ def test_min_max_length_get_less_than(value, expected):
     ('b', 'bcd', 'e'),  # nothing less than value with restrictions
 ])
 def test_get_less_than_min(min_value, restrictions, too_small):
-    cg = get_generator(3, 5, min_value, 'z', restrictions)
+    sg = get_generator(3, 5, min_value, 'z', restrictions)
     with pytest.raises(ValueError):
-        cg.get_less_than(too_small)
+        sg.get_less_than(too_small)
+
+
+@pytest.mark.parametrize("too_small", [
+    'aaa',
+    '`',
+    'aa'
+])
+def test_get_less_than_min_whitelist(too_small):
+    sg = get_generator_whitelist(3, 5, 'abcdefg')
+    with pytest.raises(ValueError):
+        sg.get_less_than(too_small)
 
 
 def test_get_list_of_values():
@@ -150,8 +230,23 @@ def test_get_list_of_values():
         assert sg.get_list_of_values(i) == values[:i]
 
 
+def test_get_list_of_values_whitelist():
+    sg = get_generator_whitelist(2, 4, 'ae')
+    values = ['aa', 'aaa', 'aaaa', 'aaae', 'aae', 'aaea', 'aaee', 'ae', 'aea', 'aeaa', 'aeae', 'aee', 'aeea', 'aeee',
+              'ea', 'eaa', 'eaaa', 'eaae', 'eae', 'eaea', 'eaee', 'ee', 'eea', 'eeaa', 'eeae', 'eee', 'eeea', 'eeee']
+
+    for i in range(1, 28):
+        assert sg.get_list_of_values(i) == values[:i]
+
+
 # Same options as test_get_list_of_values, which has 28 possible values
 def test_get_list_of_too_many_values():
     sg = get_generator(2, 4, 'a', 'e', 'bcd')
+    with pytest.raises(ValueError):
+        sg.get_list_of_values(29)
+
+
+def test_get_list_of_too_many_values_whitelist():
+    sg = get_generator_whitelist(2, 4, 'ae')
     with pytest.raises(ValueError):
         sg.get_list_of_values(29)
