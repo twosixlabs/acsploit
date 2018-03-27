@@ -25,6 +25,7 @@ class File(object):
 
             if self.options['final_newline']:
                 output_file.write(os.linesep)
+            #TODO - add print to let user know it finished
 
     def write_plaintext_file(self, output_list, output_file):
         output_file.write(os.linesep.join([self.convert_item(item) for item in output_list]))
