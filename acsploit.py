@@ -9,7 +9,7 @@ import logging
 import pkgutil
 import functools
 
-from cmd2 import with_argument_list, index_based_complete
+from cmd2 import index_based_complete
 from options import Options
 
 
@@ -110,6 +110,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.exclude_from_help.append('do_load')
         self.availexps = self.get_exploits()
         self.complete_use = functools.partial(exploit_path_complete, match_against=self.availexps)
+        self.option_list = self.get_all_options()
+        self.complete_set = functools.partial(index_based_complete, index_dict={1: self.option_list})
 
     def get_exploits(self):
         results = {}
@@ -123,6 +125,20 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 results[exploit] = m
 
         return results
+
+    def get_all_options(self):
+        options = self.options.get_option_names()
+        input_options = self.currinputgen.get_options().get_option_names()
+        output_options = self.curroutput.options.get_option_names()
+        exp_options = [] if self.currexp is None else self.currexp.options.get_option_names()
+        return options + input_options + output_options + exp_options
+
+    # Update self.option_list in place so that complete_set will always have the current set of options
+    def update_options(self, old_options, new_options):
+        for old_option in old_options:
+            self.option_list.remove(old_option)
+        for new_option in new_options:
+            self.option_list.append(new_option)
 
     def do_options(self, args):
         """Displays current options, more of which appear after 'input' and 'exploit' are set. Use 'options describe' to see descriptions of each."""
@@ -159,16 +175,21 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 print(color("Input " + val + " does not exist.", 'red'))
                 return
 
+            old_options = self.currinputgen.get_options().get_option_names()
             self.currinputgen = ACsploit.inputs[val]()
             self.options[key] = val
+            new_options = self.currinputgen.get_options().get_option_names()
+            self.update_options(old_options, new_options)
 
         elif key == "output":
             if val not in ACsploit.outputs:
                 print(color("Output " + val + " does not exist.", 'red'))
                 return
-
+            old_options = self.curroutput.options.get_option_names()
             self.curroutput = ACsploit.outputs[val]()
             self.options[key] = val
+            new_options = self.curroutput.options.get_option_names()
+            self.update_options(old_options, new_options)
 
         elif self.currexp is not None and key in self.currexp.options.get_option_names():
             # TODO check input type is what is expected
@@ -183,6 +204,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         else:
             print(color("Option " + key + " does not exist.", 'red'))
+
+
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
@@ -202,7 +225,10 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def update_exploit(self, expname):
         if expname in self.availexps:
             self.prompt = self.prompt[:self.origpromptlen - 6] + " : "+expname+") " + '\033[0m'
+            old_options = [] if self.currexp is None else self.currexp.options.get_option_names()
             self.currexp = self.availexps[expname]
+            new_options = self.currexp.options.get_option_names()
+            self.update_options(old_options, new_options)
         else:
             print((color("Exploit " + expname + " does not exist.", 'red')))
             pass
