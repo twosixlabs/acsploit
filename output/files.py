@@ -10,25 +10,34 @@ class File(object):
         self.options = Options()
         self.options.add_option('filename', 'acsploit_output.dat', 'The name of the file to write to')
         # TODO: add more formats
-        self.options.add_option('format', 'plaintext', 'The format to write output in', ['plaintext', 'csv', 'tsv'])
+        self.options.add_option('format', 'plaintext', 'The format to write output in', ['plaintext', 'csv', 'tsv', 'binary'])
         self.options.add_option('final_newline', True, 'Whether to end the file with a newline')
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
     def output(self, output_list):
-        with open(self.options['filename'], 'w') as output_file:
-            if self.options['format'] == 'plaintext':
-                self.write_plaintext_file(output_list, output_file)
-            elif self.options['format'] == 'csv':
-                self.write_sv_file(output_list, output_file, ',')
-            elif self.options['format'] == 'tsv':
-                self.write_sv_file(output_list, output_file, '\t')
+        if self.options['format'] == 'binary':
+            with open(self.options['filename'], 'wb') as output_file:
+                self.write_binary_file(output_list, output_file)
+        else:
+            with open(self.options['filename'], 'w') as output_file:
+                if self.options['format'] == 'plaintext':
+                    self.write_plaintext_file(output_list, output_file)
+                elif self.options['format'] == 'csv':
+                    self.write_sv_file(output_list, output_file, ',')
+                elif self.options['format'] == 'tsv':
+                    self.write_sv_file(output_list, output_file, '\t')
 
-            if self.options['final_newline']:
-                output_file.write(os.linesep)
-            #TODO - add print to let user know it finished
+                if self.options['final_newline']:
+                    output_file.write(os.linesep)
+                #TODO - add print to let user know it finished
 
     def write_plaintext_file(self, output_list, output_file):
+        #TODO - again for something like a binary file, we don't want to be adding in our own lineseps
         output_file.write(os.linesep.join([self.convert_item(item) for item in output_list]))
+
+    def write_binary_file(self, output_list, output_file):
+        for item in output_list:
+            output_file.write(item)
 
     def write_sv_file(self, output_list, output_file, separator):
         # treat lists of lists as rows x cols
@@ -52,5 +61,5 @@ class File(object):
                 item = hex(item)
             elif self.options['number_format'] == 'octal':
                 item = oct(item)
-
+        #TODO - do we always want to str() this? AKA what about binary stuff, like in bombs...
         return str(item)
