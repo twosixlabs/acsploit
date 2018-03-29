@@ -20,6 +20,8 @@ description of the exploit, run `info`. At any point, you can run `options` to s
 exploit options, and then use `set [option_name] [value]` to set an option. To see detailed descriptions of the options,
  use `options describe`.
 
+Tab completion is enabled for exploit and option names.
+
 Finally, use `run` to generate output from the exploit.
 
 ACsploit supports abbreviated commands, bash commands using `!`, `CTRL+R` history search, and more.
