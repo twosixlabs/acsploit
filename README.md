@@ -15,9 +15,10 @@ Usage
 Start ACsploit with `python acsploit.py`. From there, you can use the `help` command to see what commands are available.
 You can call `help` on any of them to learn more about how to use that command, such as `help set`.
 
-To see the available exploits, use the `show` command. To stage one for use, use `use [exploit_name]`. At any point, you
-can run `options` to see the current input, output, and exploit options, and then use `set [option_name] [value]` to set
-an options. To see detailed descriptions of the options, use `options describe`.
+To see the available exploits, use the `show` command. To stage one for use, use `use [exploit_name]`. To see a
+description of the exploit, run `info`. At any point, you can run `options` to see the current input, output, and 
+exploit options, and then use `set [option_name] [value]` to set an option. To see detailed descriptions of the options,
+ use `options describe`.
 
 Finally, use `run` to generate output from the exploit.
 
@@ -49,6 +50,8 @@ Exploits must follow the rules below and implement the given API:
 
 #####API:
 - Your module must have an `Options` object. Use the `add_option` method to add exploit-specific options. (See below for the options API)
+- Your module must have a `DESCRIPTION` string which briefly describes what the module does.
+  - You are strongly encouraged to follow the format of the existing exploits in your description.
 - Your module must have a method `run(generator, output)`. This method will be called when your exploit is used.
   - `generator` is an input generator object (see below for the input generator API).
   - `output` is an output generator object (see below for the output generator API).

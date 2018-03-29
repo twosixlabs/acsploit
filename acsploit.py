@@ -140,6 +140,13 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         for new_option in new_options:
             self.option_list.append(new_option)
 
+    def do_info(self, args):
+        """Displays the description of the set exploit."""
+        if self.currexp is None:
+            print(color('No exploit set; nothing to describe. See options.', 'red'))
+        else:
+            print(color('\n  ' + self.currexp.DESCRIPTION + '\n', 'green'))
+
     def do_options(self, args):
         """Displays current options, more of which appear after 'input' and 'exploit' are set. Use 'options describe' to see descriptions of each."""
         if args not in ['', 'describe']:
@@ -206,7 +213,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             print(color("Option " + key + " does not exist.", 'red'))
 
 
-
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
         if len(args) > 0:
@@ -236,9 +242,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def do_run(self, args):
         """Runs exploit with given options."""
         if self.currexp is None:
-            print(color("No exploit set, nothing to do. See options.", 'red'))
+            print(color("No exploit set; nothing to do. See options.", 'red'))
         elif self.currinputgen is None:
-            print(color("No input specified, nothing to do. See options.", 'red'))
+            print(color("No input specified; nothing to do. See options.", 'red'))
         else:
             self.currexp.run(self.currinputgen, self.curroutput)
 
