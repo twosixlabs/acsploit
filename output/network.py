@@ -7,13 +7,13 @@ class Network(object):
 
     OUTPUT_NAME = 'network'  # exploits can use this internally to whitelist/blacklist supported output formats
 
-    _SEPARATORS = {
-        'newline': '\n',
-        'comma': ',',
-        'space': ' ',
-        'tab': '\t',
-        'os_newline': os.linesep,
-        'CRLF': '\r\n'
+    _SEPARATORS = {  # as bytes because
+        'newline': b'\n',
+        'comma': b',',
+        'space': b' ',
+        'tab': b'\t',
+        'os_newline': bytes(os.linesep.encode()),
+        'CRLF': b'\r\n'
     }
 
     _VERSIONS = {
@@ -55,5 +55,7 @@ class Network(object):
                 item = hex(item)
             elif self.options['number_format'] == 'octal':
                 item = oct(item)
+        if type(item) is not bytes:
+            item = str(item).encode(encoding='utf-8')  # TODO: this is a bit of a hack, to put it mildly
 
-        return str(item)
+        return item
