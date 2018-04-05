@@ -1,11 +1,10 @@
+#! /usr/bin/env python
+
 import exploits
-import inspect
 import cmd2
 import input
 import output
 import os
-import sys
-import logging
 import pkgutil
 import functools
 
