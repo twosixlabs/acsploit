@@ -29,10 +29,10 @@ class File(object):
 
                 if self.options['final_newline']:
                     output_file.write(os.linesep)
-                #TODO - add print to let user know it finished
+                # TODO - add print to let user know it finished
 
     def write_plaintext_file(self, output_list, output_file):
-        #TODO - again for something like a binary file, we don't want to be adding in our own lineseps
+        # TODO - again for something like a binary file, we don't want to be adding in our own lineseps
         output_file.write(os.linesep.join([self.convert_item(item) for item in output_list]))
 
     def write_binary_file(self, output_list, output_file):
@@ -61,5 +61,5 @@ class File(object):
                 item = hex(item)
             elif self.options['number_format'] == 'octal':
                 item = oct(item)
-        #TODO - do we always want to str() this? AKA what about binary stuff, like in bombs...
+        # TODO - do we always want to str() this? AKA what about binary stuff, like in bombs...
         return str(item)
