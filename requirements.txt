@@ -1,13 +1,8 @@
 attrs==17.4.0
-cmd2>=0.8.2
-contextlib2==0.5.5
+cmd2==0.8.2
 exrex==0.10.5
-funcsigs==1.0.2
-mock==2.0.0
-pbr==3.1.1
-Pillow==5.0.0
 pluggy==0.6.0
-py==1.5.2
+py==1.5.3
 pyparsing==2.2.0
 pyperclip==1.6.0
 pytest==3.4.1

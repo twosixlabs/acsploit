@@ -1,6 +1,5 @@
-import os
 import socket
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 from output import Network
 
 

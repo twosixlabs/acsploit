@@ -1,5 +1,5 @@
 import os
-from mock import MagicMock, call, mock_open, patch
+from unittest.mock import MagicMock, call, mock_open, patch
 from output import File
 
 OPEN = '%s.open' % __name__

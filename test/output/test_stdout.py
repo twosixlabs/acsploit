@@ -1,6 +1,6 @@
 import os
 import sys
-from mock import patch
+from unittest.mock import patch
 from output import Stdout
 
 
