@@ -1,5 +1,9 @@
 #! /usr/bin/env python
 
+import sys
+if sys.hexversion < 0x03050000:
+    raise Exception('ACsploit requires Python 3.5 or higher')
+
 import exploits
 import cmd2
 import input
