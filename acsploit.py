@@ -115,6 +115,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.complete_use = functools.partial(exploit_path_complete, match_against=self.availexps)
         self.option_list = self.get_all_options()
         self.complete_set = functools.partial(index_based_complete, index_dict={1: self.option_list})
+        self.currexp = None
+        self.currexpname = None
 
     def get_exploits(self):
         results = {}
@@ -201,20 +203,41 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             new_options = self.curroutput.options.get_option_names()
             self.update_options(old_options, new_options)
 
+        elif '.' in key:
+            scope, scoped_key = key.split('.', 1)
+            if scope == 'input':
+                if scoped_key in self.currinputgen.get_options().get_option_names():
+                    self.currinputgen.set_option(scoped_key, val)
+                else:
+                    print(color("Option " + scoped_key + " does not exist for input " + self.currinputgen.INPUT_NAME,
+                                'red'))
+            elif scope == 'output':
+                if scoped_key in self.curroutput.options.get_option_names():
+                    self.curroutput.options[scoped_key] = val
+                else:
+                    print(color("Option " + scoped_key + " does not exist for output " + self.curroutput.OUTPUT_NAME,
+                                'red'))
+            elif scope == 'exploit':
+                if self.currexp is None:
+                    print(color('No exploit set; cannot set exploit options', 'red'))
+                elif scoped_key in self.currexp.options.get_option_names():
+                    self.currexp.options[scoped_key] = val
+                else:
+                    print(color("Option " + scoped_key + " does not exist for exploit " + self.currexpname, 'red'))
+
         elif self.currexp is not None and key in self.currexp.options.get_option_names():
             # TODO check input type is what is expected
             self.currexp.options[key] = val
 
-        elif self.currinputgen is not None and key in self.currinputgen.get_options().get_option_names():
+        elif key in self.currinputgen.get_options().get_option_names():
             # TODO check input type is what is expected
             self.currinputgen.set_option(key, val)
 
-        elif self.curroutput is not None and key in self.curroutput.options.get_option_names():
+        elif key in self.curroutput.options.get_option_names():
             self.curroutput.options[key] = val
 
         else:
             print(color("Option " + key + " does not exist.", 'red'))
-
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
@@ -233,7 +256,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
     def update_exploit(self, expname):
         if expname in self.availexps:
-            self.prompt = self.prompt[:self.origpromptlen - 6] + " : "+expname+") " + '\033[0m'
+            self.prompt = self.prompt[:self.origpromptlen - 6] + " : " + expname + ") " + '\033[0m'
+            self.currexpname = expname
             old_options = [] if self.currexp is None else self.currexp.options.get_option_names()
             self.currexp = self.availexps[expname]
             new_options = self.currexp.options.get_option_names()
@@ -260,5 +284,5 @@ if __name__ == '__main__':
             f.write('_HiStOrY_V2_\n\n')
 
     cmdlineobj = ACsploit(hist_file=history_file)
-    cmdlineobj.debug = True #TODO - eventually not have this
+    cmdlineobj.debug = True #TODO - eventually not have this or do it based on command-line flag?
     cmdlineobj.cmdloop()
