@@ -113,7 +113,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.exclude_from_help.append('do_load')
         self.availexps = self.get_exploits()
         self.complete_use = functools.partial(exploit_path_complete, match_against=self.availexps)
-        self.option_list = self.get_all_options()
+        self.option_list = self.get_initial_options()
         self.complete_set = functools.partial(index_based_complete, index_dict={1: self.option_list})
         self.currexp = None
         self.currexpname = None
@@ -131,19 +131,19 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         return results
 
-    def get_all_options(self):
+    # Assumes there is no initial exploit set by default
+    def get_initial_options(self):
         options = self.options.get_option_names()
-        input_options = self.currinputgen.get_options().get_option_names()
-        output_options = self.curroutput.options.get_option_names()
-        exp_options = [] if self.currexp is None else self.currexp.options.get_option_names()
-        return options + input_options + output_options + exp_options
+        input_options = ['input.' + option for option in self.currinputgen.get_options().get_option_names()]
+        output_options = ['output.' + option for option in self.curroutput.options.get_option_names()]
+        return options + input_options + output_options
 
     # Update self.option_list in place so that complete_set will always have the current set of options
-    def update_options(self, old_options, new_options):
+    def update_options(self, old_options, new_options, scope):
         for old_option in old_options:
-            self.option_list.remove(old_option)
+            self.option_list.remove(scope + '.' + old_option)
         for new_option in new_options:
-            self.option_list.append(new_option)
+            self.option_list.append(scope + '.' + new_option)
 
     def do_info(self, args):
         """Displays the description of the set exploit."""
@@ -191,7 +191,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             self.currinputgen = ACsploit.inputs[val]()
             self.options[key] = val
             new_options = self.currinputgen.get_options().get_option_names()
-            self.update_options(old_options, new_options)
+            self.update_options(old_options, new_options, scope='input')
 
         elif key == "output":
             if val not in ACsploit.outputs:
@@ -201,7 +201,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             self.curroutput = ACsploit.outputs[val]()
             self.options[key] = val
             new_options = self.curroutput.options.get_option_names()
-            self.update_options(old_options, new_options)
+            self.update_options(old_options, new_options, scope='output')
 
         elif '.' in key:
             scope, scoped_key = key.split('.', 1)
@@ -261,7 +261,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             old_options = [] if self.currexp is None else self.currexp.options.get_option_names()
             self.currexp = self.availexps[expname]
             new_options = self.currexp.options.get_option_names()
-            self.update_options(old_options, new_options)
+            self.update_options(old_options, new_options, scope='exploit')
         else:
             print((color("Exploit " + expname + " does not exist.", 'red')))
             pass
