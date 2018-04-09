@@ -93,7 +93,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     options.add_option('output', 'stdout', 'Output generator to use with exploits', list(outputs.keys()))
 
     currexp = None
-    currinputgen = input.StringGenerator()
+    currinput = input.StringGenerator()
     curroutput = output.Stdout()
 
     def __init__(self, hist_file):
@@ -134,7 +134,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     # Assumes there is no initial exploit set by default
     def get_initial_options(self):
         options = self.options.get_option_names()
-        input_options = ['input.' + option for option in self.currinputgen.get_options().get_option_names()]
+        input_options = ['input.' + option for option in self.currinput.get_options().get_option_names()]
         output_options = ['output.' + option for option in self.curroutput.options.get_option_names()]
         return options + input_options + output_options
 
@@ -148,10 +148,10 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     # TODO: if someone could figure out a good way to combine the following two functions
     # TODO:  that's not unreadably abstract, that'd be cool
     def update_input(self, new_input):
-        old_options = self.currinputgen.get_options().get_option_names()
-        self.currinputgen = ACsploit.inputs[new_input]()
+        old_options = self.currinput.get_options().get_option_names()
+        self.currinput = ACsploit.inputs[new_input]()
         self.options['input'] = new_input
-        new_options = self.currinputgen.get_options().get_option_names()
+        new_options = self.currinput.get_options().get_option_names()
         self.update_options(old_options, new_options, scope='input')
 
     def update_output(self, new_output):
@@ -180,9 +180,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         print()
         # TODO: suppress printing of input here if None
         print_options(self.options, describe, indent_level=1)
-        if self.currinputgen is not None:
+        if self.currinput is not None:
             print(color("\n  Input options", 'green'))
-            print_options(self.currinputgen.get_options(), describe, indent_level=2)
+            print_options(self.currinput.get_options(), describe, indent_level=2)
         if self.curroutput is not None:
             print(color("\n  Output options", "green"))
             print_options(self.curroutput.options, describe, indent_level=2)
@@ -216,10 +216,10 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         elif '.' in key:
             scope, scoped_key = key.split('.', 1)
             if scope == 'input':
-                if scoped_key in self.currinputgen.get_options().get_option_names():
-                    self.currinputgen.set_option(scoped_key, val)
+                if scoped_key in self.currinput.get_options().get_option_names():
+                    self.currinput.set_option(scoped_key, val)
                 else:
-                    print(color("Option " + scoped_key + " does not exist for input " + self.currinputgen.INPUT_NAME,
+                    print(color("Option " + scoped_key + " does not exist for input " + self.currinput.INPUT_NAME,
                                 'red'))
             elif scope == 'output':
                 if scoped_key in self.curroutput.options.get_option_names():
@@ -238,8 +238,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         elif self.currexp is not None and key in self.currexp.options.get_option_names():
             self.currexp.options[key] = val
 
-        elif key in self.currinputgen.get_options().get_option_names():
-            self.currinputgen.set_option(key, val)
+        elif key in self.currinput.get_options().get_option_names():
+            self.currinput.set_option(key, val)
 
         elif key in self.curroutput.options.get_option_names():
             self.curroutput.options[key] = val
@@ -280,7 +280,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         # set default input and output for new exploit, if any
         if hasattr(self.currexp, 'NO_INPUT') and self.currexp.NO_INPUT:
             # TODO: do this in a way that doesn't break a bunch of stuff...
-            self.currinputgen = None
+            self.currinput = None
         else:
             # thus we have an invariant that self.currexp.NO_INPUT always exists!
             self.currexp.NO_INPUT = False
@@ -294,7 +294,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         # set defaults for input and output settings for new exploit, if any
         if hasattr(self.currexp, 'DEFAULT_INPUT_OPTIONS'):
             for option, value in self.currexp.DEFAULT_INPUT_OPTIONS.items():
-                self.currinputgen.set_option(option, value)
+                self.currinput.set_option(option, value)
         if hasattr(self.currexp, 'DEFAULT_OUTPUT_OPTIONS'):
             for option, value in self.currexp.DEFAULT_OUTPUT_OPTIONS.items():
                 self.curroutput.options.set_value(option, value)
@@ -303,13 +303,13 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         """Runs exploit with given options."""
         if self.currexp is None:
             print(color("No exploit set; nothing to do. See options.", 'red'))
-        elif not self.currexp.NO_INPUT and self.currinputgen is None:  # only warn about lack of input if exploit cares
+        elif not self.currexp.NO_INPUT and self.currinput is None:  # only warn about lack of input if exploit cares
             print(color("No input specified; nothing to do. See options.", 'red'))
         else:
             if self.currexp.NO_INPUT:
                 self.currexp.run(self.curroutput)
             else:
-                self.currexp.run(self.currinputgen, self.curroutput)
+                self.currexp.run(self.currinput, self.curroutput)
 
 
 if __name__ == '__main__':
@@ -320,5 +320,5 @@ if __name__ == '__main__':
             f.write('_HiStOrY_V2_\n\n')
 
     cmdlineobj = ACsploit(hist_file=history_file)
-    cmdlineobj.debug = True #TODO - eventually not have this or do it based on command-line flag?
+    cmdlineobj.debug = True  # TODO - eventually not have this or do it based on command-line flag?
     cmdlineobj.cmdloop()
