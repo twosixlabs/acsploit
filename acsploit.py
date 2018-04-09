@@ -98,6 +98,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     currinput = None
     curroutput = None
 
+    defaulted_options = []
+
     def __init__(self, hist_file):
         # delete unused commands that are baked-into cmd2
         del cmd2.Cmd.do_py
@@ -160,6 +162,38 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         new_options = self.curroutput.options.get_option_names()
         self.update_options(old_options, new_options, scope='output')
 
+    def canonicalize_option_name(self, option_name):
+        canonicalized_name = None
+        if option_name in ['input', 'output']:
+            canonicalized_name = option_name
+        elif '.' in option_name:
+            if option_name.split('.')[0] in ['exploit', 'input', 'output']:
+                canonicalized_name = option_name
+            else:
+                print(color('Option %s does not exist' % option_name, 'red'))
+        elif self.currexp is not None and option_name in self.currexp.options.get_option_names():
+            canonicalized_name = 'exploit.%s' % option_name
+        elif self.currinput is not None and option_name in self.currinput.get_options().get_option_names():
+            canonicalized_name = 'input.%s' % option_name
+        elif self.curroutput is not None and option_name in self.curroutput.options.get_option_names():
+            canonicalized_name = 'output.%s' % option_name
+        else:
+            print(color('Option %s does not exist' % option_name, 'red'))
+
+        if canonicalized_name in self.defaulted_options:
+            if canonicalized_name == 'input' and self.currexp.NO_INPUT:
+                confirm_prompt = 'This exploit does not use an input generator and so this setting has no effect.'
+            else:
+                confirm_prompt = 'Changing this option may result in degraded exploit performance or failure.'
+            confirmation = __builtins__.input(color(confirm_prompt + '\nAre you sure you want to continue? [Y|n] ',
+                                                    'yellow'))
+            if confirmation.lower() in ['yes', 'y']:
+                self.defaulted_options.remove(canonicalized_name)  # only warn on the first defaulted option
+            else:
+                canonicalized_name = None
+
+        return canonicalized_name
+
     def do_info(self, args):
         """Displays the description of the set exploit."""
         if self.currexp is None:
@@ -177,7 +211,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         describe = args == 'describe'
 
         print()
-        # TODO: suppress printing of input here if None
         print_options(self.options, describe, indent_level=1)
         if self.currinput is not None:
             print(color("\n  Input options", 'green'))
@@ -200,6 +233,10 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             print("Usage: set [option_name] [value]")
             return
 
+        key = self.canonicalize_option_name(key)
+        if key is None:
+            return  # canonicalize_option_name() already printed the appropriate error message
+
         if key == "input":
             if val not in ACsploit.inputs:
                 print(color("Input " + val + " does not exist.", 'red'))
@@ -212,7 +249,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 return
             self.update_output(val)
 
-        elif '.' in key:
+        else:
             scope, scoped_key = key.split('.', 1)
             if scope == 'input':
                 if self.currinput is None:
@@ -237,18 +274,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                     self.currexp.options[scoped_key] = val
                 else:
                     print(color("Option " + scoped_key + " does not exist for exploit " + self.currexpname, 'red'))
-
-        elif self.currexp is not None and key in self.currexp.options.get_option_names():
-            self.currexp.options[key] = val
-
-        elif self.currinput is not None and key in self.currinput.get_options().get_option_names():
-            self.currinput.set_option(key, val)
-
-        elif self.curroutput is not None and key in self.curroutput.options.get_option_names():
-            self.curroutput.options[key] = val
-
-        else:
-            print(color("Option " + key + " does not exist.", 'red'))
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
@@ -280,9 +305,12 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         new_options = self.currexp.options.get_option_names()
         self.update_options(old_options, new_options, scope='exploit')
 
+        self.defaulted_options = []
+
         # set default input and output for new exploit, if any
         if hasattr(self.currexp, 'NO_INPUT') and self.currexp.NO_INPUT:
             self.update_input(None)
+            self.defaulted_options.append('input')
         else:
             # thus we have an invariant that self.currexp.NO_INPUT always exists!
             self.currexp.NO_INPUT = False
@@ -290,16 +318,20 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         if hasattr(self.currexp, 'DEFAULT_INPUT') and self.currexp.DEFAULT_INPUT:
             # TODO: try to validate this or error handle if it's bad?
             self.update_input(self.currexp.DEFAULT_INPUT)
+            self.defaulted_options.append('input')
         if hasattr(self.currexp, 'DEFAULT_OUTPUT') and self.currexp.DEFAULT_OUTPUT:
             self.update_output(self.currexp.DEFAULT_OUTPUT)
+            self.defaulted_options.append('output')
 
         # set defaults for input and output settings for new exploit, if any
         if hasattr(self.currexp, 'DEFAULT_INPUT_OPTIONS'):
             for option, value in self.currexp.DEFAULT_INPUT_OPTIONS.items():
                 self.currinput.set_option(option, value)
+                self.defaulted_options.append('input.%s' % option)
         if hasattr(self.currexp, 'DEFAULT_OUTPUT_OPTIONS'):
             for option, value in self.currexp.DEFAULT_OUTPUT_OPTIONS.items():
                 self.curroutput.options.set_value(option, value)
+                self.defaulted_options.append('output.%s' % option)
 
     def do_run(self, args):
         """Runs exploit with given options."""
