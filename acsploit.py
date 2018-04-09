@@ -113,6 +113,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
         self.exclude_from_help.append('do_shell')
         self.exclude_from_help.append('do_load')
+        self.exclude_from_help.append('do_exit')
         self.availexps = self.get_exploits()
         self.complete_use = functools.partial(exploit_path_complete, match_against=self.availexps)
         self.option_list = []
@@ -189,6 +190,10 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             print(color("\n  Exploit options", 'green'))
             print_options(self.currexp.options, describe, indent_level=2)
         print()
+
+    def do_exit(self,args):
+        self._should_quit = True
+        return self._STOP_AND_EXIT
 
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
