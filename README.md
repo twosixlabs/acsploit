@@ -26,6 +26,11 @@ Finally, use `run` to generate output from the exploit.
 
 ACsploit supports abbreviated commands, bash commands using `!`, `CTRL+R` history search, and more.
 
+Warning 
+------------------------
+Caution should be used in generating and accessing ACSploit exploits. Using unreasonable exploit parameters may cause denial of service on generation. Additionally, the canned exploits (e.g. compression bombs) may cause denial of service if accessed by relevant applications. 
+
+
 Contributing to ACsploit
 ------------------------
 
