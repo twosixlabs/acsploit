@@ -33,11 +33,11 @@ def color(s, c):
 
 def print_options(options, describe=False, indent_level=0):
     indent = '  ' * indent_level
-    for key in options.get_option_names():
-        line = color(str(key) + ': ', 'green') + str(options[key])
+    for option in options.get_option_names():
+        line = color(option + ': ', 'green') + str(options[option])
         if describe:
-            line += ' (' + options.get_description(key) + ')'
-            values = options.get_acceptable_values(key)
+            line += ' (' + options.get_description(option) + ')'
+            values = options.get_acceptable_values(option)
             if values is not None:
                 line += ' (Acceptable Values: ' + str(values) + ')'
         print(indent + line)
@@ -145,6 +145,22 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         for new_option in new_options:
             self.option_list.append(scope + '.' + new_option)
 
+    # TODO: if someone could figure out a good way to combine the following two functions
+    # TODO:  that's not unreadably abstract, that'd be cool
+    def update_input(self, new_input):
+        old_options = self.currinputgen.get_options().get_option_names()
+        self.currinputgen = ACsploit.inputs[new_input]()
+        self.options['input'] = new_input
+        new_options = self.currinputgen.get_options().get_option_names()
+        self.update_options(old_options, new_options, scope='input')
+
+    def update_output(self, new_output):
+        old_options = self.curroutput.options.get_option_names()
+        self.curroutput = ACsploit.outputs[new_output]()
+        self.options['output'] = new_output
+        new_options = self.curroutput.options.get_option_names()
+        self.update_options(old_options, new_options, scope='output')
+
     def do_info(self, args):
         """Displays the description of the set exploit."""
         if self.currexp is None:
@@ -162,6 +178,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         describe = args == 'describe'
 
         print()
+        # TODO: suppress printing of input here if None
         print_options(self.options, describe, indent_level=1)
         if self.currinputgen is not None:
             print(color("\n  Input options", 'green'))
@@ -176,6 +193,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
+        # TODO: warning on default overwrite
+
         try:
             key, val = args.split(' ', 1)
         except ValueError:
@@ -186,22 +205,13 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             if val not in ACsploit.inputs:
                 print(color("Input " + val + " does not exist.", 'red'))
                 return
-
-            old_options = self.currinputgen.get_options().get_option_names()
-            self.currinputgen = ACsploit.inputs[val]()
-            self.options[key] = val
-            new_options = self.currinputgen.get_options().get_option_names()
-            self.update_options(old_options, new_options, scope='input')
+            self.update_input(val)
 
         elif key == "output":
             if val not in ACsploit.outputs:
                 print(color("Output " + val + " does not exist.", 'red'))
                 return
-            old_options = self.curroutput.options.get_option_names()
-            self.curroutput = ACsploit.outputs[val]()
-            self.options[key] = val
-            new_options = self.curroutput.options.get_option_names()
-            self.update_options(old_options, new_options, scope='output')
+            self.update_output(val)
 
         elif '.' in key:
             scope, scoped_key = key.split('.', 1)
@@ -226,11 +236,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                     print(color("Option " + scoped_key + " does not exist for exploit " + self.currexpname, 'red'))
 
         elif self.currexp is not None and key in self.currexp.options.get_option_names():
-            # TODO check input type is what is expected
             self.currexp.options[key] = val
 
         elif key in self.currinputgen.get_options().get_option_names():
-            # TODO check input type is what is expected
             self.currinputgen.set_option(key, val)
 
         elif key in self.curroutput.options.get_option_names():
@@ -255,25 +263,53 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         print("")
 
     def update_exploit(self, expname):
-        if expname in self.availexps:
-            self.prompt = self.prompt[:self.origpromptlen - 6] + " : " + expname + ") " + '\033[0m'
-            self.currexpname = expname
-            old_options = [] if self.currexp is None else self.currexp.options.get_option_names()
-            self.currexp = self.availexps[expname]
-            new_options = self.currexp.options.get_option_names()
-            self.update_options(old_options, new_options, scope='exploit')
-        else:
+        if expname not in self.availexps:
             print((color("Exploit " + expname + " does not exist.", 'red')))
-            pass
+            return
+
+        self.prompt = self.prompt[:self.origpromptlen - 6] + " : " + expname + ") " + '\033[0m'
+        self.currexpname = expname
+
+        old_options = [] if self.currexp is None else self.currexp.options.get_option_names()
+
+        self.currexp = self.availexps[expname]
+
+        new_options = self.currexp.options.get_option_names()
+        self.update_options(old_options, new_options, scope='exploit')
+
+        # set default input and output for new exploit, if any
+        if hasattr(self.currexp, 'NO_INPUT') and self.currexp.NO_INPUT:
+            # TODO: do this in a way that doesn't break a bunch of stuff...
+            self.currinputgen = None
+        else:
+            # thus we have an invariant that self.currexp.NO_INPUT always exists!
+            self.currexp.NO_INPUT = False
+
+        if hasattr(self.currexp, 'DEFAULT_INPUT') and self.currexp.DEFAULT_INPUT:
+            # TODO: try to validate this or error handle if it's bad?
+            self.update_input(self.currexp.DEFAULT_INPUT)
+        if hasattr(self.currexp, 'DEFAULT_OUTPUT') and self.currexp.DEFAULT_OUTPUT:
+            self.update_output(self.currexp.DEFAULT_OUTPUT)
+
+        # set defaults for input and output settings for new exploit, if any
+        if hasattr(self.currexp, 'DEFAULT_INPUT_OPTIONS'):
+            for option, value in self.currexp.DEFAULT_INPUT_OPTIONS.items():
+                self.currinputgen.set_option(option, value)
+        if hasattr(self.currexp, 'DEFAULT_OUTPUT_OPTIONS'):
+            for option, value in self.currexp.DEFAULT_OUTPUT_OPTIONS.items():
+                self.curroutput.options.set_value(option, value)
 
     def do_run(self, args):
         """Runs exploit with given options."""
         if self.currexp is None:
             print(color("No exploit set; nothing to do. See options.", 'red'))
-        elif self.currinputgen is None:
+        elif not self.currexp.NO_INPUT and self.currinputgen is None:  # only warn about lack of input if exploit cares
             print(color("No input specified; nothing to do. See options.", 'red'))
         else:
-            self.currexp.run(self.currinputgen, self.curroutput)
+            if self.currexp.NO_INPUT:
+                self.currexp.run(self.curroutput)
+            else:
+                self.currexp.run(self.currinputgen, self.curroutput)
 
 
 if __name__ == '__main__':
