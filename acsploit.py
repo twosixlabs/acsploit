@@ -81,7 +81,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             inputs[obj.INPUT_NAME] = obj
         except AttributeError:
             continue
-    options.add_option('input', 'string', 'Input generator to use with exploits', list(inputs.keys()))
+    input_options = list(inputs.keys())
+    input_options.append('none')  # add in None as an option so we don't get errors when not using an input
+    options.add_option('input', 'string', 'Input generator to use with exploits', input_options)
 
     # find all outputs imported in output
     outputs = {}
@@ -93,8 +95,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     options.add_option('output', 'stdout', 'Output generator to use with exploits', list(outputs.keys()))
 
     currexp = None
-    currinput = input.StringGenerator()
-    curroutput = output.Stdout()
+    currinput = None
+    curroutput = None
 
     def __init__(self, hist_file):
         # delete unused commands that are baked-into cmd2
@@ -113,7 +115,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.exclude_from_help.append('do_load')
         self.availexps = self.get_exploits()
         self.complete_use = functools.partial(exploit_path_complete, match_against=self.availexps)
-        self.option_list = self.get_initial_options()
+        self.option_list = []
         self.complete_set = functools.partial(index_based_complete, index_dict={1: self.option_list})
         self.currexp = None
         self.currexpname = None
@@ -131,13 +133,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         return results
 
-    # Assumes there is no initial exploit set by default
-    def get_initial_options(self):
-        options = self.options.get_option_names()
-        input_options = ['input.' + option for option in self.currinput.get_options().get_option_names()]
-        output_options = ['output.' + option for option in self.curroutput.options.get_option_names()]
-        return options + input_options + output_options
-
     # Update self.option_list in place so that complete_set will always have the current set of options
     def update_options(self, old_options, new_options, scope):
         for old_option in old_options:
@@ -148,14 +143,18 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     # TODO: if someone could figure out a good way to combine the following two functions
     # TODO:  that's not unreadably abstract, that'd be cool
     def update_input(self, new_input):
-        old_options = self.currinput.get_options().get_option_names()
-        self.currinput = ACsploit.inputs[new_input]()
-        self.options['input'] = new_input
-        new_options = self.currinput.get_options().get_option_names()
+        old_options = self.currinput.get_options().get_option_names() if self.currinput is not None else []
+        if new_input is not None:
+            self.currinput = ACsploit.inputs[new_input]()
+            self.options['input'] = new_input
+        else:
+            self.currinput = None
+            self.options['input'] = 'none'
+        new_options = self.currinput.get_options().get_option_names() if self.currinput is not None else []
         self.update_options(old_options, new_options, scope='input')
 
     def update_output(self, new_output):
-        old_options = self.curroutput.options.get_option_names()
+        old_options = self.curroutput.options.get_option_names() if self.curroutput is not None else []
         self.curroutput = ACsploit.outputs[new_output]()
         self.options['output'] = new_output
         new_options = self.curroutput.options.get_option_names()
@@ -216,13 +215,17 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         elif '.' in key:
             scope, scoped_key = key.split('.', 1)
             if scope == 'input':
-                if scoped_key in self.currinput.get_options().get_option_names():
+                if self.currinput is None:
+                    print(color('No input set; cannot set input options', 'red'))
+                elif scoped_key in self.currinput.get_options().get_option_names():
                     self.currinput.set_option(scoped_key, val)
                 else:
                     print(color("Option " + scoped_key + " does not exist for input " + self.currinput.INPUT_NAME,
                                 'red'))
             elif scope == 'output':
-                if scoped_key in self.curroutput.options.get_option_names():
+                if self.curroutput is None:
+                    print(color('No output set; cannot set output options', 'red'))
+                elif scoped_key in self.curroutput.options.get_option_names():
                     self.curroutput.options[scoped_key] = val
                 else:
                     print(color("Option " + scoped_key + " does not exist for output " + self.curroutput.OUTPUT_NAME,
@@ -238,10 +241,10 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         elif self.currexp is not None and key in self.currexp.options.get_option_names():
             self.currexp.options[key] = val
 
-        elif key in self.currinput.get_options().get_option_names():
+        elif self.currinput is not None and key in self.currinput.get_options().get_option_names():
             self.currinput.set_option(key, val)
 
-        elif key in self.curroutput.options.get_option_names():
+        elif self.curroutput is not None and key in self.curroutput.options.get_option_names():
             self.curroutput.options[key] = val
 
         else:
@@ -279,8 +282,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         # set default input and output for new exploit, if any
         if hasattr(self.currexp, 'NO_INPUT') and self.currexp.NO_INPUT:
-            # TODO: do this in a way that doesn't break a bunch of stuff...
-            self.currinput = None
+            self.update_input(None)
         else:
             # thus we have an invariant that self.currexp.NO_INPUT always exists!
             self.currexp.NO_INPUT = False
