@@ -11,6 +11,7 @@ import output
 import os
 import pkgutil
 import functools
+import argparse
 
 from options import Options
 
@@ -74,6 +75,7 @@ def set_option_complete(text, line, begidx, endidx, context):
 
     return []
 
+
 class ACsploit(cmd2.Cmd):
     intro = r"""
                              .__         .__  __
@@ -126,6 +128,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         del cmd2.Cmd.do_alias
         del cmd2.Cmd.do_unalias
         cmd2.Cmd.abbrev = True
+        self.allow_cli_args = False  # disable parsing of command-line args by cmd2
         self.shortcuts.update({"sh": "show"})  # don't want "sh" to trigger the hidden "shell" command
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
         self.exclude_from_help.append('do_shell')
@@ -391,6 +394,11 @@ if __name__ == '__main__':
         with open(history_file, 'w') as f:
             f.write('_HiStOrY_V2_\n\n')
 
+    parser = argparse.ArgumentParser(description='A tool for generating worst-case inputs for algorithms')
+    parser.add_argument('--debug', action='store_true', help='show debug stack traces')
+
+    args = parser.parse_args()
+
     cmdlineobj = ACsploit(hist_file=history_file)
-    cmdlineobj.debug = True  # TODO - eventually not have this or do it based on command-line flag?
+    cmdlineobj.debug = args.debug
     cmdlineobj.cmdloop()

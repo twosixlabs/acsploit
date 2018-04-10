@@ -1,6 +1,8 @@
 Contributing to ACsploit
 ------------------------
 
+# TODO: update the hell out of this for new spec once that all's nailed down
+
 We welcome community contributions to all aspects of ACsploit!
 
 ### General Code Style
