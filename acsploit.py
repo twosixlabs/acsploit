@@ -316,6 +316,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                     print(self.colorize("Option " + scoped_key + " does not exist for exploit " + self.currexpname,
                                         'red'))
 
+        print(self.colorize('%s => %s' % (key, val), 'cyan'))
+
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
         if len(args) > 0:
