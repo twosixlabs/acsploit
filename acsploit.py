@@ -37,7 +37,7 @@ def set_option_complete(text, line, begidx, endidx, context):
     # split the completed words, should either be ['set'], or ['set', <option_key>]
     split_line = line[:begidx].split()
     if len(split_line) == 1:
-        return [option for option in context.get_option_names() if option.startswith(text)]
+        return [option for option in context.get_option_names() if option.startswith(text) or '.' + text in option]
 
     if len(split_line) == 2:
         option_key = split_line[1]
