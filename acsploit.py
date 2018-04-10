@@ -12,7 +12,6 @@ import os
 import pkgutil
 import functools
 
-from cmd2 import index_based_complete
 from options import Options
 
 
@@ -58,6 +57,22 @@ def exploit_path_complete(text, line, begidx, endidx, match_against):
 
     return sorted(result_set)
 
+
+def set_option_complete(text, line, begidx, endidx, context):
+    # text = line[begidx:endidx] is the word we want to complete
+    # split the completed words, should either be ['set'], or ['set', <option_key>]
+    split_line = line[:begidx].split()
+    if len(split_line) == 1:
+        return [option for option in context.get_option_names() if option.startswith(text)]
+
+    if len(split_line) == 2:
+        option_key = split_line[1]
+        values = context.get_option_values(option_key)
+        if values is None:
+            return []
+        return [value for value in values if value.startswith(text)]
+
+    return []
 
 class ACsploit(cmd2.Cmd):
     intro = r"""
@@ -119,7 +134,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.availexps = self.get_exploits()
         self.complete_use = functools.partial(exploit_path_complete, match_against=self.availexps)
         self.option_list = []
-        self.complete_set = functools.partial(index_based_complete, index_dict={1: self.option_list})
+        self.complete_set = functools.partial(set_option_complete, context=self)
         self.currexp = None
         self.currexpname = None
 
@@ -136,32 +151,57 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         return results
 
-    # Update self.option_list in place so that complete_set will always have the current set of options
-    def update_options(self, old_options, new_options, scope):
-        for old_option in old_options:
-            self.option_list.remove(scope + '.' + old_option)
-        for new_option in new_options:
-            self.option_list.append(scope + '.' + new_option)
+    def get_option_names(self):
+        # There are no options until the current exploit is set
+        if self.currexp is None:
+            return []
+
+        option_names = ['output'] if self.currexp.NO_INPUT else ['input', 'output']
+
+        if self.currinput is not None:
+            option_names += ['input.' + option for option in self.currinput.get_options().get_option_names()]
+
+        if self.curroutput is not None:
+            option_names += ['output.' + option for option in self.curroutput.options.get_option_names()]
+
+        if self.currexp is not None:
+            option_names += ['exploit.' + option for option in self.currexp.options.get_option_names()]
+
+        return option_names
+
+    def get_option_values(self, key):
+        if key in self.options.get_option_names():
+            return self.options.get_acceptable_values(key)
+
+        try:
+            scope, scoped_key = key.split('.')
+        except ValueError as e:
+            return None
+
+        if scope == 'input':
+            options = self.currinput.get_options()
+        elif scope == 'output':
+            options = self.curroutput.options
+        elif scope == 'exploit':
+            options = self.currexp.options
+        else:
+            return None
+
+        return options.get_acceptable_values(scoped_key) if scoped_key in options.get_option_names() else None
 
     # TODO: if someone could figure out a good way to combine the following two functions
     # TODO:  that's not unreadably abstract, that'd be cool
     def update_input(self, new_input):
-        old_options = self.currinput.get_options().get_option_names() if self.currinput is not None else []
         if new_input is not None:
             self.currinput = ACsploit.inputs[new_input]()
             self.options['input'] = new_input
         else:
             self.currinput = None
             self.options['input'] = 'none'
-        new_options = self.currinput.get_options().get_option_names() if self.currinput is not None else []
-        self.update_options(old_options, new_options, scope='input')
 
     def update_output(self, new_output):
-        old_options = self.curroutput.options.get_option_names() if self.curroutput is not None else []
-        self.curroutput = ACsploit.outputs[new_output]()
-        self.options['output'] = new_output
-        new_options = self.curroutput.options.get_option_names()
-        self.update_options(old_options, new_options, scope='output')
+          self.curroutput = ACsploit.outputs[new_output]()
+          self.options['output'] = new_output
 
     def canonicalize_option_name(self, option_name):
         canonicalized_name = None
@@ -301,12 +341,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.prompt = self.prompt[:self.origpromptlen - 6] + " : " + expname + ") " + '\033[0m'
         self.currexpname = expname
 
-        old_options = [] if self.currexp is None else self.currexp.options.get_option_names()
-
         self.currexp = self.availexps[expname]
-
-        new_options = self.currexp.options.get_option_names()
-        self.update_options(old_options, new_options, scope='exploit')
 
         self.defaulted_options = []
 
