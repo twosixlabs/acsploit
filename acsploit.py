@@ -16,33 +16,6 @@ import argparse
 from options import Options
 
 
-def color(s, c):
-    endc = '\033[0m'
-    colors = {
-        'blue': '\033[94m',
-        'green': '\033[92m',
-        'yellow': '\033[93m',
-        'red': '\033[91m'
-    }
-
-    if c not in colors:
-        return s
-
-    return colors[c] + s + endc
-
-
-def print_options(options, describe=False, indent_level=0):
-    indent = '  ' * indent_level
-    for option in options.get_option_names():
-        line = color(option + ': ', 'green') + str(options[option])
-        if describe:
-            line += ' (' + options.get_description(option) + ')'
-            values = options.get_acceptable_values(option)
-            if values is not None:
-                line += ' (Acceptable Values: ' + str(values) + ')'
-        print(indent + line)
-
-
 def exploit_path_complete(text, line, begidx, endidx, match_against):
     split_line = line.split(maxsplit=1)
     full_text = split_line[1] if len(split_line) == 2 else ''
@@ -87,8 +60,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
 """
 
-    prompt = color('(acsploit) ', 'blue')
-    origpromptlen = len(prompt)
     options = Options()
 
     # find all inputs imported in input
@@ -118,7 +89,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     defaulted_options = []
 
     def __init__(self, hist_file):
-        # delete unused commands that are baked-into cmd2
+        # delete unused commands that are baked-into cmd2 and set some options
         del cmd2.Cmd.do_py
         del cmd2.Cmd.do_edit
         del cmd2.Cmd.do_shortcuts
@@ -130,16 +101,28 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         cmd2.Cmd.abbrev = True
         self.allow_cli_args = False  # disable parsing of command-line args by cmd2
         self.shortcuts.update({"sh": "show"})  # don't want "sh" to trigger the hidden "shell" command
+
+        # init cmd2 and the history file
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
+
+        # disable help on builtins
         self.exclude_from_help.append('do_shell')
         self.exclude_from_help.append('do_load')
-        self.exclude_from_help.append('do_exit')
+        self.exclude_from_help.append('do_exit')  # TODO: come back to this?
+
+        # set local variables
         self.availexps = self.get_exploits()
         self.complete_use = functools.partial(exploit_path_complete, match_against=self.availexps)
-        self.option_list = []
         self.complete_set = functools.partial(set_option_complete, context=self)
+
+        self.option_list = []
         self.currexp = None
         self.currexpname = None
+        self.prompt = self.make_prompt()
+
+    def make_prompt(self, location=None):
+        prompt = '(acsploit : %s) ' % location if location is not None else '(acsploit) '
+        return self.colorize(prompt, 'blue')
 
     def get_exploits(self):
         results = {}
@@ -214,7 +197,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             if option_name.split('.')[0] in ['exploit', 'input', 'output']:
                 canonicalized_name = option_name
             else:
-                print(color('Option %s does not exist' % option_name, 'red'))
+                print(self.colorize('Option %s does not exist' % option_name, 'red'))
         elif self.currexp is not None and option_name in self.currexp.options.get_option_names():
             canonicalized_name = 'exploit.%s' % option_name
         elif self.currinput is not None and option_name in self.currinput.get_options().get_option_names():
@@ -222,15 +205,15 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         elif self.curroutput is not None and option_name in self.curroutput.options.get_option_names():
             canonicalized_name = 'output.%s' % option_name
         else:
-            print(color('Option %s does not exist' % option_name, 'red'))
+            print(self.colorize('Option %s does not exist' % option_name, 'red'))
 
         if canonicalized_name in self.defaulted_options:
             if canonicalized_name == 'input' and self.currexp.NO_INPUT:
                 confirm_prompt = 'This exploit does not use an input generator and so this setting has no effect.'
             else:
                 confirm_prompt = 'Changing this option may result in degraded exploit performance or failure.'
-            confirmation = __builtins__.input(color(confirm_prompt + '\nAre you sure you want to continue? [Y|n] ',
-                                                    'yellow'))
+            confirmation = __builtins__.input(self.colorize(confirm_prompt + '\nDo you want to continue? [Y|n] ',
+                                                            'yellow'))
             if confirmation.lower() in ['yes', 'y']:
                 self.defaulted_options.remove(canonicalized_name)  # only warn on the first defaulted option
             else:
@@ -238,36 +221,47 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         return canonicalized_name
 
+    def print_options(self, options, describe=False, indent_level=0):
+        indent = '  ' * indent_level
+        for option in options.get_option_names():
+            line = self.colorize(option + ': ', 'green') + str(options[option])
+            if describe:
+                line += ' (' + options.get_description(option) + ')'
+                values = options.get_acceptable_values(option)
+                if values is not None:
+                    line += ' (Acceptable Values: ' + str(values) + ')'
+            print(indent + line)
+
     def do_info(self, args):
         """Displays the description of the set exploit."""
         if self.currexp is None:
-            print(color('No exploit set; nothing to describe. See options.', 'red'))
+            print(self.colorize('No exploit set; nothing to describe. See options.', 'red'))
         else:
-            print(color('\n  ' + self.currexp.DESCRIPTION + '\n', 'green'))
+            print(self.colorize('\n  ' + self.currexp.DESCRIPTION + '\n', 'green'))
 
     def do_options(self, args):
         """Displays current options, more of which appear after 'input' and 'exploit' are set. Use 'options describe' to see descriptions of each."""
         if args not in ['', 'describe']:
-            print(color('Unsupported argument to options', 'red'))
+            print(self.colorize('Unsupported argument to options', 'red'))
             self.do_help('options')
             return
 
         describe = args == 'describe'
 
         print()
-        print_options(self.options, describe, indent_level=1)
+        self.print_options(self.options, describe, indent_level=1)
         if self.currinput is not None:
-            print(color("\n  Input options", 'green'))
-            print_options(self.currinput.get_options(), describe, indent_level=2)
+            print(self.colorize("\n  Input options", 'green'))
+            self.print_options(self.currinput.get_options(), describe, indent_level=2)
         if self.curroutput is not None:
-            print(color("\n  Output options", "green"))
-            print_options(self.curroutput.options, describe, indent_level=2)
+            print(self.colorize("\n  Output options", "green"))
+            self.print_options(self.curroutput.options, describe, indent_level=2)
         if self.currexp is not None:
-            print(color("\n  Exploit options", 'green'))
-            print_options(self.currexp.options, describe, indent_level=2)
+            print(self.colorize("\n  Exploit options", 'green'))
+            self.print_options(self.currexp.options, describe, indent_level=2)
         print()
 
-    def do_exit(self,args):
+    def do_exit(self, args):
         self._should_quit = True
         return self._STOP_AND_EXIT
 
@@ -285,13 +279,13 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         if key == "input":
             if val not in ACsploit.inputs:
-                print(color("Input " + val + " does not exist.", 'red'))
+                print(self.colorize("Input " + val + " does not exist.", 'red'))
                 return
             self.update_input(val)
 
         elif key == "output":
             if val not in ACsploit.outputs:
-                print(color("Output " + val + " does not exist.", 'red'))
+                print(self.colorize("Output " + val + " does not exist.", 'red'))
                 return
             self.update_output(val)
 
@@ -299,49 +293,50 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             scope, scoped_key = key.split('.', 1)
             if scope == 'input':
                 if self.currinput is None:
-                    print(color('No input set; cannot set input options', 'red'))
+                    print(self.colorize('No input set; cannot set input options', 'red'))
                 elif scoped_key in self.currinput.get_options().get_option_names():
                     self.currinput.set_option(scoped_key, val)
                 else:
-                    print(color("Option " + scoped_key + " does not exist for input " + self.currinput.INPUT_NAME,
-                                'red'))
+                    print(self.colorize("Option " + scoped_key + " does not exist for input " + self.currinput.INPUT_NAME,
+                                        'red'))
             elif scope == 'output':
                 if self.curroutput is None:
-                    print(color('No output set; cannot set output options', 'red'))
+                    print(self.colorize('No output set; cannot set output options', 'red'))
                 elif scoped_key in self.curroutput.options.get_option_names():
                     self.curroutput.options[scoped_key] = val
                 else:
-                    print(color("Option " + scoped_key + " does not exist for output " + self.curroutput.OUTPUT_NAME,
-                                'red'))
+                    print(self.colorize("Option " + scoped_key + " does not exist for output " + self.curroutput.OUTPUT_NAME,
+                                        'red'))
             elif scope == 'exploit':
                 if self.currexp is None:
-                    print(color('No exploit set; cannot set exploit options', 'red'))
+                    print(self.colorize('No exploit set; cannot set exploit options', 'red'))
                 elif scoped_key in self.currexp.options.get_option_names():
                     self.currexp.options[scoped_key] = val
                 else:
-                    print(color("Option " + scoped_key + " does not exist for exploit " + self.currexpname, 'red'))
+                    print(self.colorize("Option " + scoped_key + " does not exist for exploit " + self.currexpname,
+                                        'red'))
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
         if len(args) > 0:
             self.update_exploit(args.split()[0])
         else:
-            print(color("Usage: use [exploit_name]", 'red'))
+            print(self.colorize("Usage: use [exploit_name]", 'red'))
             return
 
     def do_show(self, args):
         """Lists all available exploits."""
-        print(color("\nAvailable exploits:", 'green'))
+        print(self.colorize("\nAvailable exploits:", 'green'))
         for key in sorted(self.availexps):
-            print(color("    " + key, 'green'))
+            print(self.colorize("    " + key, 'green'))
         print("")
 
     def update_exploit(self, expname):
         if expname not in self.availexps:
-            print((color("Exploit " + expname + " does not exist.", 'red')))
+            print((self.colorize("Exploit " + expname + " does not exist.", 'red')))
             return
 
-        self.prompt = self.prompt[:self.origpromptlen - 6] + " : " + expname + ") " + '\033[0m'
+        self.prompt = self.make_prompt(expname)
         self.currexpname = expname
 
         self.currexp = self.availexps[expname]
@@ -377,9 +372,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def do_run(self, args):
         """Runs exploit with given options."""
         if self.currexp is None:
-            print(color("No exploit set; nothing to do. See options.", 'red'))
+            print(self.colorize("No exploit set; nothing to do. See options.", 'red'))
         elif not self.currexp.NO_INPUT and self.currinput is None:  # only warn about lack of input if exploit cares
-            print(color("No input specified; nothing to do. See options.", 'red'))
+            print(self.colorize("No input specified; nothing to do. See options.", 'red'))
         else:
             if self.currexp.NO_INPUT:
                 self.currexp.run(self.curroutput)
