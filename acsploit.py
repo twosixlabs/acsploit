@@ -41,10 +41,11 @@ def set_option_complete(text, line, begidx, endidx, context):
 
     if len(split_line) == 2:
         option_key = split_line[1]
-        values = context.get_option_values(option_key)
-        if values is None:
-            return []
-        return [value for value in values if value.startswith(text)]
+        option = context.get_option(option_key)
+        if option is not None:
+            values = option.get_acceptable_values(option_key)
+            if values is not None:
+                return [value for value in values if value.startswith(text)]
 
     return []
 
@@ -139,6 +140,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         prompt = '(acsploit : %s) ' % location if location is not None else '(acsploit) '
         return self.colorize(prompt, 'blue')
 
+    # returns the names of all options within current exploit, input , and output options
     def get_option_names(self):
         # There are no options until the current exploit is set
         if self.currexp is None:
@@ -157,25 +159,24 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         return option_names
 
-    def get_option_values(self, key):
+    # returns the options object containing the given key
+    def get_options(self, key):
         if key in self.curroptions.get_option_names():
-            return self.curroptions.get_acceptable_values(key)
+            return self.curroptions
 
         try:
             scope, scoped_key = key.split('.')
         except ValueError:
             return None
 
-        if scope == 'input':
-            options = self.currinput.get_options()
-        elif scope == 'output':
-            options = self.curroutput.options
-        elif scope == 'exploit':
-            options = self.currexp.options
+        if scope == 'input' and scoped_key in self.currinput.get_options().get_option_names():
+            return self.currinput.get_options()
+        elif scope == 'output' and scoped_key in self.curroutput.options.get_option_names():
+            return self.curroutput.options
+        elif scope == 'exploit' and scoped_key in self.currexp.options.get_option_names():
+            return self.currexp.options
         else:
             return None
-
-        return options.get_acceptable_values(scoped_key) if scoped_key in options.get_option_names() else None
 
     def print_options(self, options, describe=False, indent_level=0):
         indent = '  ' * indent_level
@@ -223,7 +224,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self._should_quit = True
         return self._STOP_AND_EXIT
 
-    # TODO: Reorganize this function so it is simpler, less repetitive, and the error/success branches are clearer
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
         try:
@@ -232,68 +232,32 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             print("Usage: set [option_name] [value]")
             return
 
+        error_msg = self.colorize('No options set', 'cyan')
+
+        if key not in self.get_option_names():
+            print(self.colorize('Option {} does not exist'.format(key), 'red'))
+            print(error_msg)
+            return
+
+        options = self.get_options(key)  # This call should always succeed due to the check above
+        scoped_key = key.split('.')[1] if '.' in key else key
+        values = options.get_acceptable_values(scoped_key)
+        if values is not None and value not in values:
+            print(self.colorize('{} is not an acceptable option for {}'.format(value, key), 'red'))
+            print(error_msg)
+            return
+
         if key in self.defaulted_options:
             confirm_prompt = 'Changing this option may result in degraded exploit performance or failure.'
             confirmation = __builtins__.input(self.colorize(confirm_prompt + '\nDo you want to continue? [y|N] ',
                                                             'yellow'))
             if confirmation.lower() in ['yes', 'y']:
-                self.defaulted_options.remove(key)  # only warn on the first defaulted option
+                self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
             else:
+                print(error_msg)
                 return
 
-        if key == 'input' and 'input' in self.curroptions.get_option_names():
-            if value not in ACsploit.inputs:
-                print(self.colorize("Input " + value + " does not exist.", 'red'))
-                return
-            else:
-                self.currinput = ACsploit.inputs[value]()
-                self.curroptions['input'] = value
-
-        elif key == 'output':
-            if value not in ACsploit.outputs:
-                print(self.colorize("Output " + value + " does not exist.", 'red'))
-                return
-            else:
-                self.curroutput = ACsploit.outputs[value]()
-                self.curroptions['output'] = value
-
-        elif '.' in key:
-            scope, scoped_key = key.split('.', maxsplit=1)
-            if scope == 'input':
-                if self.currinput is None:
-                    print(self.colorize('No input set; cannot set input options', 'red'))
-                elif scoped_key in self.currinput.get_options().get_option_names():
-                    self.currinput.set_option(scoped_key, value)
-                else:
-                    print(self.colorize("Option " + scoped_key + " does not exist for input " + self.currinput.INPUT_NAME,
-                                        'red'))
-                    return
-            elif scope == 'output':
-                if self.curroutput is None:
-                    print(self.colorize('No output set; cannot set output options', 'red'))
-                elif scoped_key in self.curroutput.options.get_option_names():
-                    self.curroutput.options[scoped_key] = value
-                else:
-                    print(self.colorize("Option " + scoped_key + " does not exist for output " + self.curroutput.OUTPUT_NAME,
-                                        'red'))
-                    return
-            elif scope == 'exploit':
-                if self.currexp is None:
-                    print(self.colorize('No exploit set; cannot set exploit options', 'red'))
-                elif scoped_key in self.currexp.options.get_option_names():
-                    self.currexp.options[scoped_key] = value
-                else:
-                    print(self.colorize("Option " + scoped_key + " does not exist for exploit " + self.currexpname,
-                                        'red'))
-                    return
-            else:
-                print(self.colorize('Option %s does not exist' % key, 'red'))
-                return
-
-        else:
-            print(self.colorize('Option %s does not exist' % key, 'red'))
-            return
-
+        options[scoped_key] = value
         print(self.colorize('%s => %s' % (key, value), 'cyan'))
 
     def do_use(self, args):
