@@ -131,8 +131,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
 
         # disable help on builtins
-        self.exclude_from_help.append('do_shell')
-        self.exclude_from_help.append('do_load')
+        self.exclude_from_help.append('do_shell')  # TODO: this is still in the help menu
+        self.exclude_from_help.append('do_load')  # TODO: this is still in the help menu
         self.exclude_from_help.append('do_exit')  # TODO: come back to this?
 
     def make_prompt(self, location=None):
@@ -274,10 +274,19 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
         try:
-            key, value = args.split(' ', maxsplit=1)
+            key, value = args.split(maxsplit=1)
         except ValueError:
             print("Usage: set [option_name] [value]")
             return
+
+        if key in self.defaulted_options:
+            confirm_prompt = 'Changing this option may result in degraded exploit performance or failure.'
+            confirmation = __builtins__.input(self.colorize(confirm_prompt + '\nDo you want to continue? [y|N] ',
+                                                            'yellow'))
+            if confirmation.lower() in ['yes', 'y']:
+                self.defaulted_options.remove(key)  # only warn on the first defaulted option
+            else:
+                return
 
         if key == 'input' and 'input' in self.curroptions.get_option_names():
             if value not in ACsploit.inputs:
