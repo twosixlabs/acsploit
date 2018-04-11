@@ -177,52 +177,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         return options.get_acceptable_values(scoped_key) if scoped_key in options.get_option_names() else None
 
-    # # TODO: if someone could figure out a good way to combine the following two functions
-    # # TODO:  that's not unreadably abstract, that'd be cool
-    # def update_input(self, new_input):
-    #     if new_input is not None:
-    #         self.currinput = ACsploit.inputs[new_input]()
-    #         self.curroptions['input'] = new_input
-    #     else:
-    #         self.currinput = None
-    #         self.curroptions['input'] = 'none'
-    # 
-    # def update_output(self, new_output):
-    #       self.curroutput = ACsploit.outputs[new_output]()
-    #       self.curroptions['output'] = new_output
-
-    # def canonicalize_option_name(self, option_name):
-    #     canonicalized_name = None
-    #     if option_name in ['input', 'output']:
-    #         canonicalized_name = option_name
-    #     elif '.' in option_name:
-    #         if option_name.split('.')[0] in ['exploit', 'input', 'output']:
-    #             canonicalized_name = option_name
-    #         else:
-    #             print(self.colorize('Option %s does not exist' % option_name, 'red'))
-    #     elif self.currexp is not None and option_name in self.currexp.options.get_option_names():
-    #         canonicalized_name = 'exploit.%s' % option_name
-    #     elif self.currinput is not None and option_name in self.currinput.get_options().get_option_names():
-    #         canonicalized_name = 'input.%s' % option_name
-    #     elif self.curroutput is not None and option_name in self.curroutput.options.get_option_names():
-    #         canonicalized_name = 'output.%s' % option_name
-    #     else:
-    #         print(self.colorize('Option %s does not exist' % option_name, 'red'))
-    #
-    #     if canonicalized_name in self.defaulted_options:
-    #         if canonicalized_name == 'input' and self.currexp.NO_INPUT:
-    #             confirm_prompt = 'This exploit does not use an input generator and so this setting has no effect.'
-    #         else:
-    #             confirm_prompt = 'Changing this option may result in degraded exploit performance or failure.'
-    #         confirmation = __builtins__.input(self.colorize(confirm_prompt + '\nDo you want to continue? [Y|n] ',
-    #                                                         'yellow'))
-    #         if confirmation.lower() in ['yes', 'y']:
-    #             self.defaulted_options.remove(canonicalized_name)  # only warn on the first defaulted option
-    #         else:
-    #             canonicalized_name = None
-    #
-    #     return canonicalized_name
-
     def print_options(self, options, describe=False, indent_level=0):
         indent = '  ' * indent_level
         for option in options.get_option_names():
@@ -269,7 +223,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self._should_quit = True
         return self._STOP_AND_EXIT
 
-    # TODO: Re-include defaulted option warnings from canonicalize
     # TODO: Reorganize this function so it is simpler, less repetitive, and the error/success branches are clearer
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
@@ -425,8 +378,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         """Runs exploit with given options."""
         if self.currexp is None:
             print(self.colorize("No exploit set; nothing to do. See options.", 'red'))
-        elif not self.currexp.NO_INPUT and self.currinput is None:  # only warn about lack of input if exploit cares
-            print(self.colorize("No input specified; nothing to do. See options.", 'red'))
         else:
             if self.currexp.NO_INPUT:
                 self.currexp.run(self.curroutput)
