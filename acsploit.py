@@ -40,10 +40,11 @@ def set_option_complete(text, line, begidx, endidx, context):
         return [option for option in context.get_option_names() if option.startswith(text) or '.' + text in option]
 
     if len(split_line) == 2:
-        option_key = split_line[1]
-        option = context.get_option(option_key)
-        if option is not None:
-            values = option.get_acceptable_values(option_key)
+        key = split_line[1]
+        options = context.get_options(key)
+        if options is not None:
+            scoped_key = key.split('.')[1] if '.' in key else key
+            values = options.get_acceptable_values(scoped_key)
             if values is not None:
                 return [value for value in values if value.startswith(text)]
 
@@ -257,6 +258,11 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 print(error_msg)
                 return
 
+        if key == 'input':
+            self.currinput = ACsploit.inputs[value]()
+        elif key == 'output':
+            self.curroutput = ACsploit.outputs[value]()
+
         options[scoped_key] = value
         print(self.colorize('%s => %s' % (key, value), 'cyan'))
 
@@ -343,7 +349,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         if self.currexp is None:
             print(self.colorize("No exploit set; nothing to do. See options.", 'red'))
         else:
-            if self.currexp.NO_INPUT:
+            if self.currinput is None:
                 self.currexp.run(self.curroutput)
             else:
                 self.currexp.run(self.currinput, self.curroutput)
