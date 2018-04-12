@@ -4,31 +4,19 @@ import pytest
 
 def get_generator(min_value, max_value, restrictions):
     cg = CharGenerator()
-    cg.set_option('min_value', min_value)
-    cg.set_option('max_value', max_value)
-    cg.set_option('restrictions', restrictions)
+    cg.options['min_value'] = min_value
+    cg.options['max_value'] = max_value
+    cg.options['restrictions'] = restrictions
+    cg.prepare()
     return cg
 
 
 def get_whitelist_generator(whitelist):
     cg = CharGenerator()
-    cg.set_option('use_whitelist', True)
-    cg.set_option('whitelist', whitelist)
+    cg.options['use_whitelist'] = True
+    cg.options['whitelist'] = whitelist
+    cg.prepare()
     return cg
-
-
-def test_options():
-    cg = get_generator('a', 'c', 'b')
-    options = cg.get_options()
-    assert options['min_value'] == 'a'
-    assert options['max_value'] == 'c'
-    assert options['restrictions'] == 'b'
-    assert options['use_whitelist'] is False
-    assert options['whitelist'] == ''
-    cg.set_option('max_value', 'e')
-    assert options['max_value'] == 'e'
-    cg.set_option('use_whitelist', 'Y')
-    assert options['use_whitelist'] is True
 
 
 @pytest.mark.parametrize("min_value, max_value, restrictions, expected", [

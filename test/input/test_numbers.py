@@ -4,18 +4,10 @@ import pytest
 
 def get_generator(min_value, max_value):
     ig = IntGenerator()
-    ig.set_option('min_value', min_value)
-    ig.set_option('max_value', max_value)
+    ig.options['min_value'] = min_value
+    ig.options['max_value'] = max_value
+    ig.prepare()
     return ig
-
-
-def test_options():
-    ig = get_generator(1, 10)
-    options = ig.get_options()
-    assert options['min_value'] == 1
-    assert options['max_value'] == 10
-    ig.set_option('max_value', 5)
-    assert options['max_value'] == 5
 
 
 @pytest.mark.parametrize("min_value", [-1000, -200, -1, 0, 1, 3, 5, 50, 50000])

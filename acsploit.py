@@ -150,7 +150,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         option_names = self.curroptions.get_option_names()
 
         if self.currinput is not None:
-            option_names += ['input.' + option for option in self.currinput.get_options().get_option_names()]
+            option_names += ['input.' + option for option in self.currinput.options.get_option_names()]
 
         if self.curroutput is not None:
             option_names += ['output.' + option for option in self.curroutput.options.get_option_names()]
@@ -170,8 +170,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         except ValueError:
             return None
 
-        if scope == 'input' and scoped_key in self.currinput.get_options().get_option_names():
-            return self.currinput.get_options()
+        if scope == 'input' and scoped_key in self.currinput.options.get_option_names():
+            return self.currinput.options
         elif scope == 'output' and scoped_key in self.curroutput.options.get_option_names():
             return self.curroutput.options
         elif scope == 'exploit' and scoped_key in self.currexp.options.get_option_names():
@@ -215,7 +215,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.print_options(self.curroptions, describe, indent_level=1)
         if self.currinput is not None:
             print(self.colorize("\n  Input options", 'green'))
-            self.print_options(self.currinput.get_options(), describe, indent_level=2)
+            self.print_options(self.currinput.options, describe, indent_level=2)
         if self.curroutput is not None:
             print(self.colorize("\n  Output options", "green"))
             self.print_options(self.curroutput.options, describe, indent_level=2)
@@ -381,6 +381,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             if self.currinput is None:
                 self.currexp.run(self.curroutput)
             else:
+                # prepare is used to update internal state of input generators prior to running
+                if hasattr(self.currinput, 'prepare'):
+                    self.currinput.prepare()
                 self.currexp.run(self.currinput, self.curroutput)
 
 
