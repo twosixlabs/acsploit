@@ -114,6 +114,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.curroptions = Options()
         self.defaulted_options = []
 
+        self.script_mode = False
+
     def setup_cmd2(self, hist_file):
         # delete unused commands that are baked-into cmd2 and set some options
         del cmd2.Cmd.do_py
@@ -123,6 +125,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         del cmd2.Cmd.do_set
         del cmd2.Cmd.do_alias
         del cmd2.Cmd.do_unalias
+        del cmd2.Cmd.do_load
         cmd2.Cmd.abbrev = True
         self.allow_cli_args = False  # disable parsing of command-line args by cmd2
         self.shortcuts.update({"sh": "show"})  # don't want "sh" to trigger the hidden "shell" command
@@ -131,8 +134,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
 
         # disable help on builtins
-        self.exclude_from_help.append('do_shell')  # TODO: this is still in the help menu
-        self.exclude_from_help.append('do_load')  # TODO: this is still in the help menu
+        self.exclude_from_help.append('do_shell')  # TODO: this still gets tab-completed and is 'help'-able
         self.exclude_from_help.append('do_exit')  # TODO: come back to this?
 
     def make_prompt(self, location=None):
@@ -249,14 +251,19 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             return
 
         if key in self.defaulted_options:
-            confirm_prompt = 'Changing this option may result in degraded exploit performance or failure.'
-            confirmation = __builtins__.input(self.colorize(confirm_prompt + '\nDo you want to continue? [y|N] ',
-                                                            'yellow'))
-            if confirmation.lower() in ['yes', 'y']:
+            if self.script_mode:  # in script mode, warn and continue
+                print(self.colorize('The following change may result in degraded exploit performance or failure',
+                                    'yellow'))
                 self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
-            else:
-                print(error_msg)
-                return
+            else:  # in interactive mode, prompt for confirmation
+                confirm_prompt = 'Changing this option may result in degraded exploit performance or failure'
+                confirmation = __builtins__.input(self.colorize(confirm_prompt + '\nDo you want to continue? [y|N] ',
+                                                                'yellow'))
+                if confirmation.lower() in ['yes', 'y']:
+                    self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
+                else:
+                    print(error_msg)
+                    return
 
         if key == 'input':
             self.currinput = ACsploit.inputs[value]()
@@ -316,6 +323,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.currexp = ACsploit.availexps[expname]
         self.prompt = self.make_prompt(expname)
 
+        print(self.colorize('exploit => %s' % expname, 'cyan'))
+
         if hasattr(self.currexp, '_ACsploit_exploit_settings'):
             self.currinput = self.currexp._ACsploit_exploit_settings['input']
             self.curroutput = self.currexp._ACsploit_exploit_settings['output']
@@ -364,8 +373,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def do_run(self, args):
         """Runs exploit with given options."""
         if self.currexp is None:
-            print(self.colorize("No exploit set; nothing to do. See options.", 'red'))
+            print(self.colorize("No exploit set; nothing to do. Select an exploit with the 'use' command", 'red'))
         else:
+            print(self.colorize('Running %s' % self.currexpname, 'cyan'))
             if self.currinput is None:
                 self.currexp.run(self.curroutput)
             else:
@@ -381,9 +391,23 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='A tool for generating worst-case inputs for algorithms')
     parser.add_argument('--debug', action='store_true', help='show debug stack traces')
+    parser.add_argument('--load-file', metavar='FILE', default=None, help='load commands from file and then exit')
 
     args = parser.parse_args()
 
     cmdlineobj = ACsploit(hist_file=history_file)
     cmdlineobj.debug = args.debug
-    cmdlineobj.cmdloop()
+
+    if args.load_file is not None:
+        try:
+            with open(args.load_file) as script:
+                lines = [line.strip() for line in script]
+                # filter() after strip() so we don't have to deal with leading whitespace
+                lines = filter(lambda l: l[0] != '#', lines)  # ignore commented out lines
+                cmdlineobj.script_mode = True
+                cmdlineobj.runcmds_plus_hooks(lines)
+                # TODO: crash script on error?
+        except:
+            print(cmdlineobj.colorize('Could not open file %s' % args.load_file, 'red'))
+    else:
+        cmdlineobj.cmdloop()
