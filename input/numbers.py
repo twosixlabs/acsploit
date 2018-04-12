@@ -8,24 +8,17 @@ class IntGenerator(object):
     INPUT_NAME = "int"
 
     def __init__(self):
-        self._options = Options()
-        self._options.add_option('min_value', 0, 'Minimum integer allowed')
-        self._options.add_option('max_value', 255, 'Maximum integer allowed')
+        self.options = Options()
+        self.options.add_option('min_value', 0, 'Minimum integer allowed')
+        self.options.add_option('max_value', 255, 'Maximum integer allowed')
 
         self.min = 0
-        self.max = 0
-        self.update()
+        self.max = 255
 
-    def set_option(self, key, value):
-        self._options[key] = value
-        self.update()
-
-    def get_options(self):
-        return self._options
-
-    def update(self):
-        self.min = self._options['min_value']
-        self.max = self._options['max_value']
+    # sets max, min based on _options; called before generator is used with an exploit
+    def prepare(self):
+        self.min = self.options['min_value']
+        self.max = self.options['max_value']
 
     def get_less_than(self, value):
         # return closest int less than value
