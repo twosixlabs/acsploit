@@ -97,9 +97,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     outputs = get_outputs()
     availexps = get_exploits()
 
-    input_desc = 'Input generator to use with exploits'
-    output_desc = 'Output generator to use with exploits'
-
     def __init__(self, hist_file):
         self.setup_cmd2(hist_file)
 
@@ -308,6 +305,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             self.defaulted_options = self.currexp._ACsploit_exploit_settings['defaulted_options']
 
         else:
+            input_desc = 'Input generator to use with exploits'
+            output_desc = 'Output generator to use with exploits'
             self.defaulted_options = []
             self.curroptions = Options()
 
@@ -315,23 +314,23 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             if hasattr(self.currexp, 'NO_INPUT') and self.currexp.NO_INPUT:
                 self.currinput = None
             elif hasattr(self.currexp, 'DEFAULT_INPUT'):
-                self.curroptions.add_option('input', self.currexp.DEFAULT_INPUT, ACsploit.input_desc,
+                self.curroptions.add_option('input', self.currexp.DEFAULT_INPUT, input_desc,
                                             list(ACsploit.inputs.keys()))
                 self.defaulted_options.append('input')
                 self.currinput = ACsploit.inputs[self.currexp.DEFAULT_INPUT]()
             else:
                 # We set string as the default input, but do not warn if this option is changed
-                self.curroptions.add_option('input', 'string', ACsploit.input_desc, list(ACsploit.inputs.keys()))
+                self.curroptions.add_option('input', 'string', input_desc, list(ACsploit.inputs.keys()))
                 self.currinput = ACsploit.inputs['string']()
 
             if hasattr(self.currexp, 'DEFAULT_OUTPUT'):
-                self.curroptions.add_option('output', self.currexp.DEFAULT_OUTPUT, ACsploit.output_desc,
+                self.curroptions.add_option('output', self.currexp.DEFAULT_OUTPUT, output_desc,
                                             list(ACsploit.outputs.keys()))
                 self.defaulted_options.append('output')
                 self.curroutput = ACsploit.outputs[self.currexp.DEFAULT_OUTPUT]()
             else:
                 # We set stdout as the default output, but do not warn if this option is changed
-                self.curroptions.add_option('output', 'stdout', ACsploit.output_desc, list(ACsploit.outputs.keys()))
+                self.curroptions.add_option('output', 'stdout', output_desc, list(ACsploit.outputs.keys()))
                 self.curroutput = ACsploit.outputs['stdout']()
 
             # set defaults for input and output settings for new exploit, if any
