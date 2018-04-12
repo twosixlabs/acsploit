@@ -193,7 +193,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def do_info(self, args):
         """Displays the description of the set exploit."""
         if self.currexp is None:
-            print(self.colorize('No exploit set; nothing to describe. See options.', 'red'))
+            print(self.colorize('No exploit set; nothing to describe. Select an exploit with the \'use\' command',
+                                'cyan'))
         else:
             print(self.colorize('\n  ' + self.currexp.DESCRIPTION + '\n', 'green'))
 
@@ -205,7 +206,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             return
 
         if self.currexp is None:
-            print(self.colorize("No options available. Select an exploit with the 'use' command", "cyan"))
+            print(self.colorize("No exploit set; no options to show. Select an exploit with the 'use' command", "cyan"))
             return
 
         describe = args == 'describe'
@@ -235,11 +236,11 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             print("Usage: set [option_name] [value]")
             return
 
-        error_msg = self.colorize('No options set', 'cyan')
+        no_option_msg = self.colorize('No option set', 'cyan')
 
         if key not in self.get_option_names():
             print(self.colorize('Option {} does not exist'.format(key), 'red'))
-            print(error_msg)
+            print(no_option_msg)
             return
 
         options = self.get_options(key)  # This call should always succeed due to the check above
@@ -247,7 +248,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         values = options.get_acceptable_values(scoped_key)
         if values is not None and value not in values:
             print(self.colorize('{} is not an acceptable option for {}'.format(value, key), 'red'))
-            print(error_msg)
+            print(no_option_msg)
             return
 
         if key in self.defaulted_options:
@@ -262,7 +263,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 if confirmation.lower() in ['yes', 'y']:
                     self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
                 else:
-                    print(error_msg)
+                    print(no_option_msg)
                     return
 
         if key == 'input':
@@ -276,6 +277,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def do_reset(self, args):
         """Resets the current exploit to default options"""
         if self.currexp is None:
+            print(self.colorize('No exploit set; nothing to reset. Select an exploit with the \'use\' command', 'cyan'))
             return
 
         # delete the stored settings and reset the options in the current module
