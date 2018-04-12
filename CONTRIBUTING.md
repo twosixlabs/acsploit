@@ -1,20 +1,16 @@
 Contributing to ACsploit
 ------------------------
-
-# TODO: update the hell out of this for new spec once that all's nailed down
-
 We welcome community contributions to all aspects of ACsploit!
 
 ### General Code Style
 
-TODO; eg
-
-- use of exceptions for signalling errors in exploits, input generators, etc
-- identifiers
-- follow PEP 8
-- use of `_private` names for internal functions
-- `pytest` for tests
-- add things to `requirements.txt` if needed
+- Follow [PEP8](http://pep8.org)
+- Throw exceptions to indicate errors and failure conditions
+  - These will be caught by the ACsploit framework and any `string` message included in the error presented to the user
+- Use `_private` names for module-internal functions
+- Use [`pytest`](https://docs.pytest.org/en/latest/) for tests
+- If you add a module that requires additional dependencies, add them to `requirements.txt`
+- ACsploit aims for compatibility with Python 3.5 or greater; do not add features which rely on later Python versions without
 
 
 ### Contributing Exploits
@@ -32,8 +28,14 @@ Exploits must follow the rules below and implement the given API:
 - Your module must have a method `run(generator, output)`. This method will be called when your exploit is used.
   - `generator` is an input generator object (see below for the input generator API).
   - `output` is an output generator object (see below for the output generator API).
-  - You may want to whitelist/blacklist certain generators and output formats.
   - Your `run` method will typically end with `output.output(exploit_results)`, where `exploit_results` is a `list`.
+
+###### Optional Configuration:
+- If your exploit only works with a certain input generator you must include a module-level constant `DEFAULT_INPUT` which specifies the name of that generator.
+  - If specifying a `DEFAULT_INPUT`, you may also include a `dict` of `DEFAULT_INPUT_OPTIONS`. The keys of this `dict` must be options on the `DEFAULT_INPUT` input generator and values the values your exploit requires for those options.
+- You may include `DEFAULT_OUTPUT` and `DEFAULT_OUTPUT_OPTIONS` constants, which work analogously to `DEFAULT_INPUT` and `DEFAULT_INPUT_OPTIONS` for output formatters.
+- If your exploit does not use an input generator, you may add a module-level constant `NO_INPUT = True`.
+  - If you set `NO_INPUT = True` your exploit's  `run()` method must have the signature `run(output)`, where `output` is an output generator object.
 
 Beyond the above requirements, your exploit can be written however you'd like.
 
@@ -49,9 +51,17 @@ Input generators must follow the rules below and implement the given API:
 ##### API:
 - Your input generator class must have a class-level `OUTPUT_NAME`, a string identifying the input generator.
   - This string should be lower case and underscore-separated.
-- Your input generator class must have an `__init__(self)` method.
-- Your input generator class must have a `get_options(self)` method that returns the `Options` object used by the generator for configuration.
-- Your input generator class must have a `set_option(self, key, value)` method that sets the option `key` (a `string`) to `value` and updates the internal state of the generator as appropriate.
+- Your input generator class must have an `__init__(self)` method that creates and configures an `Options` object as the `options` member of instances of the class.
+  - eg:
+
+```
+	def __init__(self):
+   		self.options = Options()
+   		self.options.add_options(…)
+   		…
+```
+- Your input generator may have a `prepare()` method, which will be called by ACsploit before any exploit using your input generator runs but after all configuration of your input generator by the user.
+  - The `prepare()` method should be used to perform any internal synchronization or manipulations of state needed before generating values. (See `/inputs/strings.py` for an example of this.)
 - Your input generator class must have the following methods, each of which should return as indicated or raise a `NotImplementedError` if no meaningful value can be returned. (eg, the `regex` generator cannot meaningfully return anything for `get_max_value()`, as the 'maximum' value for a given regex is not a universally meaningful concept.)
   - `get_max_value(self)`/`get_min_value(self)`: return the greatest/smallest values that the generator could generate given its current option configuration.
   - `get_greater_than(self, value)`/`get_less_than(self, value)`: return a value greater or lesser than `value`, if these is one given the current option configuration. If no such value exists, these methods should raise a `ValueError`.
