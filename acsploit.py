@@ -128,7 +128,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         del cmd2.Cmd.do_load
         cmd2.Cmd.abbrev = True
         self.allow_cli_args = False  # disable parsing of command-line args by cmd2
-        self.shortcuts.update({"sh": "show"})  # don't want "sh" to trigger the hidden "shell" command
+        self.shortcuts.update({'sh': 'show'})  # don't want "sh" to trigger the hidden "shell" command
 
         # init cmd2 and the history file
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
@@ -206,7 +206,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             return
 
         if self.currexp is None:
-            print(self.colorize("No exploit set; no options to show. Select an exploit with the 'use' command", "cyan"))
+            print(self.colorize('No exploit set; no options to show. Select an exploit with the \'use\' command',
+                                'cyan'))
             return
 
         describe = args == 'describe'
@@ -214,13 +215,13 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         print()
         self.print_options(self.curroptions, describe, indent_level=1)
         if self.currinput is not None:
-            print(self.colorize("\n  Input options", 'green'))
+            print(self.colorize('\n  Input options', 'green'))
             self.print_options(self.currinput.options, describe, indent_level=2)
         if self.curroutput is not None:
-            print(self.colorize("\n  Output options", "green"))
+            print(self.colorize('\n  Output options', 'green'))
             self.print_options(self.curroutput.options, describe, indent_level=2)
         if self.currexp is not None:
-            print(self.colorize("\n  Exploit options", 'green'))
+            print(self.colorize('\n  Exploit options', 'green'))
             self.print_options(self.currexp.options, describe, indent_level=2)
         print()
 
@@ -233,7 +234,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         try:
             key, value = args.split(maxsplit=1)
         except ValueError:
-            print("Usage: set [option_name] [value]")
+            print('Usage: set [option_name] [value]')
             return
 
         no_option_msg = self.colorize('No option set', 'cyan')
@@ -294,20 +295,20 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         if len(args) > 0:
             self.update_exploit(args.split()[0])
         else:
-            print(self.colorize("Usage: use [exploit_name]", 'red'))
+            print(self.colorize('Usage: use [exploit_name]', 'red'))
             return
 
     def do_show(self, args):
         """Lists all available exploits."""
-        print(self.colorize("\nAvailable exploits:", 'green'))
+        print(self.colorize('\nAvailable exploits:', 'green'))
         for key in sorted(ACsploit.availexps):
-            print(self.colorize("    " + key, 'green'))
-        print("")
+            print(self.colorize('    ' + key, 'green'))
+        print('')
 
     # sets expname as the current exploit; restores saved settings or sets default values
     def update_exploit(self, expname):
         if expname not in ACsploit.availexps:
-            print((self.colorize("Exploit " + expname + " does not exist.", 'red')))
+            print((self.colorize('Exploit ' + expname + ' does not exist', 'red')))
             return
 
         # save current input/output and  to current exploit in private variables
@@ -375,7 +376,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def do_run(self, args):
         """Runs exploit with given options."""
         if self.currexp is None:
-            print(self.colorize("No exploit set; nothing to do. Select an exploit with the 'use' command", 'red'))
+            print(self.colorize('No exploit set; nothing to do. Select an exploit with the \'use\' command', 'cyan'))
         else:
             print(self.colorize('Running %s' % self.currexpname, 'cyan'))
             if self.currinput is None:
@@ -389,7 +390,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
 if __name__ == '__main__':
 
-    history_file = os.path.join(os.path.expanduser("~"), ".acsploit_history")
+    history_file = os.path.join(os.path.expanduser('~'), '.acsploit_history')
     if not os.path.isfile(history_file):
         with open(history_file, 'w') as f:
             f.write('_HiStOrY_V2_\n\n')
