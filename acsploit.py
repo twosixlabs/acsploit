@@ -201,7 +201,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             self.do_help('options')
             return
 
-        # TODO: Add branch here for info message that there are no options if no exploit is set
+        if self.currexp is None:
+            print(self.colorize("No options available. Select an exploit with the 'use' command", "cyan"))
+            return
 
         describe = args == 'describe'
 
