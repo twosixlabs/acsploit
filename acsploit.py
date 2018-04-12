@@ -12,6 +12,7 @@ import os
 import pkgutil
 import functools
 import argparse
+import importlib
 
 from options import Options
 
@@ -265,6 +266,20 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         options[scoped_key] = value
         print(self.colorize('%s => %s' % (key, value), 'cyan'))
 
+    def do_reset(self, args):
+        """Resets the current exploit to default options"""
+        if self.currexp is None:
+            return
+
+        # delete the stored settings and reset the options in the current module
+        if hasattr(self.currexp, '_ACsploit_exploit_settings'):
+            del self.currexp._ACsploit_exploit_settings
+
+        importlib.reload(self.currexp)  # we need to do this to reset currexp.options back to original values
+
+        self.currexp = None
+        self.update_exploit(self.currexpname)
+
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
         if len(args) > 0:
@@ -280,6 +295,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             print(self.colorize("    " + key, 'green'))
         print("")
 
+    # sets expname as the current exploit; restores saved settings or sets default values
     def update_exploit(self, expname):
         if expname not in ACsploit.availexps:
             print((self.colorize("Exploit " + expname + " does not exist.", 'red')))
