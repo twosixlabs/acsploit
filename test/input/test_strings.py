@@ -4,37 +4,23 @@ import pytest
 
 def get_generator(min_length, max_length, min_value, max_value, restrictions):
     sg = StringGenerator()
-    sg.set_option('min_length', min_length)
-    sg.set_option('max_length', max_length)
-    sg.set_option('min_value', min_value)
-    sg.set_option('max_value', max_value)
-    sg.set_option('restrictions', restrictions)
+    sg.options['min_length'] = min_length
+    sg.options['max_length'] = max_length
+    sg.options['min_value'] = min_value
+    sg.options['max_value'] = max_value
+    sg.options['restrictions'] = restrictions
+    sg.prepare()
     return sg
 
 
 def get_generator_whitelist(min_length, max_length, whitelist):
     sg = StringGenerator()
-    sg.set_option('min_length', min_length)
-    sg.set_option('max_length', max_length)
-    sg.set_option('use_whitelist', True)
-    sg.set_option('whitelist', whitelist)
+    sg.options['min_length'] = min_length
+    sg.options['max_length'] = max_length
+    sg.options['use_whitelist'] = True
+    sg.options['whitelist'] = whitelist
+    sg.prepare()
     return sg
-
-
-def test_options():
-    sg = get_generator(1, 5, 'a', 'c', 'b')
-    options = sg.get_options()
-    assert options['min_length'] == 1
-    assert options['max_length'] == 5
-    assert options['min_value'] == 'a'
-    assert options['max_value'] == 'c'
-    assert options['restrictions'] == 'b'
-    assert options['use_whitelist'] is False
-    assert options['whitelist'] == ''
-    sg.set_option('max_length', 10)
-    assert options['max_length'] == 10
-    sg.set_option('use_whitelist', 'Y')
-    assert options['use_whitelist'] is True
 
 
 @pytest.mark.parametrize("min_length, min_value, restrictions, expected", [
