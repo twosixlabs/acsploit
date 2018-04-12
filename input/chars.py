@@ -22,6 +22,7 @@ class CharGenerator(object):
 
     def prepare(self):
         self._char_set = [c for c in string.printable if self.is_valid(c)]
+        self._char_set.sort()
 
     def get_min_value(self):
         return self._char_set[0]  # options[min_value] could be in restrictions, so we don't just return that
