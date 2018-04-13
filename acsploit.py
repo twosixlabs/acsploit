@@ -408,9 +408,7 @@ if __name__ == '__main__':
     if args.load_file is not None:
         try:
             with open(args.load_file) as script:
-                lines = [line.strip() for line in script]
-                # filter() after strip() so we don't have to deal with leading whitespace
-                lines = filter(lambda l: l[0] != '#', lines)  # ignore commented out lines
+                lines = [line.strip().split('#', 1)[0] for line in script]  # `#` is a comment in scripts
                 cmdlineobj.script_mode = True
                 cmdlineobj.runcmds_plus_hooks(lines)
         except:

@@ -26,6 +26,13 @@ Finally, use `run` to generate output from the exploit.
 
 ACsploit supports abbreviated commands, bash commands using `!`, `CTRL+R` history search, and more.
 
+#### Command-line Options
+
+`--load-file SCRIPT` runs the commands in `SCRIPT` as if they had been entered in an interactive ACsploit session and then exits. `#` can be used for comments as in Python. 
+
+`--debug` enables debug mode, in which ACsploit prints stack-traces when errors occur.
+
+
 Warning 
 ------------------------
 Caution should be used in generating and accessing ACSploit exploits. Using unreasonable exploit parameters may cause denial of service on generation. Additionally, the canned exploits (e.g. compression bombs) may cause denial of service if accessed by relevant applications. 
