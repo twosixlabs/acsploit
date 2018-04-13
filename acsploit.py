@@ -191,7 +191,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             print(indent + line)
 
     def do_info(self, args):
-        """Displays the description of the set exploit."""
+        """Displays the description of the selected exploit."""
         if self.currexp is None:
             print(self.colorize('No exploit set; nothing to describe. Select an exploit with the \'use\' command',
                                 'cyan'))
@@ -199,7 +199,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             print(self.colorize('\n  ' + self.currexp.DESCRIPTION + '\n', 'green'))
 
     def do_options(self, args):
-        """Displays current options, more of which appear after 'input' and 'exploit' are set. Use 'options describe' to see descriptions of each."""
+        """Displays options for the selected exploit. Use 'options describe' to see descriptions"""
         if args not in ['', 'describe']:
             print(self.colorize('Unsupported argument to options', 'red'))
             self.do_help('options')
@@ -248,7 +248,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         scoped_key = key.split('.')[1] if '.' in key else key
         values = options.get_acceptable_values(scoped_key)
         if values is not None and value not in values:
-            print(self.colorize('{} is not an acceptable option for {}'.format(value, key), 'red'))
+            print(self.colorize('{} is not an acceptable value for {}'.format(value, key), 'red'))
             print(no_option_msg)
             return
 
@@ -374,11 +374,11 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                     self.defaulted_options.append('output.%s' % option)
 
     def do_run(self, args):
-        """Runs exploit with given options."""
+        """Runs the current exploit"""
         if self.currexp is None:
             print(self.colorize('No exploit set; nothing to do. Select an exploit with the \'use\' command', 'cyan'))
         else:
-            print(self.colorize('Running %s' % self.currexpname, 'cyan'))
+            print(self.colorize('Running %s…' % self.currexpname, 'cyan'))
             if self.currinput is None:
                 self.currexp.run(self.curroutput)
             else:
@@ -386,6 +386,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 if hasattr(self.currinput, 'prepare'):
                     self.currinput.prepare()
                 self.currexp.run(self.currinput, self.curroutput)
+            print(self.colorize('%s complete' % self.currexpname, 'cyan'))
 
 
 if __name__ == '__main__':
@@ -412,7 +413,6 @@ if __name__ == '__main__':
                 lines = filter(lambda l: l[0] != '#', lines)  # ignore commented out lines
                 cmdlineobj.script_mode = True
                 cmdlineobj.runcmds_plus_hooks(lines)
-                # TODO: crash script on error?
         except:
             print(cmdlineobj.colorize('Could not open file %s' % args.load_file, 'red'))
     else:
