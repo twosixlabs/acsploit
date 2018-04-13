@@ -26,7 +26,6 @@ class Stdout(object):
         line = separator.join([self.convert_item(item) for item in output_list])
         line += os.linesep
         sys.stdout.write(line)
-        #TODO - add print to let user know it finished
 
     def convert_item(self, item):
         # NB: this doesn't recurse onto lists
