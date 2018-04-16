@@ -40,16 +40,11 @@ class File:
 
     def write_sv_file(self, output_list, output_file, separator):
         # treat lists of lists as rows x cols
-        list_of_lists = True
-        for item in output_list:
-            if type(item) is not list:
-                list_of_lists = False
-                break
-
-        if list_of_lists:
+        if all(type(item) is list for item in output_list):
             # take each inner list, glue it together with the separator, then glue these together with os.linesep
-            output_file.write(os.linesep.join([separator.join([self.convert_item(subitem) for subitem in item])
-                                               for item in output_list]))
+            lines = [separator.join(self.convert_item(subitem) for subitem in item) for item in output_list]
+            output_file.write(os.linesep.join(lines))
+
         else:
             output_file.write(separator.join([self.convert_item(item) for item in output_list]))
 
