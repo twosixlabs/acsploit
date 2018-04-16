@@ -2,7 +2,7 @@ import os
 from options import Options
 
 
-class File(object):
+class File:
 
     OUTPUT_NAME = 'file'
 

@@ -3,7 +3,7 @@ import string
 from options import Options
 
 
-class CharGenerator(object):
+class CharGenerator:
 
     INPUT_NAME = "char"
 

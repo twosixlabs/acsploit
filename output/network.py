@@ -3,7 +3,7 @@ import socket
 from options import Options
 
 
-class Network(object):
+class Network:
 
     OUTPUT_NAME = 'network'  # exploits can use this internally to whitelist/blacklist supported output formats
 

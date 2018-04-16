@@ -1,11 +1,9 @@
 import random
-import exrex
-import re
 from .chars import CharGenerator
 from options import Options
 
 
-class StringGenerator(object):
+class StringGenerator:
 
     INPUT_NAME = "string"
 

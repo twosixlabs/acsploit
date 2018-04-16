@@ -3,7 +3,7 @@ import math
 from options import Options
 
 
-class IntGenerator(object):
+class IntGenerator:
 
     INPUT_NAME = "int"
 

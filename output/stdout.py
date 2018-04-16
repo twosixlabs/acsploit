@@ -3,7 +3,7 @@ import sys
 from options import Options
 
 
-class Stdout(object):
+class Stdout:
 
     OUTPUT_NAME = 'stdout'  # exploits can use this internally to whitelist/blacklist supported output formats
 

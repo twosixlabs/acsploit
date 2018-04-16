@@ -3,7 +3,7 @@ import re
 from options import Options
 
 
-class RegexMatchGenerator(object):
+class RegexMatchGenerator:
 
     INPUT_NAME = "regex"
 
