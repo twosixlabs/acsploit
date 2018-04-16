@@ -7,7 +7,6 @@ class CharGenerator:
 
     INPUT_NAME = "char"
 
-    # min cannot equal max
     def __init__(self):
         self.options = Options()
         self.options.add_option('min_value', 'a', 'Minimum ASCII character to use')
@@ -17,7 +16,7 @@ class CharGenerator:
         self.options.add_option('whitelist', '', 'String of characters to generate from if use_whitelist is True')
 
         # char_set will be a sorted valid set of characters given the constraints set in options
-        # char_set must be updated by calling prepare if options change
+        # char_set must be updated by calling prepare() if options change
         self._char_set = string.ascii_lowercase
 
     def prepare(self):

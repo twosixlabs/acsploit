@@ -139,7 +139,7 @@ class StringGenerator:
                 raise ValueError('Fewer than {} unique values'.format(num_values))
         return values
 
-    def is_valid(self, candidate):  # determine if candidate is valid
+    def is_valid(self, candidate):
         length_is_valid = self.options['min_length'] <= len(candidate) <= self.options['max_length']
         chars_are_valid = all(self.char_gen.is_valid(c) for c in candidate)
         return length_is_valid and chars_are_valid

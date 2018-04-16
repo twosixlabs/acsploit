@@ -21,8 +21,6 @@ class IntGenerator:
         self._max = self.options['max_value']
 
     def get_less_than(self, value):
-        # return closest int less than value
-        # this can be simplified if we know value is an int
         if value > self._max:
             return self._max
         if value <= self._min:
@@ -30,8 +28,6 @@ class IntGenerator:
         return int(math.ceil(value) - 1)
 
     def get_greater_than(self, value):
-        # return closest int greater than value
-        # this can be simplified if we know value is an int
         if value < self._min:
             return self._min
         if value >= self._max:
@@ -47,8 +43,8 @@ class IntGenerator:
     def get_random(self):
         return random.randint(self._min, self._max)
 
-    def is_valid(self, value):  # Checks if a candidate value is valid, can be made stronger in the future
-        return self._min <= value <= self._max and int(value) == value
+    def is_valid(self, value):
+        return self._min <= value <= self._max and type(value) is int
 
     def get_list_of_values(self, num_values):  # returns a list of valid numbers starting from min_value
         if self._min + num_values - 1 > self._max:
