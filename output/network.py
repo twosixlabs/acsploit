@@ -56,6 +56,6 @@ class Network:
             elif self.options['number_format'] == 'octal':
                 item = oct(item)
         if type(item) is not bytes:
-            item = str(item).encode(encoding='utf-8')  # TODO: this is a bit of a hack, to put it mildly
+            item = str(item).encode()  # TODO: this is a bit of a hack, to put it mildly
 
         return item
