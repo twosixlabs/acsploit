@@ -9,7 +9,7 @@ class RegexMatchGenerator:
 
     def __init__(self):
         self.options = Options()
-        self.options.add_option('regex', '.*', 'Regular expression to generate strings matching')
+        self.options.add_option('regex', '.*', 'Generated strings will match this regex')
 
     # returns a random string matching the regex
     def get_random(self):
