@@ -22,6 +22,7 @@ The following operations are supported:
 - `>>`: arithmetic right-shift
 - `&`: bit-wise AND
 - `|`: bit-wise OR
+- `^`: bit-wise XOR
 
 In the examples below the left expression is the hash function and the expression on the right is its expression for `custom_hash`.
 
@@ -32,6 +33,4 @@ In the examples below the left expression is the hash function and the expressio
 
 ### Limitations
 
-- Variables can only be used once per function
-  - eg, a function like `h(x, y) = 2x + xy` would have to be expressed as `* x + y 2`, not `+ * 2 x * x y` and a function like `h(x) = x^2` cannot not be expressed by `custom_hash`
 - Values are internally represented as signed `32`-bit integers and so cannot express values outside `[-2^31, 2^31)`
