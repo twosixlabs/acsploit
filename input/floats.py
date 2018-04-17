@@ -32,7 +32,7 @@ class FloatGenerator:
             return self._min
         if value >= self._max:
             raise ValueError('No valid values greater than {}'.format(value))
-        # return average of _min and value
+        # return average of _max and value
         return self._max / 2 + value / 2
 
     def get_max_value(self):
@@ -48,5 +48,5 @@ class FloatGenerator:
         return self._min <= value <= self._max and type(value) is float
 
     def get_list_of_values(self, num_values):
-        # not technically guaranteed to be unique, but collisions are highly unlikely b/c of the Birthday Paradox
+        # not technically guaranteed to be unique, but collisions are highly unlikely
         return [random.uniform(self._min, self._max) for _ in range(num_values)]
