@@ -1,4 +1,4 @@
-# Installing ACSploit
+# Installing ACsploit
 
 ## TL;DR
 
@@ -21,9 +21,9 @@ ACsploit requires Python 3.5 or above. To check the version of Python installed 
 
 If you do not have `python3` installed on your system see [here](https://www.python.org/downloads/) for information on how to install it.
 
-#### Downloading ACSploit
+#### Downloading ACsploit
 
-Run `git clone TKTK-URL-GOES-HERE-TKTK` to check out the newest version of ACSploit into the current folder, then `cd acsploit`.
+Run `git clone TKTK-URL-GOES-HERE-TKTK` to check out the newest version of ACsploit into the current folder, then `cd acsploit`.
 
 #### Creating and activating a `virtualenv`
 

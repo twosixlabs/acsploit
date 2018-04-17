@@ -35,7 +35,7 @@ ACsploit supports abbreviated commands, bash commands using `!`, `CTRL+R` histor
 
 Warning 
 ------------------------
-Caution should be used in generating and accessing ACSploit exploits. Using unreasonable exploit parameters may cause denial of service on generation. Additionally, the canned exploits (e.g. compression bombs) may cause denial of service if accessed by relevant applications. 
+Caution should be used in generating and accessing ACsploit exploits. Using unreasonable exploit parameters may cause denial of service on generation. Additionally, the canned exploits (e.g. compression bombs) may cause denial of service if accessed by relevant applications. 
 
 
 Contributing to ACsploit
