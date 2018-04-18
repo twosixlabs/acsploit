@@ -128,6 +128,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         del cmd2.Cmd.do_load
         cmd2.Cmd.abbrev = True
         self.allow_cli_args = False  # disable parsing of command-line args by cmd2
+        self.allow_redirection = False  # disable redirection to enable right shift (>>) in custom_hash to work
+        self.redirector = '\xff'  # disable redirection in the parser as well
         self.shortcuts.update({'sh': 'show'})  # don't want "sh" to trigger the hidden "shell" command
 
         # init cmd2 and the history file
