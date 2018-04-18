@@ -8,9 +8,9 @@ The `custom_hash` module allows you to define custom hash functions out of a col
 ### Syntax
 Functions are expressed in prefix notation, with each operator preceding the value or values it works on.
 
-Values can be constants (literal numbers like `7` or `65536` or `-22`) and variables (declared with names like `x` or `y` or `byte_0`). All values are assumed to be [two's complement integers](https://en.wikipedia.org/wiki/Two%27s_complement).
+Values can be constants (literal base-10 numbers like `7` or `65536` or `-22`) and variables (declared with names like `x` or `y` or `byte_0`). All values are assumed to be [two's complement integers](https://en.wikipedia.org/wiki/Two%27s_complement).
 
-If the target hash works on multiple bytes of input each byte should be represented by a separate variable.
+Any number of variables may be used and variables may be used any number of times in the function.
 
 The following operations are supported:
 
@@ -29,8 +29,12 @@ In the examples below the left expression is the hash function and the expressio
 	x + 2 => + 2 x
 	(x + 7) * y => * y + x 7
 	(x + 7) * y => * + x 7 y
+	x^2 + y << z => + * x x << y z
 	
 
-### Limitations
+### Bit-width
 
-- Values are internally represented as signed `32`-bit integers and so cannot express values outside `[-2^31, 2^31)`
+- Values are internally represented as signed integers `variable_width` bits wide and so cannot express values outside of that range.
+- Computations are performed at 32-bits wide if `variable_width` is <= 32 (the default) and at 64-bits wide if `variable_width` is not.
+    - The `target_value` must fit within the computation width but can be wider than the `variable_width`.
+    - eg, 500 cannot be expressed as an 8-bit signed integer, but `target_value` can 500 when `variable_width` is 8, because the computation will be performed at 32-bit precision, which is more than wide enough for 500.
