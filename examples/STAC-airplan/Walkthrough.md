@@ -1,4 +1,4 @@
-# Bombing AirPlan
+# AirPlan Billion Laughs Exploit
 
 ## Using ACsploit to identify and exploit vulnerabilities
 
