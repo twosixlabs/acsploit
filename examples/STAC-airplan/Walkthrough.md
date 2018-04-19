@@ -1,12 +1,12 @@
-# Bombing TextCrunchr1
+# Bombing AirPlan
 
 ## Using ACsploit to identify and exploit vulnerabilities
 
 `AirPlan` is a set of programs from Engagement 2 of the DARPA STAC program. (The STAC program, which birthed ACsploit, presents its performers with a series of Java programs containing algorithmic complexity vulnerabilities and challenge questions that specify the conditions under which the vulnerabilities must be exploited.) In this example we use ACsploit to identify and exploit a vulnerability.
 
-The `airplan_1.tar` and `airplan_5.tar` archives in this directory contains a description of the challenge program (`description.txt`), the challenge program itself(`challenge_program/bin/airplan_1`) as well as some example scripts to help a user interact with the vulnerable program (`examples/`). You can use these to follow along with this walkthrough at home.
+The `airplan_1.tar` and `airplan_5.tar` archives in this directory each contain a description of the challenge program (`description.txt`), the challenge program itself (`challenge_program/bin/airplan_[1, 5]`), and example scripts to help a user interact with the vulnerable program (`examples/`). You can use these to follow along with this walkthrough at home.
 
-The challenge question (the same question for `Question_051.txt`, `Question_052.txt`) that we are trying to answer is reproduced below:
+The challenge questions (`Question_051.txt` and `Question_052.txt` are identical) that we are trying to answer are reproduced below in unified form:
 
 ```
 Challenge Program:
@@ -36,7 +36,7 @@ Resource Usage Limit:
         under the RSS column in pmap -x <PID>)
 ```
 
-From this that we are looking for a runtime algorithmic complexity vulnerability in space in the challenge program. 
+From this we see that we are looking for a runtime algorithmic complexity vulnerability in space in the challenge program. 
 
 We note from `examples/Route_Map_Formats.txt` that a user can upload files in plaintext, XML, and JSON formats.
 
@@ -71,11 +71,13 @@ curl -s -L -b cookies.txt --insecure https://localhost:8443/passenger_capacity_m
 ```
 
 We start the AirPlan server by running `start_server.sh` in the `challenge_program` directory, then we launch our XML bomb by running our modified `example_xmlmap.sh`.
-When we run this modified example script, we see an error because we have not uploaded a valid route map to the AirPlan server. But did our attack impact the server's memory usage? Checking `htop`, we see that the Java process for `AirPlan_1` is below 100 MB of memory usage, so it seems AirPlan_1 may not be vulnerable to XML bombs.
 
-Similar programs might still be vulnerable to XML bombs. Let's try the same attack against AirPlan_5. Copy `example_xmlmap.sh` and `bomb.xml` into the airplan_5 `examples/` directory. Kill the airplan_1 server, run the airplan_5 `start_server.sh` script, and laaunch our attack with `example_xmlmap.sh`. 
-This time, we get the same invalid route map error, but `htop`shows the JVM memory usage far exceeding our target value of 1024 MB.
+We see an error claiming that we have not uploaded a valid route map to the AirPlan server. But did our attack impact the server's memory usage? Checking `htop`, we see that the Java process for `AirPlan_1` is below 100 MB of memory usage, so it seems AirPlan_1 may not be vulnerable to XML bombs.
 
-Note that the memory_impact refers to the approximate size of the expanded XML file, not the actual memory usage of a vulnerable XML parser. We can expect the memory usage to be at least as large as memory impact, but, as is the case here, it may be much larger.
+Similar programs, though, might be vulnerable to XML bombs. Let's try the same attack against `AirPlan_5`. We copy `example_xmlmap.sh` and `bomb.xml` into the airplan_5 `examples/` directory. We kill the airplan_1 server, run the airplan_5 `start_server.sh` script, and laaunch our attack again with `example_xmlmap.sh`. 
+
+This time, we get the same invalid route map error, but `htop` shows the JVM's memory usage far exceeding our target value of 1024 MB.
+
+Note that the `memory_impact` value set in ACsploit refers to the approximate size of the expanded XML file, not the actual memory usage of a vulnerable XML parser. We can expect the memory usage to be at least as large as memory impact, but, as is the case here, it may be much larger.
  
 <img src="images/STAC-airplan/htop.png" class="center"  width="600">
