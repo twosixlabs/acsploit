@@ -48,11 +48,11 @@ Let's start by firing up ACsploit and examining the potential exploits with `sho
 
 We will try the `bombs/xml/billion_laughs` exploit to generate an XML bomb.
 
-From the exploit option descriptions we see that ACsploit can generate XML bombs with varying memory impact. We are targeting 1024 MB of total memory usage.
+From the exploit option descriptions we see that ACsploit can generate XML bombs with varying memory impact.
 
 <img src="images/STAC-airplan/acsploitdescribeoptions.png" class="center"  width="700">
 
-Let's round up the memory_impact to 1100, name the file `bomb.xml`, and run the exploit.
+We are targeting 1024 MB of total memory usage, so let's round the `memory_impact` up to 1100, name the file `bomb.xml`, and run the exploit.
 
 <img src="images/STAC-airplan/acsploitrun.png" class="center" width="500">
 
@@ -74,12 +74,12 @@ curl -s -L -b cookies.txt --insecure https://localhost:8443/passenger_capacity_m
 
 We start the AirPlan server by running `start_server.sh` in the `challenge_program` directory, then we launch our XML bomb by running our modified `example_xmlmap.sh`.
 
-We get an error message: "The parser has encountered more than "64000" entity expansions in this document; this is the limit imposed by the JDK", so it seems AirPlan_1 may not be vulnerable to XML bombs. Checking `htop` confirms the Java process for `AirPlan_1` is below 100 MB of memory usage.
+We get an error message: "The parser has encountered more than "64000" entity expansions in this document; this is the limit imposed by the JDK", so it seems AirPlan_1 may not be vulnerable to XML bombs. Checking `htop` confirms that the Java process for `AirPlan_1` is below 100 MB of memory usage is thus unaffected.
 
-Similar programs, though, might be vulnerable to XML bombs. Let's try the same attack against `AirPlan_5`. We copy `example_xmlmap.sh` and `bomb.xml` into the airplan_5 `examples/` directory. We kill the airplan_1 server, run the airplan_5 `start_server.sh` script, and laaunch our attack again with `example_xmlmap.sh`. 
+Similar programs, though, might still be vulnerable to XML bombs. Let's try the same attack against `AirPlan_5`. We copy `example_xmlmap.sh` and `bomb.xml` into the airplan_5 `examples/` directory. We kill the airplan_1 server, run the airplan_5 `start_server.sh` script, and laaunch our attack again with `example_xmlmap.sh`. 
 
-This time, we do not get a response right away and CPU usage spikes to 100%. After several minutes, `htop` shows the JVM's memory usage exceeding our target value of 1024 MB.
+This time, we do not get a response right away and CPU usage spikes to 100% as the server processes our message. After several minutes, `htop` shows the JVM's memory usage exceeding our target value of 1024 MB.
 
-Note that the `memory_impact` value set in ACsploit refers to the approximate size of the expanded XML file, not the actual memory usage of a vulnerable XML parser. We can expect the memory usage to eventually be at least as large as memory impact, but it may take a long time to reach that point.
+(Note that the `memory_impact` value set in ACsploit refers to the estimated size of the expanded XML file, not the actual memory usage of any given vulnerable XML parser. We can expect the memory usage to eventually be at least as large as `memory_impact`, but it may take a long time to reach that point.)
  
 <img src="images/STAC-airplan/htop.png" class="center"  width="600">
