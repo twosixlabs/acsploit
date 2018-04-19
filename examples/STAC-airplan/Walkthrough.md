@@ -2,6 +2,8 @@
 
 ## Using ACsploit to identify and exploit vulnerabilities
 
+NOTE: This example requires Java 7 and is not compatible with newer Java versions.
+
 `AirPlan` is a set of programs from Engagement 2 of the DARPA STAC program. (The STAC program, which birthed ACsploit, presents its performers with a series of Java programs containing algorithmic complexity vulnerabilities and challenge questions that specify the conditions under which the vulnerabilities must be exploited.) In this example we use ACsploit to identify and exploit a vulnerability.
 
 The `airplan_1.tar` and `airplan_5.tar` archives in this directory each contain a description of the challenge program (`description.txt`), the challenge program itself (`challenge_program/bin/airplan_[1, 5]`), and example scripts to help a user interact with the vulnerable program (`examples/`). You can use these to follow along with this walkthrough at home.
@@ -72,12 +74,12 @@ curl -s -L -b cookies.txt --insecure https://localhost:8443/passenger_capacity_m
 
 We start the AirPlan server by running `start_server.sh` in the `challenge_program` directory, then we launch our XML bomb by running our modified `example_xmlmap.sh`.
 
-We see an error claiming that we have not uploaded a valid route map to the AirPlan server. But did our attack impact the server's memory usage? Checking `htop`, we see that the Java process for `AirPlan_1` is below 100 MB of memory usage, so it seems AirPlan_1 may not be vulnerable to XML bombs.
+We get an error message: "The parser has encountered more than "64000" entity expansions in this document; this is the limit imposed by the JDK", so it seems AirPlan_1 may not be vulnerable to XML bombs. Checking `htop` confirms the Java process for `AirPlan_1` is below 100 MB of memory usage.
 
 Similar programs, though, might be vulnerable to XML bombs. Let's try the same attack against `AirPlan_5`. We copy `example_xmlmap.sh` and `bomb.xml` into the airplan_5 `examples/` directory. We kill the airplan_1 server, run the airplan_5 `start_server.sh` script, and laaunch our attack again with `example_xmlmap.sh`. 
 
-This time, we get the same invalid route map error, but `htop` shows the JVM's memory usage far exceeding our target value of 1024 MB.
+This time, we do not get a response right away and CPU usage spikes to 100%. After several minutes, `htop` shows the JVM's memory usage exceeding our target value of 1024 MB.
 
-Note that the `memory_impact` value set in ACsploit refers to the approximate size of the expanded XML file, not the actual memory usage of a vulnerable XML parser. We can expect the memory usage to be at least as large as memory impact, but, as is the case here, it may be much larger.
+Note that the `memory_impact` value set in ACsploit refers to the approximate size of the expanded XML file, not the actual memory usage of a vulnerable XML parser. We can expect the memory usage to eventually be at least as large as memory impact, but it may take a long time to reach that point.
  
 <img src="images/STAC-airplan/htop.png" class="center"  width="600">
