@@ -74,7 +74,7 @@ curl -s -L -b cookies.txt --insecure https://localhost:8443/passenger_capacity_m
 
 We start the AirPlan server by running `start_server.sh` in the `challenge_program` directory, then we launch our XML bomb by running our modified `example_xmlmap.sh`.
 
-We get an error message: "The parser has encountered more than "64000" entity expansions in this document; this is the limit imposed by the JDK", so it seems AirPlan_1 may not be vulnerable to XML bombs. Checking `htop` confirms that the Java process for `AirPlan_1` is below 100 MB of memory usage, thus not vulnerable.
+We get an error message: "The parser has encountered more than "64000" entity expansions in this document; this is the limit imposed by the JDK", so it seems AirPlan_1 may not be vulnerable to XML bombs. Checking `htop` confirms that the Java process for `AirPlan_1` is below 100 MB of memory usage and thus not vulnerable.
 
 Similar programs, though, might still be vulnerable to XML bombs. Let's try the same attack against `AirPlan_5`. We copy `example_xmlmap.sh` and `bomb.xml` into the airplan_5 `examples/` directory. We kill the airplan_1 server, run the airplan_5 `start_server.sh` script, and launch our attack again with `example_xmlmap.sh`. 
 
