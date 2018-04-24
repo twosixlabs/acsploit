@@ -33,25 +33,6 @@ def exploit_path_complete(text, line, begidx, endidx, match_against):
     return sorted(result_set)
 
 
-def set_option_complete(text, line, begidx, endidx, context):
-    # text = line[begidx:endidx] is the word we want to complete
-    # split the completed words, should either be ['set'], or ['set', <option_key>]
-    split_line = line[:begidx].split()
-    if len(split_line) == 1:
-        return [option for option in context.get_option_names() if option.startswith(text) or '.' + text in option]
-
-    if len(split_line) == 2:
-        key = split_line[1]
-        options = context.get_options(key)
-        if options is not None:
-            scoped_key = key.split('.')[1] if '.' in key else key
-            values = options.get_acceptable_values(scoped_key)
-            if values is not None:
-                return [value for value in values if value.startswith(text)]
-
-    return []
-
-
 def get_exploits():
     results = {}
     for loader, name, ispkg in pkgutil.walk_packages(exploits.__path__):
@@ -101,9 +82,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def __init__(self, hist_file):
         self.setup_cmd2(hist_file)
 
-        # Register tab-completion functions
+        # Register tab-completion function
         self.complete_use = functools.partial(exploit_path_complete, match_against=ACsploit.availexps)
-        self.complete_set = functools.partial(set_option_complete, context=self)
 
         self.prompt = self.make_prompt()
 
@@ -142,6 +122,24 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def make_prompt(self, location=None):
         prompt = '(acsploit : %s) ' % location if location is not None else '(acsploit) '
         return self.colorize(prompt, 'blue')
+
+    def complete_set(self, text, line, begidx, endidx):
+        # text = line[begidx:endidx] is the word we want to complete
+        # split the completed words, should either be ['set'], or ['set', <option_key>]
+        split_line = line[:begidx].split()
+        if len(split_line) == 1:
+            return [option for option in self.get_option_names() if option.startswith(text) or '.' + text in option]
+
+        if len(split_line) == 2:
+            key = split_line[1]
+            options = self.get_options(key)
+            if options is not None:
+                scoped_key = key.split('.')[1] if '.' in key else key
+                values = options.get_acceptable_values(scoped_key)
+                if values is not None:
+                    return [value for value in values if value.startswith(text)]
+
+        return []
 
     # returns the names of all options within current exploit, input , and output options
     def get_option_names(self):
