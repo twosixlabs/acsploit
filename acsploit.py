@@ -66,7 +66,7 @@ def get_exploits():
 
 def get_inputs():
     inputs = {}
-    for obj in list(vars(input).values()):
+    for obj in vars(input).values():
         if hasattr(obj, 'INPUT_NAME'):
             inputs[obj.INPUT_NAME] = obj
 
@@ -75,7 +75,7 @@ def get_inputs():
 
 def get_outputs():
     outputs = {}
-    for obj in list(vars(output).values()):
+    for obj in vars(output).values():
         if hasattr(obj, 'OUTPUT_NAME'):
             outputs[obj.OUTPUT_NAME] = obj
 
