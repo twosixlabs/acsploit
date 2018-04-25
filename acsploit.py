@@ -307,7 +307,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         eprint(self.colorize('\nAvailable exploits:', 'green'))
         for key in sorted(ACsploit.exploits):
             eprint(self.colorize('    ' + key, 'green'))
-        eprint('')
+        eprint()
 
     # sets exploit_name as the current exploit; restores saved settings or sets default values
     def update_exploit(self, exploit_name):
