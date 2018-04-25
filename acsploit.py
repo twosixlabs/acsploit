@@ -17,6 +17,10 @@ import importlib
 from options import Options
 
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+
 def exploit_path_complete(text, line, begidx, endidx, match_against):
     split_line = line.split(maxsplit=1)
     full_text = split_line[1] if len(split_line) == 2 else ''
@@ -188,42 +192,42 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 values = options.get_acceptable_values(option)
                 if values is not None:
                     line += ' (Acceptable Values: ' + str(values) + ')'
-            print(indent + line)
+            eprint(indent + line)
 
     def do_info(self, args):
         """Displays the description of the selected exploit."""
         if self.exploit is None:
-            print(self.colorize('No exploit set; nothing to describe. Select an exploit with the \'use\' command',
+            eprint(self.colorize('No exploit set; nothing to describe. Select an exploit with the \'use\' command',
                                 'cyan'))
         else:
-            print(self.colorize('\n  ' + self.exploit.DESCRIPTION + '\n', 'green'))
+            eprint(self.colorize('\n  ' + self.exploit.DESCRIPTION + '\n', 'green'))
 
     def do_options(self, args):
         """Displays options for the selected exploit. Use 'options describe' to see descriptions"""
         if args not in ['', 'describe']:
-            print(self.colorize('Unsupported argument to options', 'red'))
+            eprint(self.colorize('Unsupported argument to options', 'red'))
             self.do_help('options')
             return
 
         if self.exploit is None:
-            print(self.colorize('No exploit set; no options to show. Select an exploit with the \'use\' command',
+            eprint(self.colorize('No exploit set; no options to show. Select an exploit with the \'use\' command',
                                 'cyan'))
             return
 
         describe = args == 'describe'
 
-        print()
+        eprint()
         self.print_options(self.options, describe, indent_level=1)
         if self.input is not None:
-            print(self.colorize('\n  Input options', 'green'))
+            eprint(self.colorize('\n  Input options', 'green'))
             self.print_options(self.input.options, describe, indent_level=2)
         if self.output is not None:
-            print(self.colorize('\n  Output options', 'green'))
+            eprint(self.colorize('\n  Output options', 'green'))
             self.print_options(self.output.options, describe, indent_level=2)
         if self.exploit is not None:
-            print(self.colorize('\n  Exploit options', 'green'))
+            eprint(self.colorize('\n  Exploit options', 'green'))
             self.print_options(self.exploit.options, describe, indent_level=2)
-        print()
+        eprint()
 
     def do_exit(self, args):
         self._should_quit = True
@@ -234,27 +238,27 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         try:
             key, value = args.split(maxsplit=1)
         except ValueError:
-            print('Usage: set [option_name] [value]')
+            eprint('Usage: set [option_name] [value]')
             return
 
         no_option_msg = self.colorize('No option set', 'cyan')
 
         if key not in self.get_option_names():
-            print(self.colorize('Option {} does not exist'.format(key), 'red'))
-            print(no_option_msg)
+            eprint(self.colorize('Option {} does not exist'.format(key), 'red'))
+            eprint(no_option_msg)
             return
 
         options = self.get_options(key)  # This call should always succeed due to the check above
         scoped_key = key.split('.')[1] if '.' in key else key
         values = options.get_acceptable_values(scoped_key)
         if values is not None and value not in values:
-            print(self.colorize('{} is not an acceptable value for {}'.format(value, key), 'red'))
-            print(no_option_msg)
+            eprint(self.colorize('{} is not an acceptable value for {}'.format(value, key), 'red'))
+            eprint(no_option_msg)
             return
 
         if key in self.defaulted_options:
             if self.script_mode:  # in script mode, warn and continue
-                print(self.colorize('The following change may result in degraded exploit performance or failure',
+                eprint(self.colorize('The following change may result in degraded exploit performance or failure',
                                     'yellow'))
                 self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
             else:  # in interactive mode, prompt for confirmation
@@ -264,7 +268,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 if confirmation.lower() in ['yes', 'y']:
                     self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
                 else:
-                    print(no_option_msg)
+                    eprint(no_option_msg)
                     return
 
         if key == 'input':
@@ -273,12 +277,12 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             self.output = ACsploit.outputs[value]()
 
         options[scoped_key] = value
-        print(self.colorize('%s => %s' % (key, value), 'cyan'))
+        eprint(self.colorize('%s => %s' % (key, value), 'cyan'))
 
     def do_reset(self, args):
         """Resets the current exploit to default options"""
         if self.exploit is None:
-            print(self.colorize('No exploit set; nothing to reset. Select an exploit with the \'use\' command', 'cyan'))
+            eprint(self.colorize('No exploit set; nothing to reset. Select an exploit with the \'use\' command', 'cyan'))
             return
 
         # delete the stored settings and reset the options in the current module
@@ -295,20 +299,20 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         if len(args) > 0:
             self.update_exploit(args.split()[0])
         else:
-            print(self.colorize('Usage: use [exploit_name]', 'red'))
+            eprint(self.colorize('Usage: use [exploit_name]', 'red'))
             return
 
     def do_show(self, args):
         """Lists all available exploits."""
-        print(self.colorize('\nAvailable exploits:', 'green'))
+        eprint(self.colorize('\nAvailable exploits:', 'green'))
         for key in sorted(ACsploit.exploits):
-            print(self.colorize('    ' + key, 'green'))
-        print('')
+            eprint(self.colorize('    ' + key, 'green'))
+        eprint('')
 
     # sets exploit_name as the current exploit; restores saved settings or sets default values
     def update_exploit(self, exploit_name):
         if exploit_name not in ACsploit.exploits:
-            print((self.colorize('Exploit ' + exploit_name + ' does not exist', 'red')))
+            eprint((self.colorize('Exploit ' + exploit_name + ' does not exist', 'red')))
             return
 
         # save current input/output and  to current exploit in private variables
@@ -326,7 +330,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.exploit = ACsploit.exploits[exploit_name]
         self.prompt = self.make_prompt(exploit_name)
 
-        print(self.colorize('exploit => %s' % exploit_name, 'cyan'))
+        eprint(self.colorize('exploit => %s' % exploit_name, 'cyan'))
 
         if hasattr(self.exploit, '_ACsploit_exploit_settings'):
             self.input = self.exploit._ACsploit_exploit_settings['input']
@@ -376,9 +380,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def do_run(self, args):
         """Runs the current exploit"""
         if self.exploit is None:
-            print(self.colorize('No exploit set; nothing to do. Select an exploit with the \'use\' command', 'cyan'))
+            eprint(self.colorize('No exploit set; nothing to do. Select an exploit with the \'use\' command', 'cyan'))
         else:
-            print(self.colorize('Running %s…' % self.exploit_name, 'cyan'))
+            eprint(self.colorize('Running %s…' % self.exploit_name, 'cyan'))
             if self.input is None:
                 self.exploit.run(self.output)
             else:
@@ -386,7 +390,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 if hasattr(self.input, 'prepare'):
                     self.input.prepare()
                 self.exploit.run(self.input, self.output)
-            print(self.colorize('%s complete' % self.exploit_name, 'cyan'))
+            eprint(self.colorize('%s complete' % self.exploit_name, 'cyan'))
 
 
 if __name__ == '__main__':
@@ -412,6 +416,6 @@ if __name__ == '__main__':
                 cmdlineobj.script_mode = True
                 cmdlineobj.runcmds_plus_hooks(lines)
         except OSError:
-            print(cmdlineobj.colorize('Could not open file %s' % args.load_file, 'red'))
+            eprint(cmdlineobj.colorize('Could not open file %s' % args.load_file, 'red'))
     else:
         cmdlineobj.cmdloop()
