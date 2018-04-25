@@ -390,7 +390,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 if hasattr(self.input, 'prepare'):
                     self.input.prepare()
                 self.exploit.run(self.input, self.output)
-            eprint(self.colorize('%s complete' % self.exploit_name, 'cyan'))
+            eprint(self.colorize('Finished running %s' % self.exploit_name, 'cyan'))
 
 
 if __name__ == '__main__':
