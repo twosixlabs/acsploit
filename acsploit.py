@@ -77,21 +77,21 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     # find all inputs, outputs, exploits
     inputs = get_inputs()
     outputs = get_outputs()
-    availexps = get_exploits()
+    exploits = get_exploits()
 
     def __init__(self, hist_file):
         self.setup_cmd2(hist_file)
 
         # Register tab-completion function
-        self.complete_use = functools.partial(exploit_path_complete, match_against=ACsploit.availexps)
+        self.complete_use = functools.partial(exploit_path_complete, match_against=ACsploit.exploits)
 
         self.prompt = self.make_prompt()
 
-        self.currexp = None
-        self.currexpname = ''
-        self.currinput = None
-        self.curroutput = None
-        self.curroptions = Options()
+        self.exploit = None
+        self.exploit_name = ''
+        self.input = None
+        self.output = None
+        self.options = Options()
         self.defaulted_options = []
 
         self.script_mode = False
@@ -144,38 +144,38 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     # returns the names of all options within current exploit, input , and output options
     def get_option_names(self):
         # There are no options until the current exploit is set
-        if self.currexp is None:
+        if self.exploit is None:
             return []
 
-        option_names = self.curroptions.get_option_names()
+        option_names = self.options.get_option_names()
 
-        if self.currinput is not None:
-            option_names += ['input.' + option for option in self.currinput.options.get_option_names()]
+        if self.input is not None:
+            option_names += ['input.' + option for option in self.input.options.get_option_names()]
 
-        if self.curroutput is not None:
-            option_names += ['output.' + option for option in self.curroutput.options.get_option_names()]
+        if self.output is not None:
+            option_names += ['output.' + option for option in self.output.options.get_option_names()]
 
-        if self.currexp is not None:
-            option_names += ['exploit.' + option for option in self.currexp.options.get_option_names()]
+        if self.exploit is not None:
+            option_names += ['exploit.' + option for option in self.exploit.options.get_option_names()]
 
         return option_names
 
     # returns the options object containing the given key
     def get_options(self, key):
-        if key in self.curroptions.get_option_names():
-            return self.curroptions
+        if key in self.options.get_option_names():
+            return self.options
 
         try:
             scope, scoped_key = key.split('.')
         except ValueError:
             return None
 
-        if scope == 'input' and scoped_key in self.currinput.options.get_option_names():
-            return self.currinput.options
-        elif scope == 'output' and scoped_key in self.curroutput.options.get_option_names():
-            return self.curroutput.options
-        elif scope == 'exploit' and scoped_key in self.currexp.options.get_option_names():
-            return self.currexp.options
+        if scope == 'input' and scoped_key in self.input.options.get_option_names():
+            return self.input.options
+        elif scope == 'output' and scoped_key in self.output.options.get_option_names():
+            return self.output.options
+        elif scope == 'exploit' and scoped_key in self.exploit.options.get_option_names():
+            return self.exploit.options
         else:
             return None
 
@@ -192,11 +192,11 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
     def do_info(self, args):
         """Displays the description of the selected exploit."""
-        if self.currexp is None:
+        if self.exploit is None:
             print(self.colorize('No exploit set; nothing to describe. Select an exploit with the \'use\' command',
                                 'cyan'))
         else:
-            print(self.colorize('\n  ' + self.currexp.DESCRIPTION + '\n', 'green'))
+            print(self.colorize('\n  ' + self.exploit.DESCRIPTION + '\n', 'green'))
 
     def do_options(self, args):
         """Displays options for the selected exploit. Use 'options describe' to see descriptions"""
@@ -205,7 +205,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             self.do_help('options')
             return
 
-        if self.currexp is None:
+        if self.exploit is None:
             print(self.colorize('No exploit set; no options to show. Select an exploit with the \'use\' command',
                                 'cyan'))
             return
@@ -213,16 +213,16 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         describe = args == 'describe'
 
         print()
-        self.print_options(self.curroptions, describe, indent_level=1)
-        if self.currinput is not None:
+        self.print_options(self.options, describe, indent_level=1)
+        if self.input is not None:
             print(self.colorize('\n  Input options', 'green'))
-            self.print_options(self.currinput.options, describe, indent_level=2)
-        if self.curroutput is not None:
+            self.print_options(self.input.options, describe, indent_level=2)
+        if self.output is not None:
             print(self.colorize('\n  Output options', 'green'))
-            self.print_options(self.curroutput.options, describe, indent_level=2)
-        if self.currexp is not None:
+            self.print_options(self.output.options, describe, indent_level=2)
+        if self.exploit is not None:
             print(self.colorize('\n  Exploit options', 'green'))
-            self.print_options(self.currexp.options, describe, indent_level=2)
+            self.print_options(self.exploit.options, describe, indent_level=2)
         print()
 
     def do_exit(self, args):
@@ -268,27 +268,27 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                     return
 
         if key == 'input':
-            self.currinput = ACsploit.inputs[value]()
+            self.input = ACsploit.inputs[value]()
         elif key == 'output':
-            self.curroutput = ACsploit.outputs[value]()
+            self.output = ACsploit.outputs[value]()
 
         options[scoped_key] = value
         print(self.colorize('%s => %s' % (key, value), 'cyan'))
 
     def do_reset(self, args):
         """Resets the current exploit to default options"""
-        if self.currexp is None:
+        if self.exploit is None:
             print(self.colorize('No exploit set; nothing to reset. Select an exploit with the \'use\' command', 'cyan'))
             return
 
         # delete the stored settings and reset the options in the current module
-        if hasattr(self.currexp, '_ACsploit_exploit_settings'):
-            del self.currexp._ACsploit_exploit_settings
+        if hasattr(self.exploit, '_ACsploit_exploit_settings'):
+            del self.exploit._ACsploit_exploit_settings
 
-        importlib.reload(self.currexp)  # we need to do this to reset currexp.options back to original values
+        importlib.reload(self.exploit)  # we need to do this to reset currexp.options back to original values
 
-        self.currexp = None
-        self.update_exploit(self.currexpname)
+        self.exploit = None
+        self.update_exploit(self.exploit_name)
 
     def do_use(self, args):
         """Sets the current exploit. Usage: use [exploit_name]"""
@@ -301,92 +301,92 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def do_show(self, args):
         """Lists all available exploits."""
         print(self.colorize('\nAvailable exploits:', 'green'))
-        for key in sorted(ACsploit.availexps):
+        for key in sorted(ACsploit.exploits):
             print(self.colorize('    ' + key, 'green'))
         print('')
 
-    # sets expname as the current exploit; restores saved settings or sets default values
-    def update_exploit(self, expname):
-        if expname not in ACsploit.availexps:
-            print((self.colorize('Exploit ' + expname + ' does not exist', 'red')))
+    # sets exploit_name as the current exploit; restores saved settings or sets default values
+    def update_exploit(self, exploit_name):
+        if exploit_name not in ACsploit.exploits:
+            print((self.colorize('Exploit ' + exploit_name + ' does not exist', 'red')))
             return
 
         # save current input/output and  to current exploit in private variables
         # this allows restoration of the current settings f the exploit is used again
-        if self.currexp is not None:
-            self.currexp._ACsploit_exploit_settings = {
-                'input': self.currinput,
-                'output': self.curroutput,
-                'options': self.curroptions,
+        if self.exploit is not None:
+            self.exploit._ACsploit_exploit_settings = {
+                'input': self.input,
+                'output': self.output,
+                'options': self.options,
                 'defaulted_options': self.defaulted_options,
             }
 
         # set the new exploit; restore previous input/output
-        self.currexpname = expname
-        self.currexp = ACsploit.availexps[expname]
-        self.prompt = self.make_prompt(expname)
+        self.exploit_name = exploit_name
+        self.exploit = ACsploit.exploits[exploit_name]
+        self.prompt = self.make_prompt(exploit_name)
 
-        print(self.colorize('exploit => %s' % expname, 'cyan'))
+        print(self.colorize('exploit => %s' % exploit_name, 'cyan'))
 
-        if hasattr(self.currexp, '_ACsploit_exploit_settings'):
-            self.currinput = self.currexp._ACsploit_exploit_settings['input']
-            self.curroutput = self.currexp._ACsploit_exploit_settings['output']
-            self.curroptions = self.currexp._ACsploit_exploit_settings['options']
-            self.defaulted_options = self.currexp._ACsploit_exploit_settings['defaulted_options']
+        if hasattr(self.exploit, '_ACsploit_exploit_settings'):
+            self.input = self.exploit._ACsploit_exploit_settings['input']
+            self.output = self.exploit._ACsploit_exploit_settings['output']
+            self.options = self.exploit._ACsploit_exploit_settings['options']
+            self.defaulted_options = self.exploit._ACsploit_exploit_settings['defaulted_options']
 
         else:
             input_desc = 'Input generator to use with exploits'
             output_desc = 'Output generator to use with exploits'
             self.defaulted_options = []
-            self.curroptions = Options()
+            self.options = Options()
 
             # set default input and output for new exploit, if any
-            if hasattr(self.currexp, 'NO_INPUT') and self.currexp.NO_INPUT:
-                self.currinput = None
-            elif hasattr(self.currexp, 'DEFAULT_INPUT'):
-                self.curroptions.add_option('input', self.currexp.DEFAULT_INPUT, input_desc,
-                                            list(ACsploit.inputs.keys()))
+            if hasattr(self.exploit, 'NO_INPUT') and self.exploit.NO_INPUT:
+                self.input = None
+            elif hasattr(self.exploit, 'DEFAULT_INPUT'):
+                self.options.add_option('input', self.exploit.DEFAULT_INPUT, input_desc,
+                                        list(ACsploit.inputs.keys()))
                 self.defaulted_options.append('input')
-                self.currinput = ACsploit.inputs[self.currexp.DEFAULT_INPUT]()
+                self.input = ACsploit.inputs[self.exploit.DEFAULT_INPUT]()
             else:
                 # We set string as the default input, but do not warn if this option is changed
-                self.curroptions.add_option('input', 'string', input_desc, list(ACsploit.inputs.keys()))
-                self.currinput = ACsploit.inputs['string']()
+                self.options.add_option('input', 'string', input_desc, list(ACsploit.inputs.keys()))
+                self.input = ACsploit.inputs['string']()
 
-            if hasattr(self.currexp, 'DEFAULT_OUTPUT'):
-                self.curroptions.add_option('output', self.currexp.DEFAULT_OUTPUT, output_desc,
-                                            list(ACsploit.outputs.keys()))
+            if hasattr(self.exploit, 'DEFAULT_OUTPUT'):
+                self.options.add_option('output', self.exploit.DEFAULT_OUTPUT, output_desc,
+                                        list(ACsploit.outputs.keys()))
                 self.defaulted_options.append('output')
-                self.curroutput = ACsploit.outputs[self.currexp.DEFAULT_OUTPUT]()
+                self.output = ACsploit.outputs[self.exploit.DEFAULT_OUTPUT]()
             else:
                 # We set stdout as the default output, but do not warn if this option is changed
-                self.curroptions.add_option('output', 'stdout', output_desc, list(ACsploit.outputs.keys()))
-                self.curroutput = ACsploit.outputs['stdout']()
+                self.options.add_option('output', 'stdout', output_desc, list(ACsploit.outputs.keys()))
+                self.output = ACsploit.outputs['stdout']()
 
             # set defaults for input and output settings for new exploit, if any
-            if hasattr(self.currexp, 'DEFAULT_INPUT_OPTIONS'):
-                for option, value in self.currexp.DEFAULT_INPUT_OPTIONS.items():
-                    self.currinput.set_option(option, value)
+            if hasattr(self.exploit, 'DEFAULT_INPUT_OPTIONS'):
+                for option, value in self.exploit.DEFAULT_INPUT_OPTIONS.items():
+                    self.input.set_option(option, value)
                     self.defaulted_options.append('input.%s' % option)
-            if hasattr(self.currexp, 'DEFAULT_OUTPUT_OPTIONS'):
-                for option, value in self.currexp.DEFAULT_OUTPUT_OPTIONS.items():
-                    self.curroutput.options.set_value(option, value)
+            if hasattr(self.exploit, 'DEFAULT_OUTPUT_OPTIONS'):
+                for option, value in self.exploit.DEFAULT_OUTPUT_OPTIONS.items():
+                    self.output.options.set_value(option, value)
                     self.defaulted_options.append('output.%s' % option)
 
     def do_run(self, args):
         """Runs the current exploit"""
-        if self.currexp is None:
+        if self.exploit is None:
             print(self.colorize('No exploit set; nothing to do. Select an exploit with the \'use\' command', 'cyan'))
         else:
-            print(self.colorize('Running %s…' % self.currexpname, 'cyan'))
-            if self.currinput is None:
-                self.currexp.run(self.curroutput)
+            print(self.colorize('Running %s…' % self.exploit_name, 'cyan'))
+            if self.input is None:
+                self.exploit.run(self.output)
             else:
                 # prepare is used to update internal state of input generators prior to running
-                if hasattr(self.currinput, 'prepare'):
-                    self.currinput.prepare()
-                self.currexp.run(self.currinput, self.curroutput)
-            print(self.colorize('%s complete' % self.currexpname, 'cyan'))
+                if hasattr(self.input, 'prepare'):
+                    self.input.prepare()
+                self.exploit.run(self.input, self.output)
+            print(self.colorize('%s complete' % self.exploit_name, 'cyan'))
 
 
 if __name__ == '__main__':
@@ -411,7 +411,7 @@ if __name__ == '__main__':
                 lines = [line.strip().split('#', 1)[0] for line in script]  # `#` is a comment in scripts
                 cmdlineobj.script_mode = True
                 cmdlineobj.runcmds_plus_hooks(lines)
-        except:
+        except OSError:
             print(cmdlineobj.colorize('Could not open file %s' % args.load_file, 'red'))
     else:
         cmdlineobj.cmdloop()
