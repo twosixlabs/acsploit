@@ -10,7 +10,7 @@ We welcome community contributions to all aspects of ACsploit!
 - Use `_private` names for module-internal functions
 - Use [`pytest`](https://docs.pytest.org/en/latest/) for tests
 - If you add a module that requires additional dependencies, add them to `requirements.txt`
-- ACsploit aims for compatibility with Python 3.5 or greater; do not add features which rely on later Python versions without
+- ACsploit aims for compatibility with Python 3.5 or greater; do not add features which rely on later Python versions
 
 
 ### Contributing Exploits
