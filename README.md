@@ -14,6 +14,8 @@ Install
 
 First `git clone` the repo, and then do `pip install -r requirements.txt`.
 
+Note that ACsploit is intended for use with Python 3.
+
 Usage
 -----
 
