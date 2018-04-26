@@ -13,7 +13,7 @@ creating an API, and hooking into running programs to feed worst-case input dire
 Usage
 -----
 
-Start ACsploit with `python acsploit.py`. From there, you can use the `help` command to see what commands are available.
+Start ACsploit with `python3 acsploit.py`. From there, you can use the `help` command to see what commands are available.
 You can call `help` on any of them to learn more about how to use that command, such as `help set`.
 
 To see the available exploits, use the `show` command. To stage one for use, use `use [exploit_name]`. To see a
