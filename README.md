@@ -9,6 +9,11 @@ creating an API, and hooking into running programs to feed worst-case input dire
 
 ![Screenshot](images/acsploit.png)
 
+Install
+-------
+
+First `git clone` the repo, and then do `pip install -r requirements.txt`.
+
 Usage
 -----
 
