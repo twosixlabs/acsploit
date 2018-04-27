@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 # this is necessary so python2 doesn't throw a syntax error over the definition of eprint()
 #  and can thus pass through syntax checking to actually running this file, at which point
