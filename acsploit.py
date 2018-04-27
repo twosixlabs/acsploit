@@ -1,5 +1,10 @@
 #! /usr/bin/env python
 
+# this is necessary so python2 doesn't throw a syntax error over the definition of eprint()
+#  and can thus pass through syntax checking to actually running this file, at which point
+#  it will properly bail out on the system version check
+from __future__ import print_function
+
 import sys
 if sys.hexversion < 0x03050000:
     raise Exception('ACsploit requires Python 3.5 or higher')
@@ -382,7 +387,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         if self.exploit is None:
             eprint(self.colorize('No exploit set; nothing to do. Select an exploit with the \'use\' command', 'cyan'))
         else:
-            eprint(self.colorize('Running %s…' % self.exploit_name, 'cyan'))
+            eprint(self.colorize('Running %s...' % self.exploit_name, 'cyan'))
             if self.input is None:
                 self.exploit.run(self.output)
             else:
