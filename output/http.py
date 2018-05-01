@@ -33,6 +33,7 @@ class Http:
         self.options.add_option('print_request', False, 'Print HTTP request')
         self.options.add_option('send_request', True, 'Send HTTP request')
 
+    # TODO - eventually allow printing out response
     def output(self, output_list):
         url_payload = {}
         data_payload = ''
