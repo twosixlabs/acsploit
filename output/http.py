@@ -65,9 +65,8 @@ class Http:
                 s.send(prepared)
                 s.close()
 
-
     def pretty_print_http(self, prepared_req):
-        print('{}'+os.linesep+'{}'+os.linesep+'{}'+os.linesep+os.linesep+'{}'+os.linesep+'{}'.format(
+        print(str('{}'+os.linesep+'{}'+os.linesep+'{}'+os.linesep+os.linesep+'{}'+os.linesep+'{}').format(
             '-----------START-----------',
             prepared_req.method + ' ' + prepared_req.url,
             os.linesep.join('{}: {}'.format(k, v) for k, v in prepared_req.headers.items()),
