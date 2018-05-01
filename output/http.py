@@ -24,46 +24,44 @@ class Http:
         self.options.add_option('final_separator', False, 'Whether to end output with an instance of the separator')
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
-        self.options.add_option('http_method', 'GET', 'Type of HTTP request to make', ['POST', 'GET', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'])
+        # TODO - eventually support PUT, DELETE, HEAD, and OPTIONS, since requests easily handles those
+        self.options.add_option('http_method', 'GET', 'Type of HTTP request to make', ['POST', 'GET'])
         self.options.add_option('url_param_name', 'param', 'Name of URL arg(s) to use')
         self.options.add_option('spread_params', True, 'Put each output in its own URL arg, or put all in one')
+        self.options.add_option('use_body', False, 'Put exploit output in body, not URL args')
 
         self.options.add_option('print_request', False, 'Print HTTP request')
         self.options.add_option('send_request', True, 'Send HTTP request')
 
-        #TODO - custom URL params...
-        #self.options.add_option('http_params', 'p1=arg1&p2=arg2', 'URL parameters, in the format of VAR1 = VAL1'
-        #                                                          ' separated by &')
-
-        #TODO - add authentication option?
-        #TODO - add body option
-        #TODO - custom HTTP headers option
-
     def output(self, output_list):
-        if self.options['http_method'].upper() == 'GET':
-            # in this case, any body is ignored, so output_list will only be useful in URL params
+        url_payload = {}
+        data_payload = ''
+        separator = Http._SEPARATORS[self.options['separator']]
+
+        if self.options['use_body']:
+            data_payload = separator.join([self.convert_item(item) for item in output_list])
+            if self.options['final_separator']:
+                data_payload += separator
+        else:
             if self.options['spread_params']:
-                base_name = self.options['url_param_name']
-                payload = {}
-                count = 1
-                for item in output_list:
-                    payload[base_name + str(count)] = self.convert_item(item)
-                    count += 1
+                url_payload[self.options['url_param_name']] = output_list
             else:
-                separator = Http._SEPARATORS[self.options['separator']]
                 line = separator.join([self.convert_item(item) for item in output_list])
                 if self.options['final_separator']:
                     line += separator
-                payload = {self.options['url_param_name'] : line}
-            standard_headers = {'User-Agent': 'python-requests', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'Accept': '*/*'}
-            req = requests.Request('GET', self.options['url'], params=payload, headers=standard_headers)
-            prepared = req.prepare()
-            if self.options['print_request']:
-                self.pretty_print_http(prepared)
-            if self.options['send_request']:
-                s = requests.Session()
-                s.send(prepared)
-                s.close()
+                url_payload = {self.options['url_param_name']: line}
+
+        standard_headers = {'User-Agent': 'python-requests', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'Accept': '*/*'}
+        req = requests.Request(self.options['http_method'], self.options['url'], params=url_payload, headers=standard_headers, data=data_payload)
+        prepared = req.prepare()
+
+        if self.options['print_request']:
+            self.pretty_print_http(prepared)
+
+        if self.options['send_request']:
+            s = requests.Session()
+            s.send(prepared)
+            s.close()
 
     def pretty_print_http(self, prepared_req):
         print(str('{}'+os.linesep+'{}'+os.linesep+'{}'+os.linesep+os.linesep+'{}'+os.linesep+'{}').format(
