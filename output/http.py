@@ -1,0 +1,88 @@
+import os
+import requests
+from options import Options
+
+
+class Http:
+
+    OUTPUT_NAME = 'http'  # exploits can use this internally to whitelist/blacklist supported output formats
+
+    _SEPARATORS = {  # as bytes because
+        'newline': b'\n',
+        'comma': b',',
+        'space': b' ',
+        'tab': b'\t',
+        'os_newline': bytes(os.linesep.encode()),
+        'CRLF': b'\r\n'
+    }
+
+    def __init__(self):
+        self.options = Options()
+        self.options.add_option('url', 'http://127.0.0.1:80/', 'Host to connect to')
+        self.options.add_option('separator', 'newline', 'Separator between elements', ['newline', 'comma', 'space',
+                                                                                       'tab', 'os_newline', 'CRLF'])
+        self.options.add_option('final_separator', False, 'Whether to end output with an instance of the separator')
+        self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
+
+        self.options.add_option('http_method', 'GET', 'Type of HTTP request to make', ['POST', 'GET', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'])
+        self.options.add_option('url_param_name', 'param', 'Name of URL arg(s) to use')
+        self.options.add_option('spread_params', True, 'Put each output in its own URL arg, or put all in one')
+
+        self.options.add_option('print_request', False, 'Print HTTP request')
+        self.options.add_option('send_request', True, 'Send HTTP request')
+
+        #TODO - custom URL params...
+        #self.options.add_option('http_params', 'p1=arg1&p2=arg2', 'URL parameters, in the format of VAR1 = VAL1'
+        #                                                          ' separated by &')
+
+        #TODO - add authentication option?
+        #TODO - add body option
+        #TODO - custom HTTP headers option
+
+    def output(self, output_list):
+        if self.options['http_method'].upper() == 'GET':
+            # in this case, any body is ignored, so output_list will only be useful in URL params
+            if self.options['spread_params']:
+                base_name = self.options['url_param_name']
+                payload = {}
+                count = 1
+                for item in output_list:
+                    payload[base_name + str(count)] = self.convert_item(item)
+                    count += 1
+            else:
+                separator = Http._SEPARATORS[self.options['separator']]
+                line = separator.join([self.convert_item(item) for item in output_list])
+                if self.options['final_separator']:
+                    line += separator
+                payload = {self.options['url_param_name'] : line}
+            standard_headers = {'User-Agent': 'python-requests', 'Accept-Encoding': 'gzip, deflate', 'Connection': 'keep-alive', 'Accept': '*/*'}
+            req = requests.Request('GET', self.options['url'], params=payload, headers=standard_headers)
+            prepared = req.prepare()
+            if self.options['print_request']:
+                self.pretty_print_http(prepared)
+            if self.options['send_request']:
+                s = requests.Session()
+                s.send(prepared)
+                s.close()
+
+
+    def pretty_print_http(self, prepared_req):
+        print('{}'+os.linesep+'{}'+os.linesep+'{}'+os.linesep+os.linesep+'{}'+os.linesep+'{}'.format(
+            '-----------START-----------',
+            prepared_req.method + ' ' + prepared_req.url,
+            os.linesep.join('{}: {}'.format(k, v) for k, v in prepared_req.headers.items()),
+            prepared_req.body,
+            '------------END------------'
+        ))
+
+    def convert_item(self, item):
+        # NB: this doesn't recurse onto lists
+        if type(item) is int:
+            if self.options['number_format'] == 'hexadecimal':
+                item = hex(item)
+            elif self.options['number_format'] == 'octal':
+                item = oct(item)
+        if type(item) is not bytes:
+            item = str(item).encode()  # TODO: this is a bit of a hack, to put it mildly
+
+        return item
