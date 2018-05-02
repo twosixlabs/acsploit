@@ -35,11 +35,11 @@ Let's begin by pulling down the challenge program, contained in gabfeed_2.tar. I
 
 We can take a look at the decompiled source code by using JD-Gui or similar Java decompiler and examining `/challenge_program/lib/gabfeed_2.jar`. In `GabDatabase.class`, we see that entries of the internal database are stored in custom hash maps. Furthermore, when a user sends a message, that message is broken up into individual words with each word added to a hash map. 
 
-<img src="indexmessage.png" class="center"  width="400">
+<img src="images/indexmessage.png" class="center"  width="400">
 
 Investigating the custom hash implementation, we see that the entries are hashed using the default Java hash code function.
 
-<img src="gabfeedhashcode.png" class="center"  width="400">
+<img src="images/gabfeedhashcode.png" class="center"  width="400">
 
 What's more, the hash map implements each bin as an unbalanced binary search tree. We may be able to trigger an algorithmic complexity vulnerability that satisfies the challenge question if we generate a long message full of words that share a common Java hash value, and pass them in sorted order to produce a degenerate binary search tree.
 
@@ -48,7 +48,7 @@ What's more, the hash map implements each bin as an unbalanced binary search tre
 Java's hash code was never intended to be a secure hash, but rather to be an efficient procedure that produces reasonable distributions of hashes. While any insecure hash should reasonably expect collisions, Java's hash code is susceptible to a meet-in-the-middle attack which can efficiently generate large lists of collisions. The default Java hash code function description is shown below. 
 
 
-<img src="javahashcode.png" class="center"  width="800">
+<img src="images/javahashcode.png" class="center"  width="800">
 
 Can you spot the flaw? The java hash of a string A+B can be efficiently computed knowing just the hashes of A and B separately. Indeed, the hash of A+B is hash(A)*31^(len(B)) +hash(B). Let's say we want to generate hash collisions hashing to a particular value, we can achieve this by generating a list of hashes for short strings (brute forceable), and then combining them to generate collisions. 
 
@@ -75,7 +75,7 @@ python acsploit.py --load-file commands.txt
 
 After a short time, we get the notification that our script has completed successfully.
 
-<img src="acsploitwithcommands.png" class="center"  width="300">
+<img src="images/acsploitwithcommands.png" class="center"  width="300">
 
 In the event of a collision, the challenge program stores values in a binary search tree. In order to produce the worst-case behavior, we want to create a degenerate binary tree. A simple way to do this is to sort the inserted values. We also want the collisions to be space delimited (custom delimiters are soon to come in ACSploit).
 
@@ -94,7 +94,7 @@ curl -s -L -b cookies.txt --insecure https://[target-ip]:8080/thread/1_0?suppres
 
 Running this bash script, we see the challenge program shoot to 100 percent CPU utilization.
 
-<img src="htop.png" class="center"  width="800">
+<img src="images/htop.png" class="center"  width="800">
 
 Success! After 150 seconds, we verify that we satisfy the conditions of the challenge question. Our sorted collision file consists of 328,645 bytes. Even with the overhead for the login script and the curl requests, we are still well under the 400,000 byte input budget.
 

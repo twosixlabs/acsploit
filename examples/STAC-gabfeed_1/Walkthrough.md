@@ -37,16 +37,16 @@ GabFeed contains a naive line breaking algorithm that, when given a string conta
 
 We load up ACsploit and use the `strings/line_breaking` algorithm to generate a string that fits comfortably within the input budget (280000 < 400000) but will occupy GabFeed for more than the time limit and save that string to a file (`gabfeed.dat`).
 
-<img src='images/1.png'>
+<img src='images/acsploit.png'>
 
 We then start the GabFeed server…
 
-<img src='images/2.png'>
+<img src='images/server.png'>
 
 …and launch our exploit against it with a script that sends the data in the `gabfeed.dat` file we generated at the server.
 
-<img src='images/3.png'>
+<img src='images/exploit.png'>
 
 Timing our attack, we see that we've kept the server busy for over 7 minutes, well over the target of 5 minutes (300 seconds).
 
-<img src='images/4.png'>
+<img src='images/result.png'>
