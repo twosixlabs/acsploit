@@ -1,12 +1,12 @@
 import socket
 from unittest.mock import MagicMock, patch
-from output import Network
+from output import Socket
 
 
 def test_output_defaults():
     mock_socket = MagicMock()
     with patch.object(socket, 'socket', MagicMock(return_value=mock_socket)) as mock_socket_constructor:
-        n = Network()
+        n = Socket()
         n.output([7, 'hello', 'c', [1, 2, 3]])
         mock_socket_constructor.assert_called_once_with(socket.AF_INET, socket.SOCK_STREAM)
         mock_socket.connect.assert_called_once_with(('127.0.0.1', 80))
@@ -17,7 +17,7 @@ def test_output_defaults():
 def test_output_separator():
     mock_socket = MagicMock()
     with patch.object(socket, 'socket', MagicMock(return_value=mock_socket)) as mock_socket_constructor:
-        n = Network()
+        n = Socket()
         n.options.set_value('separator', 'CRLF')
         n.output([7, 'hello', 'c', [1, 2, 3]])
         mock_socket_constructor.assert_called_once_with(socket.AF_INET, socket.SOCK_STREAM)
@@ -29,7 +29,7 @@ def test_output_separator():
 def test_final_separator():
     mock_socket = MagicMock()
     with patch.object(socket, 'socket', MagicMock(return_value=mock_socket)) as mock_socket_constructor:
-        n = Network()
+        n = Socket()
         n.options.set_value('final_separator', True)
         n.output([7, 'hello', 'c', [1, 2, 3]])
         mock_socket_constructor.assert_called_once_with(socket.AF_INET, socket.SOCK_STREAM)
@@ -41,7 +41,7 @@ def test_final_separator():
 def test_await_banner():
     mock_socket = MagicMock()
     with patch.object(socket, 'socket', MagicMock(return_value=mock_socket)) as mock_socket_constructor:
-        n = Network()
+        n = Socket()
         n.options.set_value('await_banner', True)
         n.output([7, 'hello', 'c', [1, 2, 3]])
         mock_socket_constructor.assert_called_once_with(socket.AF_INET, socket.SOCK_STREAM)
@@ -54,7 +54,7 @@ def test_await_banner():
 def test_host():
     mock_socket = MagicMock()
     with patch.object(socket, 'socket', MagicMock(return_value=mock_socket)) as mock_socket_constructor:
-        n = Network()
+        n = Socket()
         n.options.set_value('host', '192.168.100.100')
         n.output([7, 'hello', 'c', [1, 2, 3]])
         mock_socket_constructor.assert_called_once_with(socket.AF_INET, socket.SOCK_STREAM)
@@ -66,7 +66,7 @@ def test_host():
 def test_port():
     mock_socket = MagicMock()
     with patch.object(socket, 'socket', MagicMock(return_value=mock_socket)) as mock_socket_constructor:
-        n = Network()
+        n = Socket()
         n.options.set_value('port', 13337)
         n.output([7, 'hello', 'c', [1, 2, 3]])
         mock_socket_constructor.assert_called_once_with(socket.AF_INET, socket.SOCK_STREAM)
@@ -78,7 +78,7 @@ def test_port():
 def test_ip_version_host():
     mock_socket = MagicMock()
     with patch.object(socket, 'socket', MagicMock(return_value=mock_socket)) as mock_socket_constructor:
-        n = Network()
+        n = Socket()
         n.options.set_value('ip_version', 'IPv6')
         n.options.set_value('host', '::1')
         n.output([7, 'hello', 'c', [1, 2, 3]])
@@ -91,7 +91,7 @@ def test_ip_version_host():
 def test_many_options():
     mock_socket = MagicMock()
     with patch.object(socket, 'socket', MagicMock(return_value=mock_socket)) as mock_socket_constructor:
-        n = Network()
+        n = Socket()
         n.options.set_value('separator', 'comma')
         n.options.set_value('number_format', 'octal')
         n.options.set_value('final_separator', True)
@@ -104,27 +104,27 @@ def test_many_options():
 
 
 def test_convert_item_ints_decimal():
-    n = Network()
+    n = Socket()
     n.options.set_value('number_format', 'decimal')
     for item in [7, 8, 15, 20]:
         assert n.convert_item(item) == str(item).encode()
 
 
 def test_convert_item_ints_hexadecimal():
-    n = Network()
+    n = Socket()
     n.options.set_value('number_format', 'hexadecimal')
     for item in [7, 8, 15, 20]:
         assert n.convert_item(item) == hex(item).encode()
 
 
 def test_convert_item_ints_octal():
-    n = Network()
+    n = Socket()
     n.options.set_value('number_format', 'octal')
     for item in [7, 8, 15, 20]:
         assert n.convert_item(item) == oct(item).encode()
 
 
 def test_convert_item_non_int():
-    n = Network()
+    n = Socket()
     for item in ['a', [1, 2, 3]]:
         assert n.convert_item(item) == str(item).encode()
