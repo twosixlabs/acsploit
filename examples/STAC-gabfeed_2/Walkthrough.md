@@ -1,4 +1,4 @@
-#ACsploit in STAC: Gabfeed
+# ACsploit in STAC: Gabfeed
 
 
 ACsploit was originally developed to assist in solving DARPA STAC (Space/Time Analysis for Cybersecurity) challenge problems. STAC problems either address side-channels or algorithmic complexity vulnerabilities (i.e. achieve a large runtime/disk/memory utilization). Each STAC problem has a limited attacker input budget, and conditions defining how the vulnerability must be triggered. Below is the challenge question for the program "gabfeed_2" from STAC engagement 2.
@@ -98,7 +98,7 @@ Running this bash script, we see the challenge program shoot to 100 percent CPU 
 
 Success! After 150 seconds, we verify that we satisfy the conditions of the challenge question. Our sorted collision file consists of 328,645 bytes. Even with the overhead for the login script and the curl requests, we are still well under the 400,000 byte input budget.
 
-#2-for-1
+# 2-for-1
 
 The same exploit also satisfies a similar challenge question for gabfeed_4, another STAC problem. Value!
 
