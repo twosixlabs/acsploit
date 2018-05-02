@@ -5,7 +5,7 @@ from options import Options
 
 class Socket:
 
-    OUTPUT_NAME = 'network'  # exploits can use this internally to whitelist/blacklist supported output formats
+    OUTPUT_NAME = 'socket'  # exploits can use this internally to whitelist/blacklist supported output formats
 
     _SEPARATORS = {  # as bytes because
         'newline': b'\n',
