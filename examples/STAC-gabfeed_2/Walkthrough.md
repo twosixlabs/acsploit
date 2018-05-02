@@ -53,6 +53,7 @@ Java's hash code was never intended to be a secure hash, but rather to be an eff
 Can you spot the flaw? The java hash of a string A+B can be efficiently computed knowing just the hashes of A and B separately. Indeed, the hash of A+B is hash(A)*31^(len(B)) +hash(B). Let's say we want to generate hash collisions hashing to a particular value, we can achieve this by generating a list of hashes for short strings (brute forceable), and then combining them to generate collisions. 
 
 ##ACsploiting to victory
+
 When our team first solved this challenge question, we developed our own scripts to generate hash collisions. Today, we can do it easily with ACsploit. Let's take advantage of ACsploit's `--load-file` feature, which allows a user to load commands from a file. We'll put the following commands into a text file `commands.txt`.
 
 ```
@@ -98,5 +99,6 @@ Running this bash script, we see the challenge program shoot to 100 percent CPU 
 Success! After 150 seconds, we verify that we satisfy the conditions of the challenge question. Our sorted collision file consists of 328,645 bytes. Even with the overhead for the login script and the curl requests, we are still well under the 400,000 byte input budget.
 
 #2-for-1
+
 The same exploit also satisfies a similar challenge question for gabfeed_4, another STAC problem. Value!
 
