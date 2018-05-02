@@ -50,11 +50,11 @@ We will try the `bombs/xml/billion_laughs` exploit to generate an XML bomb.
 
 From the exploit option descriptions we see that ACsploit can generate XML bombs with varying memory impact.
 
-<img src="images/STAC-airplan/acsploitdescribeoptions.png" class="center"  width="700">
+<img src="images/acsploitdescribeoptions.png" class="center"  width="700">
 
 We are targeting 1024 MB of total memory usage, so let's round the `memory_impact` up to 1100, name the file `bomb.xml`, and run the exploit.
 
-<img src="images/STAC-airplan/acsploitrun.png" class="center" width="500">
+<img src="images/acsploitrun.png" class="center" width="500">
 
 Checking the generated zip bomb, we see that `bomb.xml` is only 779 bytes, well within our input budget of 25,000 bytes. Now that we've generated our bomb, let's try it out! We move `bomb.xml` into the `examples/` directory and edit `example_xmlmap.sh` as shown below to throw the bomb at `AirPlan_1`.
 
@@ -82,4 +82,4 @@ This time, we do not get a response right away and CPU usage spikes to 100% as t
 
 (Note that the `memory_impact` value set in ACsploit refers to the estimated size of the expanded XML file, not the actual memory usage of any given vulnerable XML parser. We can expect the memory usage to eventually be at least as large as `memory_impact`, but it may take a long time to reach that point.)
  
-<img src="images/STAC-airplan/htop.png" class="center"  width="600">
+<img src="images/htop.png" class="center"  width="600">

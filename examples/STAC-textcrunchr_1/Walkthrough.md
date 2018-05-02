@@ -44,15 +44,15 @@ Since the challenge program accepts compressed files, it's possible a convention
 
 Let's start by firing up ACsploit and examining the potential exploits.
 
-<img src="images/STAC-textcrunchr1/acsploitshow.png" class="center"  width="300">
+<img src="images/acsploitshow.png" class="center"  width="300">
 
 We see exploits for generating `zip`, `gz`, and `tar.gz` bombs. Let's use the `zip` bomb generator.
 
-<img src="images/STAC-textcrunchr1/acsploitdescribeoptions.png" class="center"  width="700">
+<img src="images/acsploitdescribeoptions.png" class="center"  width="700">
 
 From the exploit option descriptions we see that ACsploit can generate three different types of zip bombs: recursive bombs, single layer bombs, and layered zip bombs. Let's try out the recursive zip bomb first, naming the file `bomb.zip`.
 
-<img src="images/STAC-textcrunchr1/acsploitrun.png" class="center"  width="500">
+<img src="images/acsploitrun.png" class="center"  width="500">
 
 Checking the generated zip bomb, we see that `bomb.zip` is only 400 bytes, well within out input budget of 400,000 bytes. Now that we've generated our bomb, let's try it out! We move `bomb.zip` into the `examples/` directory and edit `example_basic.sh` as shown below to throw the bomb at `TextCrunchr1`.
 
@@ -63,4 +63,4 @@ $ cat example_basic.sh
 ```
 When we run this modified example script, we see that it takes a little while to return. Will we hit 300 seconds? Checking `htop`, we see that the Java process for `TextCrunchr1` is at 100% CPU utilization, a good sign that we've found a vulnerability. After 5 minutes, the process is still running at 100% CPU utilization and we can confirm that the recursive zip bomb achieved the desired AC vulnerability.
 
-<img src="images/STAC-textcrunchr1/htop.png" class="center"  width="600">
+<img src="images/htop.png" class="center"  width="600">
