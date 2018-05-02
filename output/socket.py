@@ -3,7 +3,7 @@ import socket
 from options import Options
 
 
-class Network:
+class Socket:
 
     OUTPUT_NAME = 'network'  # exploits can use this internally to whitelist/blacklist supported output formats
 
@@ -35,16 +35,16 @@ class Network:
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
     def output(self, output_list):
-        separator = Network._SEPARATORS[self.options['separator']]
+        separator = Socket._SEPARATORS[self.options['separator']]
         line = separator.join([self.convert_item(item) for item in output_list])
         if self.options['final_separator']:
             line += separator
-        protocol = Network._VERSIONS[self.options['ip_version']]
+        protocol = Socket._VERSIONS[self.options['ip_version']]
         # TODO: handle exceptions?
         s = socket.socket(protocol, socket.SOCK_STREAM)
         s.connect((self.options['host'], self.options['port']))
         if self.options['await_banner']:
-            s.recv(Network._BANNER_LENGTH)
+            s.recv(Socket._BANNER_LENGTH)
         s.sendall(line)
         s.close()
 
