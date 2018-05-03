@@ -52,7 +52,7 @@ Java's hash code was never intended to be a secure hash, but rather to be an eff
 
 Can you spot the flaw? The java hash of a string A+B can be efficiently computed knowing just the hashes of A and B separately. Indeed, the hash of A+B is hash(A)*31^(len(B)) +hash(B). Let's say we want to generate hash collisions hashing to a particular value, we can achieve this by generating a list of hashes for short strings (brute forceable), and then combining them to generate collisions. 
 
-##ACsploiting to victory
+## ACsploiting to victory
 
 When our team first solved this challenge question, we developed our own scripts to generate hash collisions. Today, we can do it easily with ACsploit. Let's take advantage of ACsploit's `--load-file` feature, which allows a user to load commands from a file. We'll put the following commands into a text file `commands.txt`.
 
