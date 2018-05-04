@@ -32,12 +32,13 @@ Resource Usage Limit
     Runtime: 300 seconds
 ``` 
 To use `TextCrunchr3` from the `textcrunchr_3` directory, run `./challenge_program/bin/textcrunchrhost_1 <file>`, where file can be a zip, bz2, or tar file.
-From this point forward we are going to omit the paths to files and the textcrunchrhost_1 program for brevity, and assume that all commands are run from the acsploit directory.
+From this point forward we are going to omit the paths to files and the `textcrunchrhost_1` program for brevity and assume that all commands are run from the acsploit directory.
 
 ## Identifying Attack Vectors
 
-Looking at the source code for the program with JD-Gui, we note there are custom classes for ZipDecompressor, HashMap, and Sorter. ACsploit can generate potential exploits for all three.
-Note that if ACsploit's exploits fail, it does not prove that these classes do not have algorithmic complexity issues, but it does help us triage some of the most likely sources of vulnerabilities.
+Looking at the source code for the program with JD-Gui, we note the custom classes `ZipDecompressor`, `HashMap`, and `Sorter`. ACsploit can generate potential exploits for all three.
+
+(Note that if ACsploit's exploits fail, it does not prove that these classes do not have algorithmic complexity issues, but it does help us triage some of the most likely sources of vulnerabilities.)
 
 ![JD-Gui](images/jdgui.png)
 
@@ -57,8 +58,9 @@ Let's move on to a different attack vector.
 
 ## Checking for Hash Collision Vulnerability
 
-We use ACsploit's java hash collision generator to create a list of 10000 strings that all hash to 0 and save it to a file.
-This time, we will use Acsploit's scripting capability. Save the following commands to hash_script.txt:
+We use ACsploit's Java hash collision generator to create a list of 10000 strings that all hash to 0 and save it to a file.
+
+This time, we will use ACsploit's scripting capability. Save the following commands to `hash_script.txt`:
 
 ```
 use hashes/collisions/java
@@ -77,13 +79,13 @@ run # this will take several minutes
 
 We compress this file with `zip -r hashes.zip hashes.txt`.
 
-We run `textcrunchrhost_1 hashes.zip`, and the program returns output within 5 seconds.
+We run `textcrunchrhost_1 hashes.zip` and the program returns output within 5 seconds.
 
-We note the size of our zip file is less than 100KB and our budget is 400KB, so we could increase the number of hashes and try again, but these initial results are discouraging enough that we elect to move on. We can return to the HashMap implementation if the rest of our search turns up empty.
+We note the size of our zip file is less than 100KB and our budget is 400KB, so we could increase the number of hashes and try again, but these initial results are discouraging enough that we elect to move on. We will return to the HashMap implementation if the rest of our search turns up empty.
 
 ## Checking for Sorting Vulnerability
 
-One component of the Sorter.sort() function is a call to a custom quickSort function:
+The `Sorter.sort()` function contains a call to a custom quickSort function:
 
 ```
   public List<T> sort(Collection<T> stuff)
@@ -99,9 +101,11 @@ Let's look at ACsploit's quicksort exploit:
 
 ![Quicksort options](images/qsort_options.png)
 
-There are a few different type options for quicksort. We analyzed the quickSort code and identified the implementation as lomuto. 
-If we were unsure which option to choose, we could try each of the options and see if any caused a performance impact.
-We generate 10000 strings and save them to qsort.txt with the following script:
+There are a few different type options for quicksort. We analyze the quickSort code and identify the implementation as lomuto. 
+
+(If we were unsure which option to choose, we could try each of the options and see if any caused a performance impact.)
+
+We generate 10000 strings and save them to `qsort.txt` with the following script:
 
 ```
 use sort/quicksort
@@ -113,10 +117,10 @@ set output.filename qsort.txt
 run
 ```
 
-We want to isolate the quickSort function from the rest of the sort function, which we will do using Jython. Jython allows us to interact with Java classes and objects in a Python environment.
+We want to isolate the `quickSort()` function from the rest of the sort function, which we will do using [Jython](http://www.jython.org). Jython allows us to interact with Java classes and objects in a Python environment.
 Before starting Jython, make sure to set `python.security.respectJavaAccessibility = false` in the Jython registry file.
 
-We first run a comparison of the runtime of quickSort on ACsploit's input, and the same input in a random order. Save the following script to time_sort.py:
+We first run a comparison of the runtime of `quickSort()` on ACsploit's input and the same input in a random order. Save the following script to `time_sort.py`:
 
 ```
 import time
@@ -156,14 +160,14 @@ print 'sort with ACsploit input took {} seconds'.format(end - start)
 
 ![Sort timing output](images/time_sort.png)
 
-We see the ACsploit output takes about 10 seconds for quickSort, while the random input takes less than 1 second. We also note that the sort function with ACsploit input takes less than 1 second. We infer the changingSort method shuffles the ordering of the ACsploit input so that it is no longer a worst case input.
+We see the ACsploit output takes about 10 seconds for `quickSort()`, while the random input takes less than 1 second. We also note that the sort function with ACsploit input takes less than 1 second. We thus infer the `changingSort()` method shuffles the ordering of the ACsploit input so that it is no longer a worst case input.
 
 We have our proof of concept, but we still need two things for a successful solution:
 
-1. We need to pass input that will be shuffled into the ACsploit input order by changingSort
+1. We need to pass input that will be shuffled into the ACsploit input order by `changingSort()`
 2. We need to reach a runtime of 300 seconds
 
-To resolve the first issue, we run the following Jython script to reverse the changingSort function for our input and write the result to a file:
+To resolve the first issue, we run the following Jython script to reverse the `changingSort()` function for our input and write the result to a file:
 
 ```
 import sys
@@ -203,7 +207,7 @@ We now have our malicious input saved as `malicious.txt`. It is only 50 KB, and 
 
 This actually takes much longer than what we observed in Jython. As it turns out, `TextCrunchr3` performs more than one analysis on the input, which amplifies the effect of our payload.
 
-We are still only at 80 seconds. To increase the runtime, we can double the number of inputs generated to 20000. We know quick sort is O( n^2 ) in the worst case. We expect the runtime to increase by roughly a factor of 4, from 80 seconds to over 300 seconds.
+However, we are still only at 80 seconds. To increase the runtime, we can double the number of inputs generated to 20000. We know quick sort is O( n^2 ) in the worst case. We expect the runtime to increase by roughly a factor of 4, from 80 seconds to over 300 seconds.
 Let's generate a larger list with ACsploit and save it as qsort2.txt:
 
 ```
