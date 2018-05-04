@@ -4,7 +4,7 @@
 
 `TextCrunchr3` is a program from Engagement 2 of the DARPA STAC program. (The STAC program, which birthed ACsploit, presents its performers with a series of Java programs containing algorithmic complexity vulnerabilities and challenge questions that specify the conditions under which the vulnerabilities must be exploited.) In this example we use ACsploit to identify and exploit a vulnerability.
 
-The `textcrunchr3.tar` archive in this directory, contains a description of the challenge program (`description.txt`), the challenge program itself(`challenge_program/bin/textcrunchrhost_1`) as well as some example scripts to help a user interact with the vulnerable program (`examples/`). You can use these to follow along with this walkthrough at home.
+The `textcrunchr_3.tar` archive in this directory contains a description of the challenge program (`description.txt`), the challenge program itself(`challenge_program/bin/textcrunchrhost_1`) as well as some example scripts to help a user interact with the vulnerable program (`examples/`). You can use these to follow along with this walkthrough at home.
 
 The challenge question (`Question_011.txt`) that we are trying to answer is reproduced below:
 
@@ -31,13 +31,15 @@ Resource Usage Limit
     
     Runtime: 300 seconds
 ``` 
-To use `TextCrunchr` from the `textcrunchr_3` directory, run `./challenge_program/bin/textcrunchrhost_1 <file>`, where file can be a zip, bz2, or tar file.
-From this point forward we are going to omit the paths to files and the textcrunchrhost_1 program for brevity.
+To use `TextCrunchr3` from the `textcrunchr_3` directory, run `./challenge_program/bin/textcrunchrhost_1 <file>`, where file can be a zip, bz2, or tar file.
+From this point forward we are going to omit the paths to files and the textcrunchrhost_1 program for brevity, and assume that all commands are run from the acsploit directory.
 
 ## Identifying Attack Vectors
 
 Looking at the source code for the program with JD-Gui, we note there are custom classes for ZipDecompressor, HashMap, and Sorter. ACsploit can generate potential exploits for all three.
 Note that if ACsploit's exploits fail, it does not prove that these classes do not have algorithmic complexity issues, but it does help us triage some of the most likely sources of vulnerabilities.
+
+![JD-Gui](images/jdgui.png)
 
 ## Checking for Zip Bomb Vulnerability
 
@@ -56,7 +58,7 @@ Let's move on to a different attack vector.
 ## Checking for Hash Collision Vulnerability
 
 We use ACsploit's java hash collision generator to create a list of 10000 strings that all hash to 0 and save it to a file.
-This time, we will use Acsploit's scripting capability. Save the following commands to hash_script.txt
+This time, we will use Acsploit's scripting capability. Save the following commands to hash_script.txt:
 
 ```
 use hashes/collisions/java
@@ -112,7 +114,7 @@ run
 ```
 
 We want to isolate the quickSort function from the rest of the sort function, which we will do using Jython. Jython allows us to interact with Java classes and objects in a Python environment.
-Before starting Jython, make sure to set `python.security.respectJavaAccessibility = false` in the Jython registry file
+Before starting Jython, make sure to set `python.security.respectJavaAccessibility = false` in the Jython registry file.
 
 We first run a comparison of the runtime of quickSort on ACsploit's input, and the same input in a random order. Save the following script to time_sort.py:
 
@@ -158,10 +160,10 @@ We see the ACsploit output takes about 10 seconds for quickSort, while the rando
 
 We have our proof of concept, but we still need two things for a successful solution:
 
-1. We need to pass input that will be shuffled into the ACsploit input by changingSort
+1. We need to pass input that will be shuffled into the ACsploit input order by changingSort
 2. We need to reach a runtime of 300 seconds
 
-To resolve the first issue, we run the following Jython script to reverse the changingSort function for our input and write the result to a file.
+To resolve the first issue, we run the following Jython script to reverse the changingSort function for our input and write the result to a file:
 
 ```
 import sys
@@ -194,13 +196,14 @@ with open(outfile, 'w') as f:
 `jython reverse_shuffle.py qsort.txt malicious.txt`
 
 We now have our malicious input saved as `malicious.txt`. It is only 50 KB, and `TextCrunchr3` accepts uncompressed files. Let's see how long this takes to run:
+
 `time textcrunchrhost_1 reverse_shuffle.txt`
 
 ![Test](images/test_runtime.png)
 
-This actually takes much longer to run than what we observed in Jython. As it turns out, `TextCrunchr3` performs more than one analysis on the input, which multiplies the effect of our payload.
+This actually takes much longer than what we observed in Jython. As it turns out, `TextCrunchr3` performs more than one analysis on the input, which amplifies the effect of our payload.
 
-To increase the runtime, we double the number of inputs generated to 20000. We know quick sort is O(n^2) in the worst case, so we should expect the runtime to increase by a factor of 4, which would increase the runtime from 80 seconds to over 300 seconds. 
+We are still only at 80 seconds. To increase the runtime, we can double the number of inputs generated to 20000. We know quick sort is O( n^2 ) in the worst case. We expect the runtime to increase by roughly a factor of 4, from 80 seconds to over 300 seconds.
 Let's generate a larger list with ACsploit and save it as qsort2.txt:
 
 ```
@@ -213,10 +216,12 @@ set output.filename qsort2.txt
 run # this will overwrite qsort.txt from the previous step
 ```
 
-First run the above script with ACsploit, then use Jython to reorder the input to account for the changingSort function.
+First run the above script with ACsploit, then use Jython to reorder the input to account for the changingSort function:
+
 `jython reverse_shuffle.py qsort2.txt malicious2.txt`
 
 Finally, we try our new input against `TextCrunchr3` and see if our solution has worked:
+
 `time textcrunchrhost_1 malicious2.txt`
 
 ![Success](images/success_runtime.png)
