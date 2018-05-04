@@ -213,7 +213,7 @@ set exploit.n_inputs 20000
 set input.max_length 4
 set output file
 set output.filename qsort2.txt
-run # this will overwrite qsort.txt from the previous step
+run
 ```
 
 First run the above script with ACsploit, then use Jython to reorder the input to account for the changingSort function:
