@@ -23,6 +23,7 @@ class Http:
         self.options.add_option('separator', 'newline', 'Separator between elements', ['newline', 'comma', 'space',
                                                                                        'tab', 'os_newline', 'CRLF',
                                                                                        'none'])
+        self.options.add_option('custom_separator', '', 'Custom separator to override "separator"')
         self.options.add_option('final_separator', False, 'Whether to end output with an instance of the separator')
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
@@ -39,7 +40,10 @@ class Http:
     def output(self, output_list):
         url_payload = {}
         data_payload = ''
-        separator = Http._SEPARATORS[self.options['separator']]
+        if self.options['custom_separator'] != '':
+            separator = self.options['custom_separator'].encode()
+        else:
+            separator = Http._SEPARATORS[self.options['separator']]
 
         if self.options['use_body']:
             data_payload = separator.join([self.convert_item(item) for item in output_list])
@@ -78,7 +82,7 @@ class Http:
         ))
 
         if self.options['use_body']:
-            print(str(os.linesep + os.linesep + '{}').format(prepared_req.body.decode()))
+            print(str(os.linesep + '{}').format(prepared_req.body.decode()))
             print('{}'.format('------------END------------'))
         else:
             print(str(os.linesep + '{}').format('------------END------------'))
