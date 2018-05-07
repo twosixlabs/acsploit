@@ -4,6 +4,8 @@ VALUES = 'values'
 
 
 class Options(object):
+    TRUE_VALUES = [True, 'True', 'true', 'Yes', 'yes', 'Y', 'y']
+
     def __init__(self):
         self._options = {}
 
@@ -37,7 +39,7 @@ class Options(object):
     def set_value(self, name, value):
         # type conversions for non-str values
         if type(self._options[name][VALUE]) is bool:
-            value = value in [True, 'True', 'true', 'Yes', 'yes', 'Y', 'y']
+            value = value in Options.TRUE_VALUES
         if type(self._options[name][VALUE]) is int:
             value = int(value)
         if type(self._options[name][VALUE]) is float:

@@ -199,11 +199,21 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                     line += ' (Acceptable Values: ' + str(values) + ')'
             eprint(indent + line)
 
+    # type-coerce to the type of rhs and then compare
+    def fuzzy_equals(self, lhs, rhs):
+        t = type(rhs)
+        if t is bool:  # special case bool because bool() treats all strings as True
+            return rhs is (lhs in Options.TRUE_VALUES)
+        try:
+            return t(lhs) == rhs
+        except ValueError:
+            return False
+
     def do_info(self, args):
         """Displays the description of the selected exploit."""
         if self.exploit is None:
             eprint(self.colorize('No exploit set; nothing to describe. Select an exploit with the \'use\' command',
-                                'cyan'))
+                                 'cyan'))
         else:
             eprint(self.colorize('\n  ' + self.exploit.DESCRIPTION + '\n', 'green'))
 
@@ -253,7 +263,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             eprint(no_option_msg)
             return
 
-        options = self.get_options(key)  # This call should always succeed due to the check above
+        options = self.get_options(key)  # this call should always succeed due to the check above
         scoped_key = key.split('.')[1] if '.' in key else key
         values = options.get_acceptable_values(scoped_key)
         if values is not None and value not in values:
@@ -261,10 +271,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             eprint(no_option_msg)
             return
 
-        # cast to str so we can do the comparison no matter the type of options[key]
-        # this can have false negatives due to type conversion issues
-        # eg 1000 != str(1000.0), even though float(1000) == 1000.0
-        if value == str(options[scoped_key]):
+        if self.fuzzy_equals(value, options[scoped_key]):
             eprint(self.colorize('Option {} is already set to {}'.format(key, value), 'cyan'))
             return
 
@@ -289,15 +296,13 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             self.output = ACsploit.outputs[value]()
 
         options[scoped_key] = value
-        # TODO: change to str(options[scoped_key]?
-        # TODO: should it display as what they typed or what got set?
-        # TODO: either is confusing in some situations
         eprint(self.colorize('%s => %s' % (key, value), 'cyan'))
 
     def do_reset(self, args):
         """Resets the current exploit to default options"""
         if self.exploit is None:
-            eprint(self.colorize('No exploit set; nothing to reset. Select an exploit with the \'use\' command', 'cyan'))
+            eprint(self.colorize('No exploit set; nothing to reset. Select an exploit with the \'use\' command',
+                                 'cyan'))
             return
 
         # delete the stored settings and reset the options in the current module
