@@ -216,7 +216,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         if self.exploit is None:
             eprint(self.colorize('No exploit set; no options to show. Select an exploit with the \'use\' command',
-                                'cyan'))
+                                 'cyan'))
             return
 
         describe = args == 'describe'
@@ -257,14 +257,21 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         scoped_key = key.split('.')[1] if '.' in key else key
         values = options.get_acceptable_values(scoped_key)
         if values is not None and value not in values:
-            eprint(self.colorize('{} is not an acceptable value for {}'.format(value, key), 'red'))
+            eprint(self.colorize('{} is not an acceptable value for option {}'.format(value, key), 'red'))
             eprint(no_option_msg)
+            return
+
+        # cast to str so we can do the comparison no matter the type of options[key]
+        # this can have false negatives due to type conversion issues
+        # eg 1000 != str(1000.0), even though float(1000) == 1000.0
+        if value == str(options[scoped_key]):
+            eprint(self.colorize('Option {} is already set to {}'.format(key, value), 'cyan'))
             return
 
         if key in self.defaulted_options:
             if self.script_mode:  # in script mode, warn and continue
                 eprint(self.colorize('The following change may result in degraded exploit performance or failure',
-                                    'yellow'))
+                                     'yellow'))
                 self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
             else:  # in interactive mode, prompt for confirmation
                 confirm_prompt = 'Changing this option may result in degraded exploit performance or failure'
@@ -282,6 +289,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             self.output = ACsploit.outputs[value]()
 
         options[scoped_key] = value
+        # TODO: change to str(options[scoped_key]?
+        # TODO: should it display as what they typed or what got set?
+        # TODO: either is confusing in some situations
         eprint(self.colorize('%s => %s' % (key, value), 'cyan'))
 
     def do_reset(self, args):
