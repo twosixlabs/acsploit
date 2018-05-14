@@ -24,7 +24,7 @@ Exploits must follow the rules below and implement the given API:
 ##### API:
 - Your module must have an `Options` object. Use the `add_option` method to add exploit-specific options. (See below for the options API)
 - Your module must have a `DESCRIPTION` string which briefly describes what the module does and provides a description of the algorithm or approach used by the module.
-  - This 
+  - The algorithm description should be separated from the brief module description by a newline and may contain internal newlines. 
   - You are strongly encouraged to follow the format of the existing exploits in your description.
 - Your module must have a method `run(generator, output)`. This method will be called when your exploit is used.
   - `generator` is an input generator object (see below for the input generator API).
