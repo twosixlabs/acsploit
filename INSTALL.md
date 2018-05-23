@@ -5,7 +5,7 @@
 ```
 $ python --version
 Python 3.6
-$ git clone TKTK-URL-GOES-HERE-TKTK
+$ git clone https://github.com/twosixlabs/acsploit.git
 $ cd acsploit
 $ python -m venv acvenv
 $ source acvenv/bin/activate
@@ -23,7 +23,7 @@ If you do not have `python3` installed on your system see [here](https://www.pyt
 
 #### Downloading ACsploit
 
-Run `git clone TKTK-URL-GOES-HERE-TKTK` to check out the newest version of ACsploit into the current folder, then `cd acsploit`.
+Run `git clone https://github.com/twosixlabs/acsploit.git` to check out the newest version of ACsploit into the current folder, then `cd acsploit`.
 
 #### Creating and activating a `virtualenv`
 
