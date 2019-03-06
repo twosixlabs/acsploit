@@ -23,10 +23,12 @@ from options import Options
 
 
 def eprint(*args, **kwargs):
+    """Print helper to stderr."""
     print(*args, file=sys.stderr, **kwargs)
 
 
 def exploit_path_complete(text, line, begidx, endidx, match_against):
+    """Returns a list of exploit paths for tab completion"""
     split_line = line.split(maxsplit=1)
     full_text = split_line[1] if len(split_line) == 2 else ''
     match_begidx = len(full_text) - len(text)
@@ -43,6 +45,7 @@ def exploit_path_complete(text, line, begidx, endidx, match_against):
 
 
 def get_exploits():
+    """Find and load all exploit modules."""
     results = {}
     for loader, name, ispkg in pkgutil.walk_packages(exploits.__path__):
         m = loader.find_module(name).load_module(name)
@@ -55,6 +58,7 @@ def get_exploits():
 
 
 def get_inputs():
+    """Get all input modules."""
     inputs = {}
     for obj in vars(input).values():
         if hasattr(obj, 'INPUT_NAME'):
@@ -64,6 +68,7 @@ def get_inputs():
 
 
 def get_outputs():
+    """Get all output modules."""
     outputs = {}
     for obj in vars(output).values():
         if hasattr(obj, 'OUTPUT_NAME'):
@@ -73,6 +78,8 @@ def get_outputs():
 
 
 class ACsploit(cmd2.Cmd):
+    """An interactive command-line utility to generate worst-case inputs to commonly used algorithms."""
+
     intro = r"""
                              .__         .__  __
 _____    ____   ____________ |  |   ____ |__|/  |_
@@ -89,6 +96,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     exploits = get_exploits()
 
     def __init__(self, hist_file):
+        """Initialization and setup of ACsploit."""
         self.setup_cmd2(hist_file)
 
         # Register tab-completion function
@@ -106,6 +114,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.script_mode = False
 
     def setup_cmd2(self, hist_file):
+        """"Set up interactive command line interface."""
         # delete unused commands that are baked-into cmd2 and set some options
         del cmd2.Cmd.do_py
         del cmd2.Cmd.do_edit
@@ -129,10 +138,12 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.exclude_from_help.append('do_exit')  # TODO: come back to this?
 
     def make_prompt(self, location=None):
+        """Create the command line prompt."""
         prompt = '(acsploit : %s) ' % location if location is not None else '(acsploit) '
         return self.colorize(prompt, 'blue')
 
     def complete_set(self, text, line, begidx, endidx):
+        """Provide tab completion for the "set" option."""
         # text = line[begidx:endidx] is the word we want to complete
         # split the completed words, should either be ['set'], or ['set', <option_key>]
         split_line = line[:begidx].split()
@@ -150,8 +161,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         return []
 
-    # returns the names of all options within current exploit, input , and output options
     def get_option_names(self):
+        """Returns the names of all options within current exploit, input , and output options."""
         # There are no options until the current exploit is set
         if self.exploit is None:
             return []
@@ -169,8 +180,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         return option_names
 
-    # returns the options object containing the given key
     def get_options(self, key):
+        """Returns the options object containing the given key."""
         if key in self.options.get_option_names():
             return self.options
 
@@ -189,6 +200,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             return None
 
     def print_options(self, options, describe=False, indent_level=0):
+        """Print available options and current values."""
         indent = '  ' * indent_level
         for option in options.get_option_names():
             line = self.colorize(option + ': ', 'green') + str(options[option])
@@ -199,8 +211,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                     line += ' (Acceptable Values: ' + str(values) + ')'
             eprint(indent + line)
 
-    # type-coerce to the type of rhs and then compare
     def fuzzy_equals(self, lhs, rhs):
+        """Type-coerce to the type of rhs and then compare, Returns True if equals."""
         t = type(rhs)
         if t is bool:  # special case bool because bool() treats all strings as True
             return rhs is (lhs in Options.TRUE_VALUES)
@@ -245,6 +257,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         eprint()
 
     def do_exit(self, args):
+        """Exit ACsploit."""
         self._should_quit = True
         return self._STOP_AND_EXIT
 
@@ -341,8 +354,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             eprint(self.colorize('    ' + key, 'green'))
         eprint()
 
-    # sets exploit_name as the current exploit; restores saved settings or sets default values
     def update_exploit(self, exploit_name):
+        """Sets the exploit name as the current exploit and restores saved settings or sets default values."""
         if exploit_name not in ACsploit.exploits:
             eprint((self.colorize('Exploit ' + exploit_name + ' does not exist', 'red')))
             return
