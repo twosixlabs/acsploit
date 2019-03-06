@@ -1,0 +1,1492 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.2" />
+<title>acsploit API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}#index .two-column{column-count:2}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>acsploit</code> module</h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">#! /usr/bin/env python3
+
+# this is necessary so python2 doesn&#39;t throw a syntax error over the definition of eprint()
+#  and can thus pass through syntax checking to actually running this file, at which point
+#  it will properly bail out on the system version check
+from __future__ import print_function
+
+import sys
+if sys.hexversion &lt; 0x03050000:
+    raise Exception(&#39;ACsploit requires Python 3.5 or higher&#39;)
+
+import exploits
+import cmd2
+import input
+import output
+import os
+import pkgutil
+import functools
+import argparse
+import importlib
+
+from options import Options
+
+
+def eprint(*args, **kwargs):
+    &#34;&#34;&#34;Print helper to stderr.&#34;&#34;&#34;
+    print(*args, file=sys.stderr, **kwargs)
+
+
+def exploit_path_complete(text, line, begidx, endidx, match_against):
+    &#34;&#34;&#34;Returns a list of exploit paths for tab completion&#34;&#34;&#34;
+    split_line = line.split(maxsplit=1)
+    full_text = split_line[1] if len(split_line) == 2 else &#39;&#39;
+    match_begidx = len(full_text) - len(text)
+    result_set = set()
+    for match in match_against:
+        if match.startswith(full_text):
+            match_endidx = match.find(&#39;/&#39;, match_begidx)
+            if match_endidx != -1:
+                result_set.add(match[match_begidx:match_endidx+1])
+            else:
+                result_set.add(match[match_begidx:])
+
+    return sorted(result_set)
+
+
+def get_exploits():
+    &#34;&#34;&#34;Find and load all exploit modules.&#34;&#34;&#34;
+    results = {}
+    for loader, name, ispkg in pkgutil.walk_packages(exploits.__path__):
+        m = loader.find_module(name).load_module(name)
+
+        if not ispkg and hasattr(m, &#39;options&#39;) and hasattr(m, &#39;run&#39;):
+            exploit = name.replace(&#39;.&#39;, &#39;/&#39;)
+            results[exploit] = m
+
+    return results
+
+
+def get_inputs():
+    &#34;&#34;&#34;Get all input modules.&#34;&#34;&#34;
+    inputs = {}
+    for obj in vars(input).values():
+        if hasattr(obj, &#39;INPUT_NAME&#39;):
+            inputs[obj.INPUT_NAME] = obj
+
+    return inputs
+
+
+def get_outputs():
+    &#34;&#34;&#34;Get all output modules.&#34;&#34;&#34;
+    outputs = {}
+    for obj in vars(output).values():
+        if hasattr(obj, &#39;OUTPUT_NAME&#39;):
+            outputs[obj.OUTPUT_NAME] = obj
+
+    return outputs
+
+
+class ACsploit(cmd2.Cmd):
+    &#34;&#34;&#34;An interactive command-line utility to generate worst-case inputs to commonly used algorithms.&#34;&#34;&#34;
+
+    intro = r&#34;&#34;&#34;
+                             .__         .__  __
+_____    ____   ____________ |  |   ____ |__|/  |_
+\__  \ _/ ___\ /  ___/\____ \|  |  /  _ \|  \   __\
+ / __ \\  \___ \___ \ |  |_&gt; &gt;  |_(  &lt;_&gt; )  ||  |
+(____  /\___  &gt;____  &gt;|   __/|____/\____/|__||__|
+     \/     \/     \/ |__|
+
+&#34;&#34;&#34;
+
+    # find all inputs, outputs, exploits
+    inputs = get_inputs()
+    outputs = get_outputs()
+    exploits = get_exploits()
+
+    def __init__(self, hist_file):
+        &#34;&#34;&#34;Initialization and setup of ACsploit.&#34;&#34;&#34;
+        self.setup_cmd2(hist_file)
+
+        # Register tab-completion function
+        self.complete_use = functools.partial(exploit_path_complete, match_against=ACsploit.exploits)
+
+        self.prompt = self.make_prompt()
+
+        self.exploit = None
+        self.exploit_name = &#39;&#39;
+        self.input = None
+        self.output = None
+        self.options = Options()
+        self.defaulted_options = []
+
+        self.script_mode = False
+
+    def setup_cmd2(self, hist_file):
+        &#34;&#34;&#34;&#34;Set up interactive command line interface.&#34;&#34;&#34;
+        # delete unused commands that are baked-into cmd2 and set some options
+        del cmd2.Cmd.do_py
+        del cmd2.Cmd.do_edit
+        del cmd2.Cmd.do_shortcuts
+        del cmd2.Cmd.do_pyscript
+        del cmd2.Cmd.do_set
+        del cmd2.Cmd.do_alias
+        del cmd2.Cmd.do_unalias
+        del cmd2.Cmd.do_load
+        cmd2.Cmd.abbrev = True
+        self.allow_cli_args = False  # disable parsing of command-line args by cmd2
+        self.allow_redirection = False  # disable redirection to enable right shift (&gt;&gt;) in custom_hash to work
+        self.redirector = &#39;\xff&#39;  # disable redirection in the parser as well
+        self.shortcuts.update({&#39;sh&#39;: &#39;show&#39;})  # don&#39;t want &#34;sh&#34; to trigger the hidden &#34;shell&#34; command
+
+        # init cmd2 and the history file
+        cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
+
+        # disable help on builtins
+        self.exclude_from_help.append(&#39;do_shell&#39;)  # TODO: this still gets tab-completed and is &#39;help&#39;-able
+        self.exclude_from_help.append(&#39;do_exit&#39;)  # TODO: come back to this?
+
+    def make_prompt(self, location=None):
+        &#34;&#34;&#34;Create the command line prompt.&#34;&#34;&#34;
+        prompt = &#39;(acsploit : %s) &#39; % location if location is not None else &#39;(acsploit) &#39;
+        return self.colorize(prompt, &#39;blue&#39;)
+
+    def complete_set(self, text, line, begidx, endidx):
+        &#34;&#34;&#34;Provide tab completion for the &#34;set&#34; option.&#34;&#34;&#34;
+        # text = line[begidx:endidx] is the word we want to complete
+        # split the completed words, should either be [&#39;set&#39;], or [&#39;set&#39;, &lt;option_key&gt;]
+        split_line = line[:begidx].split()
+        if len(split_line) == 1:
+            return [option for option in self.get_option_names() if option.startswith(text) or &#39;.&#39; + text in option]
+
+        if len(split_line) == 2:
+            key = split_line[1]
+            options = self.get_options(key)
+            if options is not None:
+                scoped_key = key.split(&#39;.&#39;)[1] if &#39;.&#39; in key else key
+                values = options.get_acceptable_values(scoped_key)
+                if values is not None:
+                    return [value for value in values if value.startswith(text)]
+
+        return []
+
+    def get_option_names(self):
+        &#34;&#34;&#34;Returns the names of all options within current exploit, input , and output options.&#34;&#34;&#34;
+        # There are no options until the current exploit is set
+        if self.exploit is None:
+            return []
+
+        option_names = self.options.get_option_names()
+
+        if self.input is not None:
+            option_names += [&#39;input.&#39; + option for option in self.input.options.get_option_names()]
+
+        if self.output is not None:
+            option_names += [&#39;output.&#39; + option for option in self.output.options.get_option_names()]
+
+        if self.exploit is not None:
+            option_names += [&#39;exploit.&#39; + option for option in self.exploit.options.get_option_names()]
+
+        return option_names
+
+    def get_options(self, key):
+        &#34;&#34;&#34;Returns the options object containing the given key.&#34;&#34;&#34;
+        if key in self.options.get_option_names():
+            return self.options
+
+        try:
+            scope, scoped_key = key.split(&#39;.&#39;)
+        except ValueError:
+            return None
+
+        if scope == &#39;input&#39; and scoped_key in self.input.options.get_option_names():
+            return self.input.options
+        elif scope == &#39;output&#39; and scoped_key in self.output.options.get_option_names():
+            return self.output.options
+        elif scope == &#39;exploit&#39; and scoped_key in self.exploit.options.get_option_names():
+            return self.exploit.options
+        else:
+            return None
+
+    def print_options(self, options, describe=False, indent_level=0):
+        &#34;&#34;&#34;Print available options and current values.&#34;&#34;&#34;
+        indent = &#39;  &#39; * indent_level
+        for option in options.get_option_names():
+            line = self.colorize(option + &#39;: &#39;, &#39;green&#39;) + str(options[option])
+            if describe:
+                line += &#39; (&#39; + options.get_description(option) + &#39;)&#39;
+                values = options.get_acceptable_values(option)
+                if values is not None:
+                    line += &#39; (Acceptable Values: &#39; + str(values) + &#39;)&#39;
+            eprint(indent + line)
+
+    def fuzzy_equals(self, lhs, rhs):
+        &#34;&#34;&#34;Type-coerce to the type of rhs and then compare, Returns True if equals.&#34;&#34;&#34;
+        t = type(rhs)
+        if t is bool:  # special case bool because bool() treats all strings as True
+            return rhs is (lhs in Options.TRUE_VALUES)
+        try:
+            return t(lhs) == rhs
+        except ValueError:
+            return False
+
+    def do_info(self, args):
+        &#34;&#34;&#34;Displays the description of the selected exploit.&#34;&#34;&#34;
+        if self.exploit is None:
+            eprint(self.colorize(&#39;No exploit set; nothing to describe. Select an exploit with the \&#39;use\&#39; command&#39;,
+                                 &#39;cyan&#39;))
+        else:
+            eprint(self.colorize(&#39;\n  &#39; + self.exploit.DESCRIPTION + &#39;\n&#39;, &#39;green&#39;))
+
+    def do_options(self, args):
+        &#34;&#34;&#34;Displays options for the selected exploit. Use &#39;options describe&#39; to see descriptions&#34;&#34;&#34;
+        if args not in [&#39;&#39;, &#39;describe&#39;]:
+            eprint(self.colorize(&#39;Unsupported argument to options&#39;, &#39;red&#39;))
+            self.do_help(&#39;options&#39;)
+            return
+
+        if self.exploit is None:
+            eprint(self.colorize(&#39;No exploit set; no options to show. Select an exploit with the \&#39;use\&#39; command&#39;,
+                                 &#39;cyan&#39;))
+            return
+
+        describe = args == &#39;describe&#39;
+
+        eprint()
+        self.print_options(self.options, describe, indent_level=1)
+        if self.input is not None:
+            eprint(self.colorize(&#39;\n  Input options&#39;, &#39;green&#39;))
+            self.print_options(self.input.options, describe, indent_level=2)
+        if self.output is not None:
+            eprint(self.colorize(&#39;\n  Output options&#39;, &#39;green&#39;))
+            self.print_options(self.output.options, describe, indent_level=2)
+        if self.exploit is not None:
+            eprint(self.colorize(&#39;\n  Exploit options&#39;, &#39;green&#39;))
+            self.print_options(self.exploit.options, describe, indent_level=2)
+        eprint()
+
+    def do_exit(self, args):
+        &#34;&#34;&#34;Exit ACsploit.&#34;&#34;&#34;
+        self._should_quit = True
+        return self._STOP_AND_EXIT
+
+    def do_set(self, args):
+        &#34;&#34;&#34;Sets an option. Usage: set [option_name] [value]&#34;&#34;&#34;
+        try:
+            key, value = args.split(maxsplit=1)
+        except ValueError:
+            eprint(&#39;Usage: set [option_name] [value]&#39;)
+            return
+
+        no_option_msg = self.colorize(&#39;No option set&#39;, &#39;cyan&#39;)
+
+        if key not in self.get_option_names():
+            eprint(self.colorize(&#39;Option {} does not exist&#39;.format(key), &#39;red&#39;))
+            eprint(no_option_msg)
+            return
+
+        options = self.get_options(key)  # this call should always succeed due to the check above
+        scoped_key = key.split(&#39;.&#39;)[1] if &#39;.&#39; in key else key
+        values = options.get_acceptable_values(scoped_key)
+        if values is not None and value not in values:
+            eprint(self.colorize(&#39;{} is not an acceptable value for option {}&#39;.format(value, key), &#39;red&#39;))
+            eprint(no_option_msg)
+            return
+
+        if self.fuzzy_equals(value, options[scoped_key]):
+            eprint(self.colorize(&#39;Option {} is already set to {}&#39;.format(key, value), &#39;cyan&#39;))
+            return
+
+        if key in self.defaulted_options:
+            if self.script_mode:  # in script mode, warn and continue
+                eprint(self.colorize(&#39;The following change may result in degraded exploit performance or failure&#39;,
+                                     &#39;yellow&#39;))
+                self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
+            else:  # in interactive mode, prompt for confirmation
+                confirm_prompt = &#39;Changing this option may result in degraded exploit performance or failure&#39;
+                confirmation = __builtins__.input(self.colorize(confirm_prompt + &#39;\nDo you want to continue? [y|N] &#39;,
+                                                                &#39;yellow&#39;))
+                if confirmation.lower() in [&#39;yes&#39;, &#39;y&#39;]:
+                    self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
+                else:
+                    eprint(no_option_msg)
+                    return
+
+        if key == &#39;input&#39;:
+            self.input = ACsploit.inputs[value]()
+        elif key == &#39;output&#39;:
+            self.output = ACsploit.outputs[value]()
+
+        options[scoped_key] = value
+        eprint(self.colorize(&#39;%s =&gt; %s&#39; % (key, value), &#39;cyan&#39;))
+
+    def do_reset(self, args):
+        &#34;&#34;&#34;Resets the current exploit to default options&#34;&#34;&#34;
+        if self.exploit is None:
+            eprint(self.colorize(&#39;No exploit set; nothing to reset. Select an exploit with the \&#39;use\&#39; command&#39;,
+                                 &#39;cyan&#39;))
+            return
+
+        # delete the stored settings and reset the options in the current module
+        if hasattr(self.exploit, &#39;_ACsploit_exploit_settings&#39;):
+            del self.exploit._ACsploit_exploit_settings
+
+        importlib.reload(self.exploit)  # we need to do this to reset currexp.options back to original values
+
+        self.exploit = None
+        self.update_exploit(self.exploit_name)
+
+    def do_use(self, args):
+        &#34;&#34;&#34;Sets the current exploit. Usage: use [exploit_name]&#34;&#34;&#34;
+        if len(args) &gt; 0:
+            self.update_exploit(args.split()[0])
+        else:
+            eprint(self.colorize(&#39;Usage: use [exploit_name]&#39;, &#39;red&#39;))
+            return
+
+    def do_show(self, args):
+        &#34;&#34;&#34;Lists all available exploits.&#34;&#34;&#34;
+        eprint(self.colorize(&#39;\nAvailable exploits:&#39;, &#39;green&#39;))
+        for key in sorted(ACsploit.exploits):
+            eprint(self.colorize(&#39;    &#39; + key, &#39;green&#39;))
+        eprint()
+
+    def update_exploit(self, exploit_name):
+        &#34;&#34;&#34;Sets the exploit name as the current exploit and restores saved settings or sets default values.&#34;&#34;&#34;
+        if exploit_name not in ACsploit.exploits:
+            eprint((self.colorize(&#39;Exploit &#39; + exploit_name + &#39; does not exist&#39;, &#39;red&#39;)))
+            return
+
+        # save current input/output and  to current exploit in private variables
+        # this allows restoration of the current settings f the exploit is used again
+        if self.exploit is not None:
+            self.exploit._ACsploit_exploit_settings = {
+                &#39;input&#39;: self.input,
+                &#39;output&#39;: self.output,
+                &#39;options&#39;: self.options,
+                &#39;defaulted_options&#39;: self.defaulted_options,
+            }
+
+        # set the new exploit; restore previous input/output
+        self.exploit_name = exploit_name
+        self.exploit = ACsploit.exploits[exploit_name]
+        self.prompt = self.make_prompt(exploit_name)
+
+        eprint(self.colorize(&#39;exploit =&gt; %s&#39; % exploit_name, &#39;cyan&#39;))
+
+        if hasattr(self.exploit, &#39;_ACsploit_exploit_settings&#39;):
+            self.input = self.exploit._ACsploit_exploit_settings[&#39;input&#39;]
+            self.output = self.exploit._ACsploit_exploit_settings[&#39;output&#39;]
+            self.options = self.exploit._ACsploit_exploit_settings[&#39;options&#39;]
+            self.defaulted_options = self.exploit._ACsploit_exploit_settings[&#39;defaulted_options&#39;]
+
+        else:
+            input_desc = &#39;Input generator to use with exploits&#39;
+            output_desc = &#39;Output generator to use with exploits&#39;
+            self.defaulted_options = []
+            self.options = Options()
+
+            # set default input and output for new exploit, if any
+            if hasattr(self.exploit, &#39;NO_INPUT&#39;) and self.exploit.NO_INPUT:
+                self.input = None
+            elif hasattr(self.exploit, &#39;DEFAULT_INPUT&#39;):
+                self.options.add_option(&#39;input&#39;, self.exploit.DEFAULT_INPUT, input_desc,
+                                        list(ACsploit.inputs.keys()))
+                self.defaulted_options.append(&#39;input&#39;)
+                self.input = ACsploit.inputs[self.exploit.DEFAULT_INPUT]()
+            else:
+                # We set string as the default input, but do not warn if this option is changed
+                self.options.add_option(&#39;input&#39;, &#39;string&#39;, input_desc, list(ACsploit.inputs.keys()))
+                self.input = ACsploit.inputs[&#39;string&#39;]()
+
+            if hasattr(self.exploit, &#39;DEFAULT_OUTPUT&#39;):
+                self.options.add_option(&#39;output&#39;, self.exploit.DEFAULT_OUTPUT, output_desc,
+                                        list(ACsploit.outputs.keys()))
+                self.defaulted_options.append(&#39;output&#39;)
+                self.output = ACsploit.outputs[self.exploit.DEFAULT_OUTPUT]()
+            else:
+                # We set stdout as the default output, but do not warn if this option is changed
+                self.options.add_option(&#39;output&#39;, &#39;stdout&#39;, output_desc, list(ACsploit.outputs.keys()))
+                self.output = ACsploit.outputs[&#39;stdout&#39;]()
+
+            # set defaults for input and output settings for new exploit, if any
+            if hasattr(self.exploit, &#39;DEFAULT_INPUT_OPTIONS&#39;):
+                for option, value in self.exploit.DEFAULT_INPUT_OPTIONS.items():
+                    self.input.set_option(option, value)
+                    self.defaulted_options.append(&#39;input.%s&#39; % option)
+            if hasattr(self.exploit, &#39;DEFAULT_OUTPUT_OPTIONS&#39;):
+                for option, value in self.exploit.DEFAULT_OUTPUT_OPTIONS.items():
+                    self.output.options.set_value(option, value)
+                    self.defaulted_options.append(&#39;output.%s&#39; % option)
+
+    def do_run(self, args):
+        &#34;&#34;&#34;Runs the current exploit&#34;&#34;&#34;
+        if self.exploit is None:
+            eprint(self.colorize(&#39;No exploit set; nothing to do. Select an exploit with the \&#39;use\&#39; command&#39;, &#39;cyan&#39;))
+        else:
+            eprint(self.colorize(&#39;Running %s...&#39; % self.exploit_name, &#39;cyan&#39;))
+            if self.input is None:
+                self.exploit.run(self.output)
+            else:
+                # prepare is used to update internal state of input generators prior to running
+                if hasattr(self.input, &#39;prepare&#39;):
+                    self.input.prepare()
+                self.exploit.run(self.input, self.output)
+            eprint(self.colorize(&#39;Finished running %s&#39; % self.exploit_name, &#39;cyan&#39;))
+
+
+if __name__ == &#39;__main__&#39;:
+
+    history_file = os.path.join(os.path.expanduser(&#39;~&#39;), &#39;.acsploit_history&#39;)
+    if not os.path.isfile(history_file):
+        with open(history_file, &#39;w&#39;) as f:
+            f.write(&#39;&#39;)
+
+    parser = argparse.ArgumentParser(description=&#39;A tool for generating worst-case inputs for algorithms&#39;)
+    parser.add_argument(&#39;--debug&#39;, action=&#39;store_true&#39;, help=&#39;show debug stack traces&#39;)
+    parser.add_argument(&#39;--load-file&#39;, metavar=&#39;FILE&#39;, default=None, help=&#39;load commands from file and then exit&#39;)
+
+    args = parser.parse_args()
+
+    cmdlineobj = ACsploit(hist_file=history_file)
+    cmdlineobj.debug = args.debug
+
+    if args.load_file is not None:
+        try:
+            with open(args.load_file) as script:
+                lines = [line.strip().split(&#39;#&#39;, 1)[0] for line in script]  # `#` is a comment in scripts
+                cmdlineobj.script_mode = True
+                cmdlineobj.runcmds_plus_hooks(lines)
+        except OSError:
+            eprint(cmdlineobj.colorize(&#39;Could not open file %s&#39; % args.load_file, &#39;red&#39;))
+    else:
+        cmdlineobj.cmdloop()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="acsploit.eprint"><code class="name flex">
+<span>def <span class="ident">eprint</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Print helper to stderr.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def eprint(*args, **kwargs):
+    &#34;&#34;&#34;Print helper to stderr.&#34;&#34;&#34;
+    print(*args, file=sys.stderr, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="acsploit.exploit_path_complete"><code class="name flex">
+<span>def <span class="ident">exploit_path_complete</span></span>(<span>text, line, begidx, endidx, match_against)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a list of exploit paths for tab completion</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def exploit_path_complete(text, line, begidx, endidx, match_against):
+    &#34;&#34;&#34;Returns a list of exploit paths for tab completion&#34;&#34;&#34;
+    split_line = line.split(maxsplit=1)
+    full_text = split_line[1] if len(split_line) == 2 else &#39;&#39;
+    match_begidx = len(full_text) - len(text)
+    result_set = set()
+    for match in match_against:
+        if match.startswith(full_text):
+            match_endidx = match.find(&#39;/&#39;, match_begidx)
+            if match_endidx != -1:
+                result_set.add(match[match_begidx:match_endidx+1])
+            else:
+                result_set.add(match[match_begidx:])
+
+    return sorted(result_set)</code></pre>
+</details>
+</dd>
+<dt id="acsploit.get_exploits"><code class="name flex">
+<span>def <span class="ident">get_exploits</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Find and load all exploit modules.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_exploits():
+    &#34;&#34;&#34;Find and load all exploit modules.&#34;&#34;&#34;
+    results = {}
+    for loader, name, ispkg in pkgutil.walk_packages(exploits.__path__):
+        m = loader.find_module(name).load_module(name)
+
+        if not ispkg and hasattr(m, &#39;options&#39;) and hasattr(m, &#39;run&#39;):
+            exploit = name.replace(&#39;.&#39;, &#39;/&#39;)
+            results[exploit] = m
+
+    return results</code></pre>
+</details>
+</dd>
+<dt id="acsploit.get_inputs"><code class="name flex">
+<span>def <span class="ident">get_inputs</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Get all input modules.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_inputs():
+    &#34;&#34;&#34;Get all input modules.&#34;&#34;&#34;
+    inputs = {}
+    for obj in vars(input).values():
+        if hasattr(obj, &#39;INPUT_NAME&#39;):
+            inputs[obj.INPUT_NAME] = obj
+
+    return inputs</code></pre>
+</details>
+</dd>
+<dt id="acsploit.get_outputs"><code class="name flex">
+<span>def <span class="ident">get_outputs</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Get all output modules.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_outputs():
+    &#34;&#34;&#34;Get all output modules.&#34;&#34;&#34;
+    outputs = {}
+    for obj in vars(output).values():
+        if hasattr(obj, &#39;OUTPUT_NAME&#39;):
+            outputs[obj.OUTPUT_NAME] = obj
+
+    return outputs</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="acsploit.ACsploit"><code class="flex name class">
+<span>class <span class="ident">ACsploit</span></span>
+<span>(</span><span><small>ancestors:</small> cmd2.Cmd, cmd.Cmd)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>An interactive command-line utility to generate worst-case inputs to commonly used algorithms.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class ACsploit(cmd2.Cmd):
+    &#34;&#34;&#34;An interactive command-line utility to generate worst-case inputs to commonly used algorithms.&#34;&#34;&#34;
+
+    intro = r&#34;&#34;&#34;
+                             .__         .__  __
+_____    ____   ____________ |  |   ____ |__|/  |_
+\__  \ _/ ___\ /  ___/\____ \|  |  /  _ \|  \   __\
+ / __ \\  \___ \___ \ |  |_&gt; &gt;  |_(  &lt;_&gt; )  ||  |
+(____  /\___  &gt;____  &gt;|   __/|____/\____/|__||__|
+     \/     \/     \/ |__|
+
+&#34;&#34;&#34;
+
+    # find all inputs, outputs, exploits
+    inputs = get_inputs()
+    outputs = get_outputs()
+    exploits = get_exploits()
+
+    def __init__(self, hist_file):
+        &#34;&#34;&#34;Initialization and setup of ACsploit.&#34;&#34;&#34;
+        self.setup_cmd2(hist_file)
+
+        # Register tab-completion function
+        self.complete_use = functools.partial(exploit_path_complete, match_against=ACsploit.exploits)
+
+        self.prompt = self.make_prompt()
+
+        self.exploit = None
+        self.exploit_name = &#39;&#39;
+        self.input = None
+        self.output = None
+        self.options = Options()
+        self.defaulted_options = []
+
+        self.script_mode = False
+
+    def setup_cmd2(self, hist_file):
+        &#34;&#34;&#34;&#34;Set up interactive command line interface.&#34;&#34;&#34;
+        # delete unused commands that are baked-into cmd2 and set some options
+        del cmd2.Cmd.do_py
+        del cmd2.Cmd.do_edit
+        del cmd2.Cmd.do_shortcuts
+        del cmd2.Cmd.do_pyscript
+        del cmd2.Cmd.do_set
+        del cmd2.Cmd.do_alias
+        del cmd2.Cmd.do_unalias
+        del cmd2.Cmd.do_load
+        cmd2.Cmd.abbrev = True
+        self.allow_cli_args = False  # disable parsing of command-line args by cmd2
+        self.allow_redirection = False  # disable redirection to enable right shift (&gt;&gt;) in custom_hash to work
+        self.redirector = &#39;\xff&#39;  # disable redirection in the parser as well
+        self.shortcuts.update({&#39;sh&#39;: &#39;show&#39;})  # don&#39;t want &#34;sh&#34; to trigger the hidden &#34;shell&#34; command
+
+        # init cmd2 and the history file
+        cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
+
+        # disable help on builtins
+        self.exclude_from_help.append(&#39;do_shell&#39;)  # TODO: this still gets tab-completed and is &#39;help&#39;-able
+        self.exclude_from_help.append(&#39;do_exit&#39;)  # TODO: come back to this?
+
+    def make_prompt(self, location=None):
+        &#34;&#34;&#34;Create the command line prompt.&#34;&#34;&#34;
+        prompt = &#39;(acsploit : %s) &#39; % location if location is not None else &#39;(acsploit) &#39;
+        return self.colorize(prompt, &#39;blue&#39;)
+
+    def complete_set(self, text, line, begidx, endidx):
+        &#34;&#34;&#34;Provide tab completion for the &#34;set&#34; option.&#34;&#34;&#34;
+        # text = line[begidx:endidx] is the word we want to complete
+        # split the completed words, should either be [&#39;set&#39;], or [&#39;set&#39;, &lt;option_key&gt;]
+        split_line = line[:begidx].split()
+        if len(split_line) == 1:
+            return [option for option in self.get_option_names() if option.startswith(text) or &#39;.&#39; + text in option]
+
+        if len(split_line) == 2:
+            key = split_line[1]
+            options = self.get_options(key)
+            if options is not None:
+                scoped_key = key.split(&#39;.&#39;)[1] if &#39;.&#39; in key else key
+                values = options.get_acceptable_values(scoped_key)
+                if values is not None:
+                    return [value for value in values if value.startswith(text)]
+
+        return []
+
+    def get_option_names(self):
+        &#34;&#34;&#34;Returns the names of all options within current exploit, input , and output options.&#34;&#34;&#34;
+        # There are no options until the current exploit is set
+        if self.exploit is None:
+            return []
+
+        option_names = self.options.get_option_names()
+
+        if self.input is not None:
+            option_names += [&#39;input.&#39; + option for option in self.input.options.get_option_names()]
+
+        if self.output is not None:
+            option_names += [&#39;output.&#39; + option for option in self.output.options.get_option_names()]
+
+        if self.exploit is not None:
+            option_names += [&#39;exploit.&#39; + option for option in self.exploit.options.get_option_names()]
+
+        return option_names
+
+    def get_options(self, key):
+        &#34;&#34;&#34;Returns the options object containing the given key.&#34;&#34;&#34;
+        if key in self.options.get_option_names():
+            return self.options
+
+        try:
+            scope, scoped_key = key.split(&#39;.&#39;)
+        except ValueError:
+            return None
+
+        if scope == &#39;input&#39; and scoped_key in self.input.options.get_option_names():
+            return self.input.options
+        elif scope == &#39;output&#39; and scoped_key in self.output.options.get_option_names():
+            return self.output.options
+        elif scope == &#39;exploit&#39; and scoped_key in self.exploit.options.get_option_names():
+            return self.exploit.options
+        else:
+            return None
+
+    def print_options(self, options, describe=False, indent_level=0):
+        &#34;&#34;&#34;Print available options and current values.&#34;&#34;&#34;
+        indent = &#39;  &#39; * indent_level
+        for option in options.get_option_names():
+            line = self.colorize(option + &#39;: &#39;, &#39;green&#39;) + str(options[option])
+            if describe:
+                line += &#39; (&#39; + options.get_description(option) + &#39;)&#39;
+                values = options.get_acceptable_values(option)
+                if values is not None:
+                    line += &#39; (Acceptable Values: &#39; + str(values) + &#39;)&#39;
+            eprint(indent + line)
+
+    def fuzzy_equals(self, lhs, rhs):
+        &#34;&#34;&#34;Type-coerce to the type of rhs and then compare, Returns True if equals.&#34;&#34;&#34;
+        t = type(rhs)
+        if t is bool:  # special case bool because bool() treats all strings as True
+            return rhs is (lhs in Options.TRUE_VALUES)
+        try:
+            return t(lhs) == rhs
+        except ValueError:
+            return False
+
+    def do_info(self, args):
+        &#34;&#34;&#34;Displays the description of the selected exploit.&#34;&#34;&#34;
+        if self.exploit is None:
+            eprint(self.colorize(&#39;No exploit set; nothing to describe. Select an exploit with the \&#39;use\&#39; command&#39;,
+                                 &#39;cyan&#39;))
+        else:
+            eprint(self.colorize(&#39;\n  &#39; + self.exploit.DESCRIPTION + &#39;\n&#39;, &#39;green&#39;))
+
+    def do_options(self, args):
+        &#34;&#34;&#34;Displays options for the selected exploit. Use &#39;options describe&#39; to see descriptions&#34;&#34;&#34;
+        if args not in [&#39;&#39;, &#39;describe&#39;]:
+            eprint(self.colorize(&#39;Unsupported argument to options&#39;, &#39;red&#39;))
+            self.do_help(&#39;options&#39;)
+            return
+
+        if self.exploit is None:
+            eprint(self.colorize(&#39;No exploit set; no options to show. Select an exploit with the \&#39;use\&#39; command&#39;,
+                                 &#39;cyan&#39;))
+            return
+
+        describe = args == &#39;describe&#39;
+
+        eprint()
+        self.print_options(self.options, describe, indent_level=1)
+        if self.input is not None:
+            eprint(self.colorize(&#39;\n  Input options&#39;, &#39;green&#39;))
+            self.print_options(self.input.options, describe, indent_level=2)
+        if self.output is not None:
+            eprint(self.colorize(&#39;\n  Output options&#39;, &#39;green&#39;))
+            self.print_options(self.output.options, describe, indent_level=2)
+        if self.exploit is not None:
+            eprint(self.colorize(&#39;\n  Exploit options&#39;, &#39;green&#39;))
+            self.print_options(self.exploit.options, describe, indent_level=2)
+        eprint()
+
+    def do_exit(self, args):
+        &#34;&#34;&#34;Exit ACsploit.&#34;&#34;&#34;
+        self._should_quit = True
+        return self._STOP_AND_EXIT
+
+    def do_set(self, args):
+        &#34;&#34;&#34;Sets an option. Usage: set [option_name] [value]&#34;&#34;&#34;
+        try:
+            key, value = args.split(maxsplit=1)
+        except ValueError:
+            eprint(&#39;Usage: set [option_name] [value]&#39;)
+            return
+
+        no_option_msg = self.colorize(&#39;No option set&#39;, &#39;cyan&#39;)
+
+        if key not in self.get_option_names():
+            eprint(self.colorize(&#39;Option {} does not exist&#39;.format(key), &#39;red&#39;))
+            eprint(no_option_msg)
+            return
+
+        options = self.get_options(key)  # this call should always succeed due to the check above
+        scoped_key = key.split(&#39;.&#39;)[1] if &#39;.&#39; in key else key
+        values = options.get_acceptable_values(scoped_key)
+        if values is not None and value not in values:
+            eprint(self.colorize(&#39;{} is not an acceptable value for option {}&#39;.format(value, key), &#39;red&#39;))
+            eprint(no_option_msg)
+            return
+
+        if self.fuzzy_equals(value, options[scoped_key]):
+            eprint(self.colorize(&#39;Option {} is already set to {}&#39;.format(key, value), &#39;cyan&#39;))
+            return
+
+        if key in self.defaulted_options:
+            if self.script_mode:  # in script mode, warn and continue
+                eprint(self.colorize(&#39;The following change may result in degraded exploit performance or failure&#39;,
+                                     &#39;yellow&#39;))
+                self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
+            else:  # in interactive mode, prompt for confirmation
+                confirm_prompt = &#39;Changing this option may result in degraded exploit performance or failure&#39;
+                confirmation = __builtins__.input(self.colorize(confirm_prompt + &#39;\nDo you want to continue? [y|N] &#39;,
+                                                                &#39;yellow&#39;))
+                if confirmation.lower() in [&#39;yes&#39;, &#39;y&#39;]:
+                    self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
+                else:
+                    eprint(no_option_msg)
+                    return
+
+        if key == &#39;input&#39;:
+            self.input = ACsploit.inputs[value]()
+        elif key == &#39;output&#39;:
+            self.output = ACsploit.outputs[value]()
+
+        options[scoped_key] = value
+        eprint(self.colorize(&#39;%s =&gt; %s&#39; % (key, value), &#39;cyan&#39;))
+
+    def do_reset(self, args):
+        &#34;&#34;&#34;Resets the current exploit to default options&#34;&#34;&#34;
+        if self.exploit is None:
+            eprint(self.colorize(&#39;No exploit set; nothing to reset. Select an exploit with the \&#39;use\&#39; command&#39;,
+                                 &#39;cyan&#39;))
+            return
+
+        # delete the stored settings and reset the options in the current module
+        if hasattr(self.exploit, &#39;_ACsploit_exploit_settings&#39;):
+            del self.exploit._ACsploit_exploit_settings
+
+        importlib.reload(self.exploit)  # we need to do this to reset currexp.options back to original values
+
+        self.exploit = None
+        self.update_exploit(self.exploit_name)
+
+    def do_use(self, args):
+        &#34;&#34;&#34;Sets the current exploit. Usage: use [exploit_name]&#34;&#34;&#34;
+        if len(args) &gt; 0:
+            self.update_exploit(args.split()[0])
+        else:
+            eprint(self.colorize(&#39;Usage: use [exploit_name]&#39;, &#39;red&#39;))
+            return
+
+    def do_show(self, args):
+        &#34;&#34;&#34;Lists all available exploits.&#34;&#34;&#34;
+        eprint(self.colorize(&#39;\nAvailable exploits:&#39;, &#39;green&#39;))
+        for key in sorted(ACsploit.exploits):
+            eprint(self.colorize(&#39;    &#39; + key, &#39;green&#39;))
+        eprint()
+
+    def update_exploit(self, exploit_name):
+        &#34;&#34;&#34;Sets the exploit name as the current exploit and restores saved settings or sets default values.&#34;&#34;&#34;
+        if exploit_name not in ACsploit.exploits:
+            eprint((self.colorize(&#39;Exploit &#39; + exploit_name + &#39; does not exist&#39;, &#39;red&#39;)))
+            return
+
+        # save current input/output and  to current exploit in private variables
+        # this allows restoration of the current settings f the exploit is used again
+        if self.exploit is not None:
+            self.exploit._ACsploit_exploit_settings = {
+                &#39;input&#39;: self.input,
+                &#39;output&#39;: self.output,
+                &#39;options&#39;: self.options,
+                &#39;defaulted_options&#39;: self.defaulted_options,
+            }
+
+        # set the new exploit; restore previous input/output
+        self.exploit_name = exploit_name
+        self.exploit = ACsploit.exploits[exploit_name]
+        self.prompt = self.make_prompt(exploit_name)
+
+        eprint(self.colorize(&#39;exploit =&gt; %s&#39; % exploit_name, &#39;cyan&#39;))
+
+        if hasattr(self.exploit, &#39;_ACsploit_exploit_settings&#39;):
+            self.input = self.exploit._ACsploit_exploit_settings[&#39;input&#39;]
+            self.output = self.exploit._ACsploit_exploit_settings[&#39;output&#39;]
+            self.options = self.exploit._ACsploit_exploit_settings[&#39;options&#39;]
+            self.defaulted_options = self.exploit._ACsploit_exploit_settings[&#39;defaulted_options&#39;]
+
+        else:
+            input_desc = &#39;Input generator to use with exploits&#39;
+            output_desc = &#39;Output generator to use with exploits&#39;
+            self.defaulted_options = []
+            self.options = Options()
+
+            # set default input and output for new exploit, if any
+            if hasattr(self.exploit, &#39;NO_INPUT&#39;) and self.exploit.NO_INPUT:
+                self.input = None
+            elif hasattr(self.exploit, &#39;DEFAULT_INPUT&#39;):
+                self.options.add_option(&#39;input&#39;, self.exploit.DEFAULT_INPUT, input_desc,
+                                        list(ACsploit.inputs.keys()))
+                self.defaulted_options.append(&#39;input&#39;)
+                self.input = ACsploit.inputs[self.exploit.DEFAULT_INPUT]()
+            else:
+                # We set string as the default input, but do not warn if this option is changed
+                self.options.add_option(&#39;input&#39;, &#39;string&#39;, input_desc, list(ACsploit.inputs.keys()))
+                self.input = ACsploit.inputs[&#39;string&#39;]()
+
+            if hasattr(self.exploit, &#39;DEFAULT_OUTPUT&#39;):
+                self.options.add_option(&#39;output&#39;, self.exploit.DEFAULT_OUTPUT, output_desc,
+                                        list(ACsploit.outputs.keys()))
+                self.defaulted_options.append(&#39;output&#39;)
+                self.output = ACsploit.outputs[self.exploit.DEFAULT_OUTPUT]()
+            else:
+                # We set stdout as the default output, but do not warn if this option is changed
+                self.options.add_option(&#39;output&#39;, &#39;stdout&#39;, output_desc, list(ACsploit.outputs.keys()))
+                self.output = ACsploit.outputs[&#39;stdout&#39;]()
+
+            # set defaults for input and output settings for new exploit, if any
+            if hasattr(self.exploit, &#39;DEFAULT_INPUT_OPTIONS&#39;):
+                for option, value in self.exploit.DEFAULT_INPUT_OPTIONS.items():
+                    self.input.set_option(option, value)
+                    self.defaulted_options.append(&#39;input.%s&#39; % option)
+            if hasattr(self.exploit, &#39;DEFAULT_OUTPUT_OPTIONS&#39;):
+                for option, value in self.exploit.DEFAULT_OUTPUT_OPTIONS.items():
+                    self.output.options.set_value(option, value)
+                    self.defaulted_options.append(&#39;output.%s&#39; % option)
+
+    def do_run(self, args):
+        &#34;&#34;&#34;Runs the current exploit&#34;&#34;&#34;
+        if self.exploit is None:
+            eprint(self.colorize(&#39;No exploit set; nothing to do. Select an exploit with the \&#39;use\&#39; command&#39;, &#39;cyan&#39;))
+        else:
+            eprint(self.colorize(&#39;Running %s...&#39; % self.exploit_name, &#39;cyan&#39;))
+            if self.input is None:
+                self.exploit.run(self.output)
+            else:
+                # prepare is used to update internal state of input generators prior to running
+                if hasattr(self.input, &#39;prepare&#39;):
+                    self.input.prepare()
+                self.exploit.run(self.input, self.output)
+            eprint(self.colorize(&#39;Finished running %s&#39; % self.exploit_name, &#39;cyan&#39;))</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="acsploit.ACsploit.exploits"><code class="name">var <span class="ident">exploits</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="acsploit.ACsploit.inputs"><code class="name">var <span class="ident">inputs</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="acsploit.ACsploit.intro"><code class="name">var <span class="ident">intro</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="acsploit.ACsploit.outputs"><code class="name">var <span class="ident">outputs</span></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="acsploit.ACsploit.__init__"><code class="name flex">
+<span>def <span class="ident">__init__</span></span>(<span>self, hist_file)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Initialization and setup of ACsploit.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def __init__(self, hist_file):
+    &#34;&#34;&#34;Initialization and setup of ACsploit.&#34;&#34;&#34;
+    self.setup_cmd2(hist_file)
+
+    # Register tab-completion function
+    self.complete_use = functools.partial(exploit_path_complete, match_against=ACsploit.exploits)
+
+    self.prompt = self.make_prompt()
+
+    self.exploit = None
+    self.exploit_name = &#39;&#39;
+    self.input = None
+    self.output = None
+    self.options = Options()
+    self.defaulted_options = []
+
+    self.script_mode = False</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.complete_set"><code class="name flex">
+<span>def <span class="ident">complete_set</span></span>(<span>self, text, line, begidx, endidx)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Provide tab completion for the "set" option.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def complete_set(self, text, line, begidx, endidx):
+    &#34;&#34;&#34;Provide tab completion for the &#34;set&#34; option.&#34;&#34;&#34;
+    # text = line[begidx:endidx] is the word we want to complete
+    # split the completed words, should either be [&#39;set&#39;], or [&#39;set&#39;, &lt;option_key&gt;]
+    split_line = line[:begidx].split()
+    if len(split_line) == 1:
+        return [option for option in self.get_option_names() if option.startswith(text) or &#39;.&#39; + text in option]
+
+    if len(split_line) == 2:
+        key = split_line[1]
+        options = self.get_options(key)
+        if options is not None:
+            scoped_key = key.split(&#39;.&#39;)[1] if &#39;.&#39; in key else key
+            values = options.get_acceptable_values(scoped_key)
+            if values is not None:
+                return [value for value in values if value.startswith(text)]
+
+    return []</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.do_exit"><code class="name flex">
+<span>def <span class="ident">do_exit</span></span>(<span>self, args)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Exit ACsploit.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def do_exit(self, args):
+    &#34;&#34;&#34;Exit ACsploit.&#34;&#34;&#34;
+    self._should_quit = True
+    return self._STOP_AND_EXIT</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.do_info"><code class="name flex">
+<span>def <span class="ident">do_info</span></span>(<span>self, args)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Displays the description of the selected exploit.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def do_info(self, args):
+    &#34;&#34;&#34;Displays the description of the selected exploit.&#34;&#34;&#34;
+    if self.exploit is None:
+        eprint(self.colorize(&#39;No exploit set; nothing to describe. Select an exploit with the \&#39;use\&#39; command&#39;,
+                             &#39;cyan&#39;))
+    else:
+        eprint(self.colorize(&#39;\n  &#39; + self.exploit.DESCRIPTION + &#39;\n&#39;, &#39;green&#39;))</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.do_options"><code class="name flex">
+<span>def <span class="ident">do_options</span></span>(<span>self, args)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Displays options for the selected exploit. Use 'options describe' to see descriptions</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def do_options(self, args):
+    &#34;&#34;&#34;Displays options for the selected exploit. Use &#39;options describe&#39; to see descriptions&#34;&#34;&#34;
+    if args not in [&#39;&#39;, &#39;describe&#39;]:
+        eprint(self.colorize(&#39;Unsupported argument to options&#39;, &#39;red&#39;))
+        self.do_help(&#39;options&#39;)
+        return
+
+    if self.exploit is None:
+        eprint(self.colorize(&#39;No exploit set; no options to show. Select an exploit with the \&#39;use\&#39; command&#39;,
+                             &#39;cyan&#39;))
+        return
+
+    describe = args == &#39;describe&#39;
+
+    eprint()
+    self.print_options(self.options, describe, indent_level=1)
+    if self.input is not None:
+        eprint(self.colorize(&#39;\n  Input options&#39;, &#39;green&#39;))
+        self.print_options(self.input.options, describe, indent_level=2)
+    if self.output is not None:
+        eprint(self.colorize(&#39;\n  Output options&#39;, &#39;green&#39;))
+        self.print_options(self.output.options, describe, indent_level=2)
+    if self.exploit is not None:
+        eprint(self.colorize(&#39;\n  Exploit options&#39;, &#39;green&#39;))
+        self.print_options(self.exploit.options, describe, indent_level=2)
+    eprint()</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.do_reset"><code class="name flex">
+<span>def <span class="ident">do_reset</span></span>(<span>self, args)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Resets the current exploit to default options</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def do_reset(self, args):
+    &#34;&#34;&#34;Resets the current exploit to default options&#34;&#34;&#34;
+    if self.exploit is None:
+        eprint(self.colorize(&#39;No exploit set; nothing to reset. Select an exploit with the \&#39;use\&#39; command&#39;,
+                             &#39;cyan&#39;))
+        return
+
+    # delete the stored settings and reset the options in the current module
+    if hasattr(self.exploit, &#39;_ACsploit_exploit_settings&#39;):
+        del self.exploit._ACsploit_exploit_settings
+
+    importlib.reload(self.exploit)  # we need to do this to reset currexp.options back to original values
+
+    self.exploit = None
+    self.update_exploit(self.exploit_name)</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.do_run"><code class="name flex">
+<span>def <span class="ident">do_run</span></span>(<span>self, args)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Runs the current exploit</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def do_run(self, args):
+    &#34;&#34;&#34;Runs the current exploit&#34;&#34;&#34;
+    if self.exploit is None:
+        eprint(self.colorize(&#39;No exploit set; nothing to do. Select an exploit with the \&#39;use\&#39; command&#39;, &#39;cyan&#39;))
+    else:
+        eprint(self.colorize(&#39;Running %s...&#39; % self.exploit_name, &#39;cyan&#39;))
+        if self.input is None:
+            self.exploit.run(self.output)
+        else:
+            # prepare is used to update internal state of input generators prior to running
+            if hasattr(self.input, &#39;prepare&#39;):
+                self.input.prepare()
+            self.exploit.run(self.input, self.output)
+        eprint(self.colorize(&#39;Finished running %s&#39; % self.exploit_name, &#39;cyan&#39;))</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.do_set"><code class="name flex">
+<span>def <span class="ident">do_set</span></span>(<span>self, args)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Sets an option. Usage: set [option_name] [value]</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def do_set(self, args):
+    &#34;&#34;&#34;Sets an option. Usage: set [option_name] [value]&#34;&#34;&#34;
+    try:
+        key, value = args.split(maxsplit=1)
+    except ValueError:
+        eprint(&#39;Usage: set [option_name] [value]&#39;)
+        return
+
+    no_option_msg = self.colorize(&#39;No option set&#39;, &#39;cyan&#39;)
+
+    if key not in self.get_option_names():
+        eprint(self.colorize(&#39;Option {} does not exist&#39;.format(key), &#39;red&#39;))
+        eprint(no_option_msg)
+        return
+
+    options = self.get_options(key)  # this call should always succeed due to the check above
+    scoped_key = key.split(&#39;.&#39;)[1] if &#39;.&#39; in key else key
+    values = options.get_acceptable_values(scoped_key)
+    if values is not None and value not in values:
+        eprint(self.colorize(&#39;{} is not an acceptable value for option {}&#39;.format(value, key), &#39;red&#39;))
+        eprint(no_option_msg)
+        return
+
+    if self.fuzzy_equals(value, options[scoped_key]):
+        eprint(self.colorize(&#39;Option {} is already set to {}&#39;.format(key, value), &#39;cyan&#39;))
+        return
+
+    if key in self.defaulted_options:
+        if self.script_mode:  # in script mode, warn and continue
+            eprint(self.colorize(&#39;The following change may result in degraded exploit performance or failure&#39;,
+                                 &#39;yellow&#39;))
+            self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
+        else:  # in interactive mode, prompt for confirmation
+            confirm_prompt = &#39;Changing this option may result in degraded exploit performance or failure&#39;
+            confirmation = __builtins__.input(self.colorize(confirm_prompt + &#39;\nDo you want to continue? [y|N] &#39;,
+                                                            &#39;yellow&#39;))
+            if confirmation.lower() in [&#39;yes&#39;, &#39;y&#39;]:
+                self.defaulted_options.remove(key)  # only warn the first time overwriting the defaulted option
+            else:
+                eprint(no_option_msg)
+                return
+
+    if key == &#39;input&#39;:
+        self.input = ACsploit.inputs[value]()
+    elif key == &#39;output&#39;:
+        self.output = ACsploit.outputs[value]()
+
+    options[scoped_key] = value
+    eprint(self.colorize(&#39;%s =&gt; %s&#39; % (key, value), &#39;cyan&#39;))</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.do_show"><code class="name flex">
+<span>def <span class="ident">do_show</span></span>(<span>self, args)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Lists all available exploits.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def do_show(self, args):
+    &#34;&#34;&#34;Lists all available exploits.&#34;&#34;&#34;
+    eprint(self.colorize(&#39;\nAvailable exploits:&#39;, &#39;green&#39;))
+    for key in sorted(ACsploit.exploits):
+        eprint(self.colorize(&#39;    &#39; + key, &#39;green&#39;))
+    eprint()</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.do_use"><code class="name flex">
+<span>def <span class="ident">do_use</span></span>(<span>self, args)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Sets the current exploit. Usage: use [exploit_name]</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def do_use(self, args):
+    &#34;&#34;&#34;Sets the current exploit. Usage: use [exploit_name]&#34;&#34;&#34;
+    if len(args) &gt; 0:
+        self.update_exploit(args.split()[0])
+    else:
+        eprint(self.colorize(&#39;Usage: use [exploit_name]&#39;, &#39;red&#39;))
+        return</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.fuzzy_equals"><code class="name flex">
+<span>def <span class="ident">fuzzy_equals</span></span>(<span>self, lhs, rhs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Type-coerce to the type of rhs and then compare, Returns True if equals.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def fuzzy_equals(self, lhs, rhs):
+    &#34;&#34;&#34;Type-coerce to the type of rhs and then compare, Returns True if equals.&#34;&#34;&#34;
+    t = type(rhs)
+    if t is bool:  # special case bool because bool() treats all strings as True
+        return rhs is (lhs in Options.TRUE_VALUES)
+    try:
+        return t(lhs) == rhs
+    except ValueError:
+        return False</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.get_option_names"><code class="name flex">
+<span>def <span class="ident">get_option_names</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the names of all options within current exploit, input , and output options.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_option_names(self):
+    &#34;&#34;&#34;Returns the names of all options within current exploit, input , and output options.&#34;&#34;&#34;
+    # There are no options until the current exploit is set
+    if self.exploit is None:
+        return []
+
+    option_names = self.options.get_option_names()
+
+    if self.input is not None:
+        option_names += [&#39;input.&#39; + option for option in self.input.options.get_option_names()]
+
+    if self.output is not None:
+        option_names += [&#39;output.&#39; + option for option in self.output.options.get_option_names()]
+
+    if self.exploit is not None:
+        option_names += [&#39;exploit.&#39; + option for option in self.exploit.options.get_option_names()]
+
+    return option_names</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.get_options"><code class="name flex">
+<span>def <span class="ident">get_options</span></span>(<span>self, key)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the options object containing the given key.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_options(self, key):
+    &#34;&#34;&#34;Returns the options object containing the given key.&#34;&#34;&#34;
+    if key in self.options.get_option_names():
+        return self.options
+
+    try:
+        scope, scoped_key = key.split(&#39;.&#39;)
+    except ValueError:
+        return None
+
+    if scope == &#39;input&#39; and scoped_key in self.input.options.get_option_names():
+        return self.input.options
+    elif scope == &#39;output&#39; and scoped_key in self.output.options.get_option_names():
+        return self.output.options
+    elif scope == &#39;exploit&#39; and scoped_key in self.exploit.options.get_option_names():
+        return self.exploit.options
+    else:
+        return None</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.make_prompt"><code class="name flex">
+<span>def <span class="ident">make_prompt</span></span>(<span>self, location=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Create the command line prompt.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def make_prompt(self, location=None):
+    &#34;&#34;&#34;Create the command line prompt.&#34;&#34;&#34;
+    prompt = &#39;(acsploit : %s) &#39; % location if location is not None else &#39;(acsploit) &#39;
+    return self.colorize(prompt, &#39;blue&#39;)</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.print_options"><code class="name flex">
+<span>def <span class="ident">print_options</span></span>(<span>self, options, describe=False, indent_level=0)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Print available options and current values.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def print_options(self, options, describe=False, indent_level=0):
+    &#34;&#34;&#34;Print available options and current values.&#34;&#34;&#34;
+    indent = &#39;  &#39; * indent_level
+    for option in options.get_option_names():
+        line = self.colorize(option + &#39;: &#39;, &#39;green&#39;) + str(options[option])
+        if describe:
+            line += &#39; (&#39; + options.get_description(option) + &#39;)&#39;
+            values = options.get_acceptable_values(option)
+            if values is not None:
+                line += &#39; (Acceptable Values: &#39; + str(values) + &#39;)&#39;
+        eprint(indent + line)</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.setup_cmd2"><code class="name flex">
+<span>def <span class="ident">setup_cmd2</span></span>(<span>self, hist_file)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>"Set up interactive command line interface.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def setup_cmd2(self, hist_file):
+    &#34;&#34;&#34;&#34;Set up interactive command line interface.&#34;&#34;&#34;
+    # delete unused commands that are baked-into cmd2 and set some options
+    del cmd2.Cmd.do_py
+    del cmd2.Cmd.do_edit
+    del cmd2.Cmd.do_shortcuts
+    del cmd2.Cmd.do_pyscript
+    del cmd2.Cmd.do_set
+    del cmd2.Cmd.do_alias
+    del cmd2.Cmd.do_unalias
+    del cmd2.Cmd.do_load
+    cmd2.Cmd.abbrev = True
+    self.allow_cli_args = False  # disable parsing of command-line args by cmd2
+    self.allow_redirection = False  # disable redirection to enable right shift (&gt;&gt;) in custom_hash to work
+    self.redirector = &#39;\xff&#39;  # disable redirection in the parser as well
+    self.shortcuts.update({&#39;sh&#39;: &#39;show&#39;})  # don&#39;t want &#34;sh&#34; to trigger the hidden &#34;shell&#34; command
+
+    # init cmd2 and the history file
+    cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
+
+    # disable help on builtins
+    self.exclude_from_help.append(&#39;do_shell&#39;)  # TODO: this still gets tab-completed and is &#39;help&#39;-able
+    self.exclude_from_help.append(&#39;do_exit&#39;)  # TODO: come back to this?</code></pre>
+</details>
+</dd>
+<dt id="acsploit.ACsploit.update_exploit"><code class="name flex">
+<span>def <span class="ident">update_exploit</span></span>(<span>self, exploit_name)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Sets the exploit name as the current exploit and restores saved settings or sets default values.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def update_exploit(self, exploit_name):
+    &#34;&#34;&#34;Sets the exploit name as the current exploit and restores saved settings or sets default values.&#34;&#34;&#34;
+    if exploit_name not in ACsploit.exploits:
+        eprint((self.colorize(&#39;Exploit &#39; + exploit_name + &#39; does not exist&#39;, &#39;red&#39;)))
+        return
+
+    # save current input/output and  to current exploit in private variables
+    # this allows restoration of the current settings f the exploit is used again
+    if self.exploit is not None:
+        self.exploit._ACsploit_exploit_settings = {
+            &#39;input&#39;: self.input,
+            &#39;output&#39;: self.output,
+            &#39;options&#39;: self.options,
+            &#39;defaulted_options&#39;: self.defaulted_options,
+        }
+
+    # set the new exploit; restore previous input/output
+    self.exploit_name = exploit_name
+    self.exploit = ACsploit.exploits[exploit_name]
+    self.prompt = self.make_prompt(exploit_name)
+
+    eprint(self.colorize(&#39;exploit =&gt; %s&#39; % exploit_name, &#39;cyan&#39;))
+
+    if hasattr(self.exploit, &#39;_ACsploit_exploit_settings&#39;):
+        self.input = self.exploit._ACsploit_exploit_settings[&#39;input&#39;]
+        self.output = self.exploit._ACsploit_exploit_settings[&#39;output&#39;]
+        self.options = self.exploit._ACsploit_exploit_settings[&#39;options&#39;]
+        self.defaulted_options = self.exploit._ACsploit_exploit_settings[&#39;defaulted_options&#39;]
+
+    else:
+        input_desc = &#39;Input generator to use with exploits&#39;
+        output_desc = &#39;Output generator to use with exploits&#39;
+        self.defaulted_options = []
+        self.options = Options()
+
+        # set default input and output for new exploit, if any
+        if hasattr(self.exploit, &#39;NO_INPUT&#39;) and self.exploit.NO_INPUT:
+            self.input = None
+        elif hasattr(self.exploit, &#39;DEFAULT_INPUT&#39;):
+            self.options.add_option(&#39;input&#39;, self.exploit.DEFAULT_INPUT, input_desc,
+                                    list(ACsploit.inputs.keys()))
+            self.defaulted_options.append(&#39;input&#39;)
+            self.input = ACsploit.inputs[self.exploit.DEFAULT_INPUT]()
+        else:
+            # We set string as the default input, but do not warn if this option is changed
+            self.options.add_option(&#39;input&#39;, &#39;string&#39;, input_desc, list(ACsploit.inputs.keys()))
+            self.input = ACsploit.inputs[&#39;string&#39;]()
+
+        if hasattr(self.exploit, &#39;DEFAULT_OUTPUT&#39;):
+            self.options.add_option(&#39;output&#39;, self.exploit.DEFAULT_OUTPUT, output_desc,
+                                    list(ACsploit.outputs.keys()))
+            self.defaulted_options.append(&#39;output&#39;)
+            self.output = ACsploit.outputs[self.exploit.DEFAULT_OUTPUT]()
+        else:
+            # We set stdout as the default output, but do not warn if this option is changed
+            self.options.add_option(&#39;output&#39;, &#39;stdout&#39;, output_desc, list(ACsploit.outputs.keys()))
+            self.output = ACsploit.outputs[&#39;stdout&#39;]()
+
+        # set defaults for input and output settings for new exploit, if any
+        if hasattr(self.exploit, &#39;DEFAULT_INPUT_OPTIONS&#39;):
+            for option, value in self.exploit.DEFAULT_INPUT_OPTIONS.items():
+                self.input.set_option(option, value)
+                self.defaulted_options.append(&#39;input.%s&#39; % option)
+        if hasattr(self.exploit, &#39;DEFAULT_OUTPUT_OPTIONS&#39;):
+            for option, value in self.exploit.DEFAULT_OUTPUT_OPTIONS.items():
+                self.output.options.set_value(option, value)
+                self.defaulted_options.append(&#39;output.%s&#39; % option)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="acsploit.eprint" href="#acsploit.eprint">eprint</a></code></li>
+<li><code><a title="acsploit.exploit_path_complete" href="#acsploit.exploit_path_complete">exploit_path_complete</a></code></li>
+<li><code><a title="acsploit.get_exploits" href="#acsploit.get_exploits">get_exploits</a></code></li>
+<li><code><a title="acsploit.get_inputs" href="#acsploit.get_inputs">get_inputs</a></code></li>
+<li><code><a title="acsploit.get_outputs" href="#acsploit.get_outputs">get_outputs</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="acsploit.ACsploit" href="#acsploit.ACsploit">ACsploit</a></code></h4>
+<ul class="two-column">
+<li><code><a title="acsploit.ACsploit.__init__" href="#acsploit.ACsploit.__init__">__init__</a></code></li>
+<li><code><a title="acsploit.ACsploit.complete_set" href="#acsploit.ACsploit.complete_set">complete_set</a></code></li>
+<li><code><a title="acsploit.ACsploit.do_exit" href="#acsploit.ACsploit.do_exit">do_exit</a></code></li>
+<li><code><a title="acsploit.ACsploit.do_info" href="#acsploit.ACsploit.do_info">do_info</a></code></li>
+<li><code><a title="acsploit.ACsploit.do_options" href="#acsploit.ACsploit.do_options">do_options</a></code></li>
+<li><code><a title="acsploit.ACsploit.do_reset" href="#acsploit.ACsploit.do_reset">do_reset</a></code></li>
+<li><code><a title="acsploit.ACsploit.do_run" href="#acsploit.ACsploit.do_run">do_run</a></code></li>
+<li><code><a title="acsploit.ACsploit.do_set" href="#acsploit.ACsploit.do_set">do_set</a></code></li>
+<li><code><a title="acsploit.ACsploit.do_show" href="#acsploit.ACsploit.do_show">do_show</a></code></li>
+<li><code><a title="acsploit.ACsploit.do_use" href="#acsploit.ACsploit.do_use">do_use</a></code></li>
+<li><code><a title="acsploit.ACsploit.exploits" href="#acsploit.ACsploit.exploits">exploits</a></code></li>
+<li><code><a title="acsploit.ACsploit.fuzzy_equals" href="#acsploit.ACsploit.fuzzy_equals">fuzzy_equals</a></code></li>
+<li><code><a title="acsploit.ACsploit.get_option_names" href="#acsploit.ACsploit.get_option_names">get_option_names</a></code></li>
+<li><code><a title="acsploit.ACsploit.get_options" href="#acsploit.ACsploit.get_options">get_options</a></code></li>
+<li><code><a title="acsploit.ACsploit.inputs" href="#acsploit.ACsploit.inputs">inputs</a></code></li>
+<li><code><a title="acsploit.ACsploit.intro" href="#acsploit.ACsploit.intro">intro</a></code></li>
+<li><code><a title="acsploit.ACsploit.make_prompt" href="#acsploit.ACsploit.make_prompt">make_prompt</a></code></li>
+<li><code><a title="acsploit.ACsploit.outputs" href="#acsploit.ACsploit.outputs">outputs</a></code></li>
+<li><code><a title="acsploit.ACsploit.print_options" href="#acsploit.ACsploit.print_options">print_options</a></code></li>
+<li><code><a title="acsploit.ACsploit.setup_cmd2" href="#acsploit.ACsploit.setup_cmd2">setup_cmd2</a></code></li>
+<li><code><a title="acsploit.ACsploit.update_exploit" href="#acsploit.ACsploit.update_exploit">update_exploit</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><h3><a href="">Sub-modules</a></h3>
+<ul><li><h4><code><a title="exploits" href="exploits/index.html">exploits</a></code></h4></li>
+<li><h4><code><a title="input" href="input/index.html">input</a></code></h4></li>
+<li><h4><code><a title="output" href="output/index.html">output</a></code></h4></li>
+<li><h4><code><a title="options" href="options/index.html">options</a></code></h4></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
