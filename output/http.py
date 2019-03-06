@@ -4,6 +4,7 @@ from options import Options
 
 
 class Http:
+    """Http class."""
 
     OUTPUT_NAME = 'http'  # exploits can use this internally to whitelist/blacklist supported output formats
 
@@ -18,6 +19,7 @@ class Http:
     }
 
     def __init__(self):
+        """Initialize the Http class."""
         self.options = Options()
         self.options.add_option('url', 'http://127.0.0.1:80/', 'Host to connect to')
         self.options.add_option('separator', 'newline', 'Separator between elements', ['newline', 'comma', 'space',
@@ -38,6 +40,7 @@ class Http:
 
     # TODO - eventually allow printing out http response?
     def output(self, output_list):
+        """Create an HTTP request and send the payload."""
         url_payload = {}
         data_payload = ''
         if self.options['custom_separator'] != '':
@@ -75,6 +78,7 @@ class Http:
             s.close()
 
     def pretty_print_http(self, prepared_req):
+        """Print readable http output."""
         print(str('{}'+os.linesep+'{}'+os.linesep+'{}').format(
             '-----------START-----------',
             prepared_req.method + ' ' + prepared_req.url,
@@ -88,6 +92,7 @@ class Http:
             print(str(os.linesep + '{}').format('------------END------------'))
 
     def convert_item(self, item):
+        """Convert output to hexadecimal or octal."""
         # NB: this doesn't recurse onto lists
         if type(item) is int:
             if self.options['number_format'] == 'hexadecimal':
