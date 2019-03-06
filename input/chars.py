@@ -4,10 +4,12 @@ from options import Options
 
 
 class CharGenerator:
+    """Character generator"""
 
     INPUT_NAME = "char"
 
     def __init__(self):
+        """Initialize the Chracter generator."""
         self.options = Options()
         self.options.add_option('min_value', 'a', 'Minimum ASCII character to use')
         self.options.add_option('max_value', 'z', 'Maximum ASCII character to use')
@@ -20,16 +22,20 @@ class CharGenerator:
         self._char_set = string.ascii_lowercase
 
     def prepare(self):
+        """Update the character set."""
         self._char_set = [c for c in string.printable if self.is_valid(c)]
         self._char_set.sort()
 
     def get_min_value(self):
+        """Return the min character value."""
         return self._char_set[0]  # options[min_value] could be in restrictions, so we don't just return that
 
     def get_max_value(self):
+        """Return the max character value."""
         return self._char_set[-1]  # options[max_value] could be in restrictions, so we don't just return that
 
     def is_valid(self, candidate):
+        """Returns true if character is valid."""
         whitelist = self.options['use_whitelist']
         if whitelist:
             return candidate in self.options['whitelist']
@@ -40,6 +46,7 @@ class CharGenerator:
             return min_val <= candidate <= max_val and candidate not in restrictions
 
     def get_less_than(self, value):
+        """Returns a character less than the given value."""
         result = None
         for c in self._char_set:
             if c >= value:
@@ -50,6 +57,7 @@ class CharGenerator:
         return result
 
     def get_greater_than(self, value):
+        """Returns a character greater than the given value."""
         for c in self._char_set:
             if c > value:
                 return c
@@ -57,12 +65,15 @@ class CharGenerator:
         raise ValueError('No valid value exists greater than {}'.format(value))
 
     def get_random(self):
+        """Returns a random character set."""
         return random.choice(self._char_set)
 
     def get_char_set(self):
+        """Returns a character set."""
         return self._char_set
 
-    def get_list_of_values(self, num_values):  # returns a string with length num_values starting from min_value
+    def get_list_of_values(self, num_values):
+        """Returns a string with length num_values starting from min_value"""
         if num_values > len(self._char_set):
             raise ValueError('Fewer than {} unique values'.format(num_values))
 
