@@ -258,6 +258,18 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         no_option_msg = self.colorize('No option set', 'cyan')
 
+        if key == 'debug':
+            if value.lower() == 'true':
+                self.debug = True
+                eprint(self.colorize('debug => true', 'cyan'))
+            elif value.lower() == 'false':
+                self.debug = False
+                eprint(self.colorize('debug => false', 'cyan'))
+            else:
+                eprint(self.colorize('{} is not an acceptable value for option {}'.format(value, key), 'red'))
+                eprint(no_option_msg)
+            return
+
         if key not in self.get_option_names():
             eprint(self.colorize('Option {} does not exist'.format(key), 'red'))
             eprint(no_option_msg)
