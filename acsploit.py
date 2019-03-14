@@ -18,6 +18,7 @@ import pkgutil
 import functools
 import argparse
 import importlib
+import time
 
 from options import Options
 
@@ -428,6 +429,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             eprint(self.colorize('No exploit set; nothing to do. Select an exploit with the \'use\' command', 'cyan'))
         else:
             eprint(self.colorize('Running %s...' % self.exploit_name, 'cyan'))
+            start = time.process_time()
             if self.input is None:
                 self.exploit.run(self.output)
             else:
@@ -435,7 +437,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 if hasattr(self.input, 'prepare'):
                     self.input.prepare()
                 self.exploit.run(self.input, self.output)
-            eprint(self.colorize('Finished running %s' % self.exploit_name, 'cyan'))
+            end = time.process_time()
+            eprint(self.colorize('Finished running %s (%.2f seconds)' % (self.exploit_name, end - start), 'cyan'))
 
 
 if __name__ == '__main__':
