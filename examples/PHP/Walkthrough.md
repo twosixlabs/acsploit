@@ -17,31 +17,31 @@ From the description given in the CVE we know that our payload will be a malicio
 
 We start ACsploit and examine the available exploits. 
 
-<img src="images/ACsploitOptions.png" class="center"  width="300">
+<img src="images/ACsploitOptions.png" class="center" width="300">
 
-After selecting `hashes/collisions/php` as our module, we set our `options`. We want to generate an `output` file containing the hash collisions, so we set that option first.
+After selecting `hashes/collisions/php5` as our module, we set our `options`. We want to generate an `output` file containing the hash collisions, so we set that option first.
 
-We now examine the exploit options and set some necessary parameters. We want 100,000 collisions as a baseline to start with to achieve some measurable effect so we set `n_collisions` to `40000`. This may not achieve 100% CPU but it more than suffices for a proof of concept. (Once we know that we can achieve an effect we can go back an increase the number of collisions.) We then set the `hash\_table\_size` to `2^32`, as this covers all integer values in PHP. (If we knew the hash table was a particular size this option would allow us to adapt our collisions appropriately (e.g. if hashes were reduced modulo 1,000).)
+We now examine the exploit options and set some necessary parameters. We want 100,000 collisions as a baseline to start with to achieve some measurable effect so we set `n_collisions` to `40000`. This may not achieve 100% CPU but it more than suffices for a proof of concept. (Once we know that we can achieve an effect we can go back an increase the number of collisions.) We note that the `hash\_table\_size` is already set to `2^32`, which covers all integer values in PHP. (If we knew the hash table was a particular size this option would allow us to adapt our collisions appropriately (e.g. if hashes were reduced modulo 1,000).)
 
 (Note that we leave the `input` generator set to `char`. This may seem unintuitive because the output will be a set of strings, but the exploit generates its collisions by manipulating and combining individual characters, and so must be given individual characters to work with.)
 
 <img src="images/ACsploitSetOptions.png" class="center" width="400">
 
-We re-examine our options. Everything looks fine, so we are ready to run our exploit with `run`. (Note that generating 40,000 collisions may take some time. If you want to )
+We re-examine our options. Everything looks fine, so we are ready to run our exploit with `run`. (Note that generating 40,000 collisions may take quite some time, on the order of 10-20 minutes. You can reduce the number of hashes at the cost of less of a CPU impact on the target.)
 
-<img src="images/PHPHashOptions.png" class="center"  width="300">
+<img src="images/PHPHashOptions.png" class="center" width="300">
 
 We now have our 40,000 hash collisions. We write the small `python` script shown below to format them appropriately and serve them in a `POST` request. (There's nothing special about Python here, so feel free to use your favorite method to build and serve the `POST` request).
 
-<img src="images/PythonPOSTRequestScript.png"  class="center" width="600">
+<img src="images/PythonPOSTRequestScript.png" class="center" width="600">
 
 The `path` we supplied leads to a simple PHP file the `Dockerfile` placed on the PHP server that accepts `POST` requests. (What the page does is irrelevant as long as it accepts `POST` requests.)  The outer `for` loop controls how many times we send the payload. To initiate a serious DOS, an attacker might want to send hundreds or even thousands of payloads, but ten payloads will be sufficient to run up the CPU on all available threads on our target box and serve as a proof of concept.
 
-We are now ready to launch our exploit! We run the script with the invokation below to target the PHP Docker container we started above and observe we see that the CPU utilization of all 4 cores spike up in `htop`. If we increased the number of collisions up from 40,000 the CPU usage would increase accordingly.
+We are now ready to launch our exploit! We run the script with the invokation below to target the our PHP Docker container and observe the CPU utilization of all 4 cores spike in `htop`. If we increased the number of collisions beyond 40,000 the CPU usage would increase accordingly.
 
 ```
-python PoC.py 127.0.0.1 80 collisions.txt
+python PoC.py 127.0.0.1 80 acsploit_output.dat
 ```
 
 
-<img src="images/TomcatCPU.png" class="center" width="800" >
+<img src="images/PHPCPU.png" class="center" width="800" >
