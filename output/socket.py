@@ -4,6 +4,7 @@ from options import Options
 
 
 class Socket:
+    """Socket class."""
 
     OUTPUT_NAME = 'socket'  # exploits can use this internally to whitelist/blacklist supported output formats
 
@@ -24,6 +25,7 @@ class Socket:
     _BANNER_LENGTH = 1024
 
     def __init__(self):
+        """Initialize the Socket class."""
         self.options = Options()
         self.options.add_option('host', '127.0.0.1', 'Host to connect to')
         self.options.add_option('port', 80, 'Port to connect to')
@@ -35,6 +37,7 @@ class Socket:
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
     def output(self, output_list):
+        """Create a socket stream and send the payload as output."""
         separator = Socket._SEPARATORS[self.options['separator']]
         line = separator.join([self.convert_item(item) for item in output_list])
         if self.options['final_separator']:
@@ -49,6 +52,7 @@ class Socket:
         s.close()
 
     def convert_item(self, item):
+        """Convert output to hexadecimal or octal."""
         # NB: this doesn't recurse onto lists
         if type(item) is int:
             if self.options['number_format'] == 'hexadecimal':

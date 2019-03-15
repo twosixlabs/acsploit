@@ -4,6 +4,7 @@ from options import Options
 
 
 class Stdout:
+    """Stdout class."""
 
     OUTPUT_NAME = 'stdout'  # exploits can use this internally to whitelist/blacklist supported output formats
 
@@ -16,18 +17,21 @@ class Stdout:
     }
 
     def __init__(self):
+        """Initialize the Stdout class."""
         self.options = Options()
         self.options.add_option('separator', 'newline', 'Separator between elements', ['newline', 'comma', 'space',
                                                                                        'tab', 'os_newline'])
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
     def output(self, output_list):
+        """Output to stdout."""
         separator = Stdout._SEPARATORS[self.options['separator']]
         line = separator.join([self.convert_item(item) for item in output_list])
         line += os.linesep
         sys.stdout.write(line)
 
     def convert_item(self, item):
+        """Convert output to hexadecimal or octal."""
         # NB: this doesn't recurse onto lists
         if type(item) is int:
             if self.options['number_format'] == 'hexadecimal':

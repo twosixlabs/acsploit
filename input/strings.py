@@ -4,10 +4,12 @@ from options import Options
 
 
 class StringGenerator:
+    """String Generator"""
 
     INPUT_NAME = "string"
 
     def __init__(self):
+        """Initialize the String Generator."""
         self.options = Options()
         self.options.add_option('min_length', 1, 'Minimum string length')
         self.options.add_option('max_length', 10, 'Maximum string length')
@@ -21,6 +23,7 @@ class StringGenerator:
         self.prepare()
 
     def prepare(self):
+        """Updates the string generator options."""
         self.char_gen.options['min_value'] = self.options['min_value']
         self.char_gen.options['max_value'] = self.options['max_value']
         self.char_gen.options['restrictions'] = self.options['restrictions']
@@ -28,8 +31,8 @@ class StringGenerator:
         self.char_gen.options['whitelist'] = self.options['whitelist']
         self.char_gen.prepare()
 
-    # returns the next lowest string, may be shorter than min_length
     def _reduce_last_char(self, value):
+        """Returns the next lowest string, may be shorter than min_length"""
         c = value[-1]
         try:
             low_c = self.char_gen.get_less_than(c)
@@ -38,8 +41,8 @@ class StringGenerator:
             # the last character is min_value, strip it off
             return value[:-1]
 
-    # returns the next greatest string of equal or lesser length than value
     def _increment_last_char(self, value):
+        """Returns the next greatest string of equal or lesser length than value"""
         while len(value) > 0:
             c = value[-1]
             try:
@@ -55,8 +58,8 @@ class StringGenerator:
         # should never get here since we only call this function with value < max_value
         raise ValueError('No valid value exists greater than {}'.format(value))
 
-    # returns the largest valid string less than value (lexicographical order)
     def get_less_than(self, value):
+        """Returns the largest valid string less than value (lexicographical order)"""
         # give up if value is not greater than min_value
         # all other cases should succeed, since there is at least one valid string (min_value) less than value
         if value <= self.get_min_value():
@@ -82,8 +85,8 @@ class StringGenerator:
 
         return value
 
-    # returns the smallest valid string greater than value (lexicographical order)
     def get_greater_than(self, value):
+        """Returns the smallest valid string greater than value (lexicographical order)"""
         # give up if value is not smaller than max_value
         # all other cases should succeed, since there is at least one valid string (max_value) greater than value
         if value >= self.get_max_value():
@@ -115,20 +118,23 @@ class StringGenerator:
             return self._increment_last_char(value)
 
     def get_max_value(self):
+        """Returns the max value."""
         return self.char_gen.get_max_value() * self.options['max_length']
 
     def get_min_value(self):
+        """Returns the min value."""
         return self.char_gen.get_min_value() * self.options['min_length']
 
-    # Returns a random string
-    # Length is chosen uniformly at random, so shorter strings appear equally as often as longer strings,
-    # which means the distribution is not uniform, since any given short string is more likely to be chosen
-    # than a given longer string
     def get_random(self):
+        """Returns a random string
+        Length is chosen uniformly at random, so shorter strings appear equally as often as longer strings,
+        which means the distribution is not uniform, since any given short string is more likely to be chosen
+        than a given longer string"""
         length = random.randint(self.options['min_length'], self.options['max_length'])
         return ''.join([self.char_gen.get_random() for _ in range(length)])
 
-    def get_list_of_values(self, num_values):  # returns a list of valid numbers starting from min_value.
+    def get_list_of_values(self, num_values):
+        """Returns a list of valid numbers starting from min_value."""
         values = []
         next = self.get_min_value()
         for _ in range(num_values):
@@ -140,6 +146,7 @@ class StringGenerator:
         return values
 
     def is_valid(self, candidate):
+        """Returns true if the string has valid characters and meets min and max length constraints."""
         length_is_valid = self.options['min_length'] <= len(candidate) <= self.options['max_length']
         chars_are_valid = all(self.char_gen.is_valid(c) for c in candidate)
         return length_is_valid and chars_are_valid
