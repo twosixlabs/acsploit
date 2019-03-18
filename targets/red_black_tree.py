@@ -149,7 +149,6 @@ class RedBlackNode:
 def main():
     parser = argparse.ArgumentParser(description='Partial implementation of a Red-Black Tree to demonstrate ACsploit')
     parser.add_argument('value', metavar='VALUE', nargs='+', type=int, help='Values to add to the tree')
-
     args = parser.parse_args()
 
     tree = RedBlackNode.make_tree()
