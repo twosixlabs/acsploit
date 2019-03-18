@@ -18,11 +18,12 @@ class File:
 
     def output(self, output_list):
         """Create file output."""
+        output_path = os.path.expanduser(self.options['filename'])
         if self.options['format'] == 'binary':
-            with open(self.options['filename'], 'wb') as output_file:
+            with open(output_path, 'wb') as output_file:
                 self.write_binary_file(output_list, output_file)
         else:
-            with open(self.options['filename'], 'w') as output_file:
+            with open(output_path, 'w') as output_file:
                 if self.options['format'] == 'plaintext':
                     self.write_plaintext_file(output_list, output_file)
                 elif self.options['format'] == 'csv':
