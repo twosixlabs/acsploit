@@ -291,9 +291,11 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
         options = self.get_options(key)  # this call should always succeed due to the check above
         scoped_key = key.split('.')[1] if '.' in key else key
-        values = options.get_acceptable_values(scoped_key)
-        if values is not None and value not in values:
-            eprint(self.colorize('{} is not an acceptable value for option {}'.format(value, key), 'red'))
+        if not options.is_acceptable_value(scoped_key, value):
+            if options.supports_custom(scoped_key) and value == 'custom':
+                eprint(self.colorize('value must be specified after \"custom\"', 'red'))
+            else:
+                eprint(self.colorize('{} is not an acceptable value for option {}'.format(value, key), 'red'))
             eprint(no_option_msg)
             return
 

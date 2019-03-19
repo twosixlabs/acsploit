@@ -30,15 +30,15 @@ class Socket:
         self.options.add_option('host', '127.0.0.1', 'Host to connect to')
         self.options.add_option('port', 80, 'Port to connect to')
         self.options.add_option('ip_version', 'IPv4', 'Version of IP to use', ['IPv4', 'IPv6'])
-        self.options.add_option('separator', 'newline', 'Separator between elements', ['newline', 'comma', 'space',
-                                                                                       'tab', 'os_newline', 'CRLF'])
+        self.options.add_option('separator', 'newline', 'Separator between elements',
+                                list(self._SEPARATORS.keys()), True)
         self.options.add_option('final_separator', False, 'Whether to end output with an instance of the separator')
         self.options.add_option('await_banner', False, 'Receive a banner message from the server before sending data')
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
     def output(self, output_list):
         """Create a socket stream and send the payload as output."""
-        separator = Socket._SEPARATORS[self.options['separator']]
+        separator = output_common.get_separator(self.options['separator'], self._SEPARATORS)
         line = separator.join([self.convert_item(item) for item in output_list])
         if self.options['final_separator']:
             line += separator

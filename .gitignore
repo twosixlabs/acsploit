@@ -7,3 +7,4 @@ venv
 .pytest_cache
 *~
 *.class
+acsploit_output.dat
