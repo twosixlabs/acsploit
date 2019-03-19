@@ -22,10 +22,8 @@ class Http:
         """Initialize the Http class."""
         self.options = Options()
         self.options.add_option('url', 'http://127.0.0.1:80/', 'Host to connect to')
-        self.options.add_option('separator', 'newline', 'Separator between elements', ['newline', 'comma', 'space',
-                                                                                       'tab', 'os_newline', 'CRLF',
-                                                                                       'none'])
-        self.options.add_option('custom_separator', '', 'Custom separator to override "separator"')
+        self.options.add_option('separator', 'newline', 'Separator between elements',
+                                list(self._SEPARATORS.keys()), True)
         self.options.add_option('final_separator', False, 'Whether to end output with an instance of the separator')
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
@@ -43,10 +41,7 @@ class Http:
         """Create an HTTP request and send the payload."""
         url_payload = {}
         data_payload = ''
-        if self.options['custom_separator'] != '':
-            separator = self.options['custom_separator'].encode()
-        else:
-            separator = Http._SEPARATORS[self.options['separator']]
+        separator = output_common.get_separator(self.options['separator'], self._SEPARATORS)
 
         if self.options['use_body']:
             data_payload = separator.join([self.convert_item(item) for item in output_list])

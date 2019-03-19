@@ -1,5 +1,6 @@
 import os
 from options import Options
+from . import output_common
 
 
 class File:
@@ -7,36 +8,45 @@ class File:
 
     OUTPUT_NAME = 'file'
 
+    _SEPARATORS = {
+        'newline': '\n',
+        'comma': ',',
+        'space': ' ',
+        'tab': '\t',
+        'os_newline': os.linesep
+    }
+
     def __init__(self):
         """Initialize the File class."""
         self.options = Options()
         self.options.add_option('filename', 'acsploit_output.dat', 'The name of the file to write to')
         # TODO: add more formats
-        self.options.add_option('format', 'plaintext', 'The format to write output in', ['plaintext', 'csv', 'tsv', 'binary'])
+        self.options.add_option('separator', 'newline', 'Separator between elements',
+                                list(self._SEPARATORS.keys()), True)
+        self.options.add_option('format', 'plaintext', 'The format to write output in', ['plaintext', 'binary', 'sv'])
         self.options.add_option('final_newline', True, 'Whether to end the file with a newline')
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
     def output(self, output_list):
         """Create file output."""
         output_path = os.path.expanduser(self.options['filename'])
+        separator = output_common.get_separator(self.options['separator'], self._SEPARATORS)
         if self.options['format'] == 'binary':
             with open(output_path, 'wb') as output_file:
                 self.write_binary_file(output_list, output_file)
         else:
             with open(output_path, 'w') as output_file:
                 if self.options['format'] == 'plaintext':
-                    self.write_plaintext_file(output_list, output_file)
-                elif self.options['format'] == 'csv':
-                    self.write_sv_file(output_list, output_file, ',')
-                elif self.options['format'] == 'tsv':
-                    self.write_sv_file(output_list, output_file, '\t')
+                    self.write_plaintext_file(output_list, output_file, separator)
+                elif self.options['format'] == 'sv':
+                    self.write_sv_file(output_list, output_file, separator)
 
                 if self.options['final_newline']:
                     output_file.write(os.linesep)
 
-    def write_plaintext_file(self, output_list, output_file):
+    def write_plaintext_file(self, output_list, output_file, separator):
         """Write plaintext payload data to output file."""
-        output_file.write(os.linesep.join([self.convert_item(item) for item in output_list]))
+        output_file.write(separator.join([self.convert_item(item) for item in output_list]))
 
     def write_binary_file(self, output_list, output_file):
         """Write binary payload data to output file."""
