@@ -218,6 +218,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         if t is bool:  # special case bool because bool() treats all strings as True
             return rhs is (lhs in Options.TRUE_VALUES)
         try:
+            if rhs is None:
+                return lhs is None
             return t(lhs) == rhs
         except ValueError:
             return False

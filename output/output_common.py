@@ -26,3 +26,10 @@ def get_separator(options_separator, separator_dictionary):
         if len(separator) >= 2 and ((separator[0] == '"' and separator[-1] == '"') or (separator[0] == '\'' and separator[-1] == '\;')):
             separator = separator[1:-1]
         return decode_escapes(separator)
+
+def process_template(template, output, replacement_pattern, first_only):
+    with open(os.path.expanduser(template), 'r') as template_file:
+        if first_only:
+            return template_file.read().replace(replacement_pattern, output, 1)
+        else:
+            return template_file.read().replace(replacement_pattern, output)
