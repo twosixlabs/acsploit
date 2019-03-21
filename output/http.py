@@ -1,6 +1,7 @@
 import os
 import requests
 from options import Options
+from . import output_common
 
 
 class Http:
@@ -9,13 +10,13 @@ class Http:
     OUTPUT_NAME = 'http'  # exploits can use this internally to whitelist/blacklist supported output formats
 
     _SEPARATORS = {  # as bytes because
-        'newline': b'\n',
-        'comma': b',',
-        'space': b' ',
-        'tab': b'\t',
-        'os_newline': bytes(os.linesep.encode()),
-        'CRLF': b'\r\n',
-        'none': b''
+        'newline': '\n',
+        'comma': ',',
+        'space': ' ',
+        'tab': '\t',
+        'os_newline': os.linesep.encode(),
+        'CRLF': '\r\n',
+        'none': ''
     }
 
     def __init__(self):
@@ -29,6 +30,7 @@ class Http:
 
         # TODO - eventually support PUT, DELETE, HEAD, and OPTIONS, since requests easily handles those
         self.options.add_option('http_method', 'GET', 'Type of HTTP request to make', ['POST', 'GET'])
+        self.options.add_option('content_type', '', 'Content-Type header for the HTTP request')
         self.options.add_option('url_param_name', 'param', 'Name of URL arg(s) to use')
         self.options.add_option('spread_params', True, 'Put each output in its own URL arg, as opposed to all in one')
         self.options.add_option('use_body', False, 'Put exploit output in body, not URL args')
@@ -58,6 +60,9 @@ class Http:
 
         standard_headers = {'User-Agent': 'python-requests', 'Accept-Encoding': 'gzip, deflate',
                             'Connection': 'keep-alive', 'Accept': '*/*'}
+        if self.options['content_type'] != '':
+            standard_headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8'
+
         req = requests.Request(self.options['http_method'], self.options['url'], params=url_payload,
                                headers=standard_headers, data=data_payload)
         prepared = req.prepare()
@@ -74,17 +79,14 @@ class Http:
 
     def pretty_print_http(self, prepared_req):
         """Print readable http output."""
-        print(str('{}'+os.linesep+'{}'+os.linesep+'{}').format(
-            '-----------START-----------',
-            prepared_req.method + ' ' + prepared_req.url,
-            os.linesep.join('{}: {}'.format(k, v) for k, v in prepared_req.headers.items())
-        ))
+        print('-----------START-----------')
+        print(prepared_req.method + ' ' + prepared_req.url)
+        print(os.linesep.join('{}: {}'.format(k, v) for k, v in prepared_req.headers.items()))
 
         if self.options['use_body']:
-            print(str(os.linesep + '{}').format(prepared_req.body.decode()))
-            print('{}'.format('------------END------------'))
-        else:
-            print(str(os.linesep + '{}').format('------------END------------'))
+            print(str(os.linesep + '{}').format(prepared_req.body))
+
+        print('------------END------------')
 
     def convert_item(self, item):
         """Convert output to a bytes type."""
@@ -94,7 +96,5 @@ class Http:
                 item = hex(item)
             elif self.options['number_format'] == 'octal':
                 item = oct(item)
-        if type(item) is not bytes:
-            item = str(item).encode()  # TODO: this is a bit of a hack, to put it mildly
 
-        return item
+        return str(item)
