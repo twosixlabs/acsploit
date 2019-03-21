@@ -201,7 +201,7 @@ with open(outfile, 'w') as f:
 
 We now have our malicious input saved as `malicious.txt`. It is only 50 KB, and `TextCrunchr3` accepts uncompressed files. Let's see how long this takes to run:
 
-`time textcrunchrhost_1 reverse_shuffle.txt`
+`time textcrunchrhost_1 malicious.txt`
 
 ![Test](images/test_runtime.png)
 

@@ -6,3 +6,5 @@ venv
 .DS_Store
 .pytest_cache
 *~
+acsploit_output.dat
+*.class

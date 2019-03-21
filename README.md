@@ -33,6 +33,14 @@ ACsploit supports abbreviated commands, bash commands using `!`, `CTRL+R` histor
 
 `--debug` enables debug mode, in which ACsploit prints stack-traces when errors occur.
 
+Documentation 
+------------------------
+
+Documents are generated using pdoc3 and can be found in the `docs` directory.
+
+#### Generating Documents
+Run `pip3 install pdoc3` to install the documentation dependencies and then run `python generate_docs.py`
+
 
 Warning 
 ------------------------

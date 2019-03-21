@@ -1,13 +1,16 @@
 import os
 import socket
+
+from . import output_common
 from options import Options
 
 
 class Socket:
+    """Socket class."""
 
     OUTPUT_NAME = 'socket'  # exploits can use this internally to whitelist/blacklist supported output formats
 
-    _SEPARATORS = {  # as bytes because
+    _SEPARATORS = {  # as bytes because socket.sendall() requires bytes
         'newline': b'\n',
         'comma': b',',
         'space': b' ',
@@ -24,18 +27,20 @@ class Socket:
     _BANNER_LENGTH = 1024
 
     def __init__(self):
+        """Initialize the Socket class."""
         self.options = Options()
         self.options.add_option('host', '127.0.0.1', 'Host to connect to')
         self.options.add_option('port', 80, 'Port to connect to')
         self.options.add_option('ip_version', 'IPv4', 'Version of IP to use', ['IPv4', 'IPv6'])
-        self.options.add_option('separator', 'newline', 'Separator between elements', ['newline', 'comma', 'space',
-                                                                                       'tab', 'os_newline', 'CRLF'])
+        self.options.add_option('separator', 'newline', 'Separator between elements',
+                                list(self._SEPARATORS.keys()), True)
         self.options.add_option('final_separator', False, 'Whether to end output with an instance of the separator')
         self.options.add_option('await_banner', False, 'Receive a banner message from the server before sending data')
         self.options.add_option('number_format', 'decimal', 'Format for numbers', ['decimal', 'hexadecimal', 'octal'])
 
     def output(self, output_list):
-        separator = Socket._SEPARATORS[self.options['separator']]
+        """Create a socket stream and send the payload as output."""
+        separator = output_common.get_separator(self.options['separator'], self._SEPARATORS)
         line = separator.join([self.convert_item(item) for item in output_list])
         if self.options['final_separator']:
             line += separator
@@ -49,6 +54,7 @@ class Socket:
         s.close()
 
     def convert_item(self, item):
+        """Convert output to hexadecimal or octal."""
         # NB: this doesn't recurse onto lists
         if type(item) is int:
             if self.options['number_format'] == 'hexadecimal':
