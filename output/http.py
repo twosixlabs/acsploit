@@ -87,7 +87,7 @@ class Http:
             print(str(os.linesep + '{}').format('------------END------------'))
 
     def convert_item(self, item):
-        """Convert output to hexadecimal or octal."""
+        """Convert output to a bytes type."""
         # NB: this doesn't recurse onto lists
         if type(item) is int:
             if self.options['number_format'] == 'hexadecimal':
