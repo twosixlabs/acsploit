@@ -1,5 +1,7 @@
 import os
 import socket
+
+from . import output_common
 from options import Options
 
 
@@ -8,7 +10,7 @@ class Socket:
 
     OUTPUT_NAME = 'socket'  # exploits can use this internally to whitelist/blacklist supported output formats
 
-    _SEPARATORS = {  # as bytes because
+    _SEPARATORS = {  # as bytes because socket.sendall() requires bytes
         'newline': b'\n',
         'comma': b',',
         'space': b' ',
