@@ -431,7 +431,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             eprint(self.colorize('No exploit set; nothing to do. Select an exploit with the \'use\' command', 'cyan'))
         else:
             eprint(self.colorize('Running %s...' % self.exploit_name, 'cyan'))
-            start = time.process_time()
+            start = time.perf_counter()
             if self.input is None:
                 self.exploit.run(self.output)
             else:
@@ -439,7 +439,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 if hasattr(self.input, 'prepare'):
                     self.input.prepare()
                 self.exploit.run(self.input, self.output)
-            end = time.process_time()
+            end = time.perf_counter()
             eprint(self.colorize('Finished running %s (%.2f seconds)' % (self.exploit_name, end - start), 'cyan'))
 
 
