@@ -9,12 +9,12 @@ class Http:
 
     OUTPUT_NAME = 'http'  # exploits can use this internally to whitelist/blacklist supported output formats
 
-    _SEPARATORS = {  # as bytes because
+    _SEPARATORS = {
         'newline': '\n',
         'comma': ',',
         'space': ' ',
         'tab': '\t',
-        'os_newline': os.linesep.encode(),
+        'os_newline': os.linesep,
         'CRLF': '\r\n',
         'none': ''
     }
@@ -81,15 +81,17 @@ class Http:
         """Print readable http output."""
         print('-----------START-----------')
         print(prepared_req.method + ' ' + prepared_req.url)
-        print(os.linesep.join('{}: {}'.format(k, v) for k, v in prepared_req.headers.items()))
+        for k, v in prepared_req.headers.items():
+            print('{}: {}'.format(k, v))
 
         if self.options['use_body']:
-            print(str(os.linesep + '{}').format(prepared_req.body))
+            print()
+            print(prepared_req.body)
 
         print('------------END------------')
 
     def convert_item(self, item):
-        """Convert output to a bytes type."""
+        """Convert output to a str type."""
         # NB: this doesn't recurse onto lists
         if type(item) is int:
             if self.options['number_format'] == 'hexadecimal':
