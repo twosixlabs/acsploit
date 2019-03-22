@@ -61,7 +61,7 @@ class Http:
         standard_headers = {'User-Agent': 'python-requests', 'Accept-Encoding': 'gzip, deflate',
                             'Connection': 'keep-alive', 'Accept': '*/*'}
         if self.options['content_type'] != '':
-            standard_headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8'
+            standard_headers['Content-Type'] = self.options['content_type']
 
         req = requests.Request(self.options['http_method'], self.options['url'], params=url_payload,
                                headers=standard_headers, data=data_payload)
