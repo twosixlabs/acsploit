@@ -46,7 +46,7 @@ given individual characters to work with. By default, the `char` input generator
 We want to send our input to a web server so we set `output` to `http`. We set `output.url` to our target: 
 `http://127.0.0.1/post.php`, which leads to a simple PHP file we added to the running Docker container. The file accepts
 `POST` requests, so we set `output.http_method` to `POST`. We want to submit our collisions as parameters in the body of
-the request. To do this, we set `output.use_body` to `True` and run `set output.separator custom =&` to chain together
+the request, so we set `output.use_body` to `True` and run `set output.separator custom =&` to chain together
 the collisions. Finally, we set `output.content_type` to `application/x-www-form-urlencoded`.
 
 <img src="images/ACsploitSetOptions.png" class="center" width="400">
