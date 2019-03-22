@@ -47,7 +47,6 @@ class Http:
 
         if self.options['use_body']:
             data_payload = separator.join([self.convert_item(item) for item in output_list])
-            print(len(data_payload))
             if self.options['final_separator']:
                 data_payload += separator
         else:
@@ -63,7 +62,6 @@ class Http:
                             'Connection': 'keep-alive', 'Accept': '*/*'}
         if self.options['content_type'] != '':
             standard_headers['Content-Type'] = self.options['content_type']
-            print(standard_headers)
 
         req = requests.Request(self.options['http_method'], self.options['url'], params=url_payload,
                                headers=standard_headers, data=data_payload)
