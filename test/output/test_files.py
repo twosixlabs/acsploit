@@ -46,8 +46,8 @@ def test_output_number_format():
 def test_write_plaintext_file():
     mock_output = MagicMock()
     f = File()
-    f.write_plaintext_file(TEST_OUTPUT_LINES, mock_output)
-    mock_output.write.assert_called_once_with(os.linesep.join(TEST_OUTPUT_LINES_STR))
+    f.write_plaintext_file(TEST_OUTPUT_LINES, mock_output, ' ')
+    mock_output.write.assert_called_once_with(' '.join(TEST_OUTPUT_LINES_STR))
 
 
 def test_write_sv_file():
