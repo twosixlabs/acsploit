@@ -63,8 +63,13 @@ class Http:
         if self.options['content_type'] != '':
             standard_headers['Content-Type'] = self.options['content_type']
 
-        req = requests.Request(self.options['http_method'], self.options['url'], params=url_payload,
-                               headers=standard_headers, data=data_payload)
+        # Must use HTTP or HTTPS; default to http if user has not specified
+        url = self.options['url']
+        if not url.startswith('http://') and not url.startswith('https://'):
+            url = 'http://' + url
+
+        req = requests.Request(self.options['http_method'], url, params=url_payload, headers=standard_headers,
+                               data=data_payload)
         prepared = req.prepare()
 
         if self.options['print_request']:
