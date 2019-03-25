@@ -77,18 +77,20 @@ class Http:
 
         if self.options['send_request']:
             s = requests.Session()
-            print('Sending HTTP request (estimated length {} bytes)...'.format(len(self.get_request(prepared))))
+            print('Sending HTTP request (estimated payload length {} bytes)...'.format(len(self.get_request(prepared))))
             s.send(prepared)    # TODO - eventually wrap this in try/except for ConnectionError?
             print('HTTP request sent.')
             s.close()
 
     # NOTE: This is only an approximation of the request that will actually be sent
     #       The requests API does not expose the actual bytes of a request that will be sent over the wire
+    #       If using HTTPS, will return the unencrypted HTTP payload, not the TLS payloads
     def get_request(self, prepared_req):
-
+        _, full_url = prepared_req.url.split('://', maxsplit=1)  # Strip http:// or https://
+        url, _, path = full_url.partition('/')  # Requests formats the url so there should always be a '/'
         headers = ''.join('{}: {}\r\n'.format(k, v) for k, v in prepared_req.headers.items())
-        url = prepared_req.url[]
-        request = '{} {} HTTP/1.1\r\nHost: {}\r\n{}\r\n{}'.format(prepared_req.method, prepared_req.url, headers, prepared_req.body)
+        body = '' if prepared_req.body is None else prepared_req.body
+        request = '{} /{} HTTP/1.1\r\nHost: {}\r\n{}\r\n{}'.format(prepared_req.method, path, url, headers, body)
         return request
 
     def pretty_print_http(self, prepared_req):
