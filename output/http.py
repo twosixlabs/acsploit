@@ -72,22 +72,24 @@ class Http:
 
         if self.options['send_request']:
             s = requests.Session()
-            print('Sending HTTP request...')
+            print('Sending HTTP request (estimated length {} bytes)...'.format(len(self.get_request(prepared))))
             s.send(prepared)    # TODO - eventually wrap this in try/except for ConnectionError?
             print('HTTP request sent.')
             s.close()
 
+    # NOTE: This is only an approximation of the request that will actually be sent
+    #       The requests API does not expose the actual bytes of a request that will be sent over the wire
+    def get_request(self, prepared_req):
+
+        headers = ''.join('{}: {}\r\n'.format(k, v) for k, v in prepared_req.headers.items())
+        url = prepared_req.url[]
+        request = '{} {} HTTP/1.1\r\nHost: {}\r\n{}\r\n{}'.format(prepared_req.method, prepared_req.url, headers, prepared_req.body)
+        return request
+
     def pretty_print_http(self, prepared_req):
         """Print readable http output."""
         print('-----------START-----------')
-        print(prepared_req.method + ' ' + prepared_req.url)
-        for k, v in prepared_req.headers.items():
-            print('{}: {}'.format(k, v))
-
-        if self.options['use_body']:
-            print()
-            print(prepared_req.body)
-
+        print(self.get_request(prepared_req))
         print('------------END------------')
 
     def convert_item(self, item):
