@@ -63,8 +63,13 @@ class Http:
         if self.options['content_type'] != '':
             standard_headers['Content-Type'] = self.options['content_type']
 
-        req = requests.Request(self.options['http_method'], self.options['url'], params=url_payload,
-                               headers=standard_headers, data=data_payload)
+        # Must use HTTP or HTTPS; default to http if user has not specified
+        url = self.options['url']
+        if not url.startswith('http://') and not url.startswith('https://'):
+            url = 'http://' + url
+
+        req = requests.Request(self.options['http_method'], url, params=url_payload, headers=standard_headers,
+                               data=data_payload)
         prepared = req.prepare()
 
         if self.options['print_request']:
@@ -72,22 +77,26 @@ class Http:
 
         if self.options['send_request']:
             s = requests.Session()
-            print('Sending HTTP request...')
+            print('Sending HTTP request (estimated payload length {} bytes)...'.format(len(self.get_request(prepared))))
             s.send(prepared)    # TODO - eventually wrap this in try/except for ConnectionError?
             print('HTTP request sent.')
             s.close()
 
+    # NOTE: This is only an approximation of the request that will actually be sent
+    #       The requests API does not expose the actual bytes of a request that will be sent over the wire
+    #       If using HTTPS, will return the unencrypted HTTP payload, not the TLS payloads
+    def get_request(self, prepared_req):
+        _, full_url = prepared_req.url.split('://', maxsplit=1)  # Strip http:// or https://
+        url, _, path = full_url.partition('/')  # Requests formats the url so there should always be a '/'
+        headers = ''.join('{}: {}\r\n'.format(k, v) for k, v in prepared_req.headers.items())
+        body = '' if prepared_req.body is None else prepared_req.body
+        request = '{} /{} HTTP/1.1\r\nHost: {}\r\n{}\r\n{}'.format(prepared_req.method, path, url, headers, body)
+        return request
+
     def pretty_print_http(self, prepared_req):
         """Print readable http output."""
         print('-----------START-----------')
-        print(prepared_req.method + ' ' + prepared_req.url)
-        for k, v in prepared_req.headers.items():
-            print('{}: {}'.format(k, v))
-
-        if self.options['use_body']:
-            print()
-            print(prepared_req.body)
-
+        print(self.get_request(prepared_req))
         print('------------END------------')
 
     def convert_item(self, item):
