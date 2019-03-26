@@ -1,5 +1,7 @@
 import os
 import requests
+import multiprocessing.pool
+
 from options import Options
 from . import output_common
 
@@ -38,6 +40,9 @@ class Http:
         self.options.add_option('print_request', False, 'Print HTTP request')
         self.options.add_option('send_request', True, 'Send HTTP request')
 
+        self.options.add_option('n_requests', 1, 'Total number of times to send the request')
+        self.options.add_option('n_parallel', 1, 'Number of requests to send simultaneously')
+
     # TODO - eventually allow printing out http response?
     def output(self, output_list):
         """Create an HTTP request and send the payload."""
@@ -75,12 +80,29 @@ class Http:
         if self.options['print_request']:
             self.pretty_print_http(prepared)
 
-        if self.options['send_request']:
-            s = requests.Session()
-            print('Sending HTTP request (estimated payload length {} bytes)...'.format(len(self.get_request(prepared))))
-            s.send(prepared)    # TODO - eventually wrap this in try/except for ConnectionError?
-            print('HTTP request sent.')
-            s.close()
+        if self.options['send_request'] and self.options['n_requests'] > 0:
+            request = self.get_request(prepared)
+
+            if self.options['n_requests'] == 1:
+                print('Sending HTTP request (est. {} bytes)'.format(len(request)))
+                self.send_request(prepared)
+
+            else:
+                pool = multiprocessing.pool.ThreadPool(self.options['n_parallel'])
+                print('Sending {} HTTP requests (est. {} bytes each)'.format(self.options['n_requests'], len(request)))
+
+                # This will send n_parallel requests at once; each thread blocks until receiving a response
+                # Each thread continues sending requests until n_requests have been sent in total across all threads
+                pool.map(self.send_request, [prepared]*self.options['n_requests'])
+                pool.close()
+                pool.join()
+
+            print('All HTTP requests sent')
+
+    def send_request(self, prepared_req):
+        s = requests.Session()
+        s.send(prepared_req)
+        s.close()
 
     # NOTE: This is only an approximation of the request that will actually be sent
     #       The requests API does not expose the actual bytes of a request that will be sent over the wire
