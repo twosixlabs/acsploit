@@ -407,7 +407,9 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                 self.options.add_option('input', 'string', input_desc, list(ACsploit.inputs.keys()))
                 self.input = ACsploit.inputs['string']()
 
-            if hasattr(self.exploit, 'DEFAULT_OUTPUT'):
+            if hasattr(self.exploit, 'NO_OUTPUT') and self.exploit.NO_OUTPUT:
+                self.output = None
+            elif hasattr(self.exploit, 'DEFAULT_OUTPUT'):
                 self.options.add_option('output', self.exploit.DEFAULT_OUTPUT, output_desc,
                                         list(ACsploit.outputs.keys()))
                 self.defaulted_options.append('output')
@@ -435,12 +437,18 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             eprint(self.colorize('Running %s...' % self.exploit_name, 'cyan'))
             start = time.perf_counter()
             if self.input is None:
-                self.exploit.run(self.output)
+                if self.output is None:
+                    self.exploit.run()
+                else:
+                    self.exploit.run(self.output)
             else:
                 # prepare is used to update internal state of input generators prior to running
                 if hasattr(self.input, 'prepare'):
                     self.input.prepare()
-                self.exploit.run(self.input, self.output)
+                if self.output is None:
+                    self.exploit.run(self.input)
+                else:
+                    self.exploit.run(self.input, self.output)
             end = time.perf_counter()
             eprint(self.colorize('Finished running %s (%.2f seconds)' % (self.exploit_name, end - start), 'cyan'))
 
