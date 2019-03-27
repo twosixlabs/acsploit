@@ -51,7 +51,6 @@ class File:
                     self.write_template_file(output_list, output_file, separator, self.options['template_file'],
                                              self.options['template_pattern'])
 
-
                 if self.options['final_newline'] and self.options['format'] != 'template':
                     output_file.write(os.linesep)
 
