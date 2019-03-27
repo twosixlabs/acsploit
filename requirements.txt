@@ -16,5 +16,5 @@ pyperclip==1.6.0
 pytest==3.4.1
 requests==2.20.0
 six==1.11.0
-urllib3==1.21.1
+urllib3==1.24.1
 z3-solver==4.5.1.0.post2
