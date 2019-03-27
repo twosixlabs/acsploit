@@ -47,6 +47,9 @@ Warning
 
 Caution should be used in generating and accessing ACsploit exploits. Using unreasonable exploit parameters may cause denial of service on generation. Additionally, the canned exploits (e.g. compression bombs) may cause denial of service if accessed by relevant applications. 
 
+Tests
+------------------------
+Tests for ACsploit can be invoked by running `python -m pytest test`. Alternatively, individual tests can be invoked by running `python -m pytest test/path/to/test.py`.
 
 Contributing to ACsploit
 ------------------------
