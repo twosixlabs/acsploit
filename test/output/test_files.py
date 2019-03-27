@@ -50,6 +50,31 @@ def test_write_plaintext_file():
     mock_output.write.assert_called_once_with(' '.join(TEST_OUTPUT_LINES_STR))
 
 
+def test_write_template_file():
+    mock_output = MagicMock()
+    f = File()
+    template_file = os.path.join(os.path.dirname(__file__), 'template.txt')
+    f.write_template_file(TEST_OUTPUT_LINES, mock_output, ' ', template_file, '!!!')
+    mock_output.write.assert_called_once_with('hello %s %s' % (' '.join(TEST_OUTPUT_LINES_STR),
+                                                               ' '.join(TEST_OUTPUT_LINES_STR)))
+
+
+def test_write_template_file_replace_first_only():
+    mock_output = MagicMock()
+    f = File()
+    f.options['replace_first_only'] = True
+    template_file = os.path.join(os.path.dirname(__file__), 'template.txt')
+    f.write_template_file(TEST_OUTPUT_LINES, mock_output, ' ', template_file, '!!!')
+    mock_output.write.assert_called_once_with('hello %s !!!' % ' '.join(TEST_OUTPUT_LINES_STR))
+
+
+def test_write_binary_file():
+    mock_output = MagicMock()
+    f = File()
+    f.write_binary_file(TEST_OUTPUT_LINES, mock_output)
+    mock_output.write.assert_has_calls([call(line) for line in TEST_OUTPUT_LINES])
+
+
 def test_write_sv_file():
     mock_output = MagicMock()
     f = File()
