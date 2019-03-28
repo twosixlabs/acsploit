@@ -359,6 +359,11 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             eprint(self.colorize('    ' + key, 'green'))
         eprint()
 
+    def do_clear(self, args):
+        """Clears the screen"""
+        # 'cls' on windows, otherwise 'clear'
+        os.system('cls' if os.name == 'nt' else 'clear')
+
     def update_exploit(self, exploit_name):
         """Sets the exploit name as the current exploit and restores saved settings or sets default values."""
         if exploit_name not in ACsploit.exploits:
