@@ -57,6 +57,12 @@ To run the tests and obtain an HTML coverage report run the following:
 python -m pytest --cov=exploits --cov=input --cov=output --cov-report html:cov test/
 ```
 
+Finally to run the tests in parellel the `-n` flag can be used followed by the number of parellel tests.  On Linux and Mac the following works:
+
+```
+python -m pytest -n`nproc` --cov=exploits --cov=input --cov=output --cov-report html:cov test/
+```
+
 Contributing to ACsploit
 ------------------------
 
