@@ -13,6 +13,7 @@ pluggy==0.6.0
 py==1.5.3
 pyparsing==2.2.0
 pyperclip==1.6.0
+pypng==0.0.19
 pytest==3.4.1
 requests==2.20.0
 six==1.11.0
