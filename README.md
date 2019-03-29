@@ -51,6 +51,12 @@ Tests
 ------------------------
 Tests for ACsploit can be invoked by running `python -m pytest test`. Alternatively, individual tests can be invoked by running `python -m pytest test/path/to/test.py`.
 
+To run the tests and obtain an HTML coverage report run the following:
+
+```
+python -m pytest --cov=exploits --cov=input --cov=output --cov-report html:cov test/
+```
+
 Contributing to ACsploit
 ------------------------
 
