@@ -12,11 +12,13 @@ ESCAPE_SEQUENCE_RE = re.compile(r'''
     | \\[\\'"abfnrtv]  # Single-character escapes
     )''', re.UNICODE | re.VERBOSE)
 
+
 def decode_escapes(s):
     def decode_match(match):
         return codecs.decode(match.group(0), 'unicode-escape')
 
     return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
+
 
 def get_separator(options_separator, separator_dictionary):
     if options_separator in separator_dictionary:
@@ -26,6 +28,7 @@ def get_separator(options_separator, separator_dictionary):
         if len(separator) >= 2 and ((separator[0] == '"' and separator[-1] == '"') or (separator[0] == '\'' and separator[-1] == '\;')):
             separator = separator[1:-1]
         return decode_escapes(separator)
+
 
 def process_template(template, output, replacement_pattern, first_only):
     with open(os.path.expanduser(template), 'r') as template_file:
