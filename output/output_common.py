@@ -25,7 +25,7 @@ def get_separator(options_separator, separator_dictionary):
         return separator_dictionary[options_separator]
     else:
         separator = options_separator[len('custom '):]
-        if len(separator) >= 2 and ((separator[0] == '"' and separator[-1] == '"') or (separator[0] == '\'' and separator[-1] == '\;')):
+        if len(separator) >= 2 and ((separator[0] == '"' and separator[-1] == '"') or (separator[0] == '\'' and separator[-1] == ';')):
             separator = separator[1:-1]
         return decode_escapes(separator)
 
