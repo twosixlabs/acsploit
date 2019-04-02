@@ -8,3 +8,5 @@ venv
 *~
 acsploit_output.dat
 *.class
+cov
+.coverage
