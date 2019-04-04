@@ -4,7 +4,7 @@
 
 ```
 $ python --version
-Python 3.6
+Python 3.5
 $ git clone https://github.com/twosixlabs/acsploit.git
 $ cd acsploit
 $ python -m venv acvenv
@@ -38,6 +38,10 @@ Activate the virtual environment with `source acvenv/bin/activate`
 #### Installing dependencies
 
 Run `pip install -r requirements.txt` to install the dependencies for ACsploit. This may take several minutes, as `pip` may need to compile `z3` as part of the installation process.
+
+##### Installing `libdnet`
+
+If you are on macOS you may need to manually install `libdnet`. Install [Homebrew](https://brew.sh) and run `brew install libdnet` to install `libdnet`.
 
 #### Running ACsploit
 
