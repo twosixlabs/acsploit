@@ -38,6 +38,10 @@ Exploits must follow the rules below and implement the given API:
 - If your exploit does not use an input generator, you may add a module-level constant `NO_INPUT = True`.
   - If you set `NO_INPUT = True` your exploit's  `run()` method must have the signature `run(output)`, where `output` is an output generator object.
 
+##### Tests:
+- It is strongly recommended that you implement a test suite for your exploit.
+- If your exploit is in a file called `exploits/star/twinkle/shiny.py`, you should put its tests in `test/exploits/star/twinkle/shiny.py`.
+
 Beyond the above requirements, your exploit can be written however you'd like.
 
 ### Contributing Input Generators
