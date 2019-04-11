@@ -264,14 +264,13 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self._should_quit = True
         return self._STOP_AND_EXIT
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('key')
+    parser.add_argument('value')
+    @cmd2.with_argparser(parser)
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
-        try:
-            key, value = args.split(maxsplit=1)
-        except ValueError:
-            eprint('Usage: set [option_name] [value]')
-            return
-
+        key, value = args.key, args.value
         no_option_msg = self.colorize('No option set', 'cyan')
 
         if key == 'debug':
