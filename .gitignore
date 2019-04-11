@@ -10,3 +10,4 @@ acsploit_output.dat
 *.class
 cov
 .coverage
+regex_parser_RegexParser_parsetab.py
