@@ -44,23 +44,6 @@ def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 
-def exploit_path_complete(text, line, begidx, endidx, match_against):
-    """Returns a list of exploit paths for tab completion"""
-    split_line = line.split(maxsplit=1)
-    full_text = split_line[1] if len(split_line) == 2 else ''
-    match_begidx = len(full_text) - len(text)
-    result_set = set()
-    for match in match_against:
-        if match.startswith(full_text):
-            match_endidx = match.find('/', match_begidx)
-            if match_endidx != -1:
-                result_set.add(match[match_begidx:match_endidx+1])
-            else:
-                result_set.add(match[match_begidx:])
-
-    return sorted(result_set)
-
-
 def get_exploits():
     """Find and load all exploit modules."""
     results = {}
@@ -115,9 +98,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def __init__(self, hist_file):
         """Initialization and setup of ACsploit."""
         self.setup_cmd2(hist_file)
-
-        # Register tab-completion function
-        self.complete_use = functools.partial(exploit_path_complete, match_against=ACsploit.exploits)
 
         self.prompt = self.make_prompt()
 
@@ -176,6 +156,10 @@ _____    ____   ____________ |  |   ____ |__|/  |_
                     return [value for value in values if value.startswith(text)]
 
         return []
+
+    def complete_use(self, text, line, begidx, endidx):
+        """Provide tab completion for the "use" option."""
+        return self.delimiter_complete(text, line, begidx, endidx, ACsploit.exploits, '/')
 
     def get_option_names(self):
         """Returns the names of all options within current exploit, input , and output options."""
