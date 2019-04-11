@@ -135,8 +135,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
 
         # disable help on builtins
-        self.exclude_from_help.append('do_shell')  # TODO: this still gets tab-completed and is 'help'-able
-        self.exclude_from_help.append('do_exit')  # TODO: come back to this?
+        self.hidden_commands.append('shell')
+        self.hidden_commands.append('exit')
 
     def make_prompt(self, location=None):
         """Create the command line prompt."""
