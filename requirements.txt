@@ -2,6 +2,7 @@ attrs==17.4.0
 certifi==2018.4.16
 chardet==3.0.4
 cmd2==0.9.11
+colorama=0.4.1
 coverage==4.5.1
 exrex==0.10.5
 idna==2.5

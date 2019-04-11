@@ -19,6 +19,7 @@ import functools
 import argparse
 import importlib
 import time
+from colorama import Fore
 
 from options import Options
 
@@ -123,7 +124,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         del cmd2.Cmd.do_pyscript
         del cmd2.Cmd.do_set
         del cmd2.Cmd.do_alias
-        del cmd2.Cmd.do_unalias
         del cmd2.Cmd.do_load
         cmd2.Cmd.abbrev = True
         self.allow_cli_args = False  # disable parsing of command-line args by cmd2
@@ -141,7 +141,8 @@ _____    ____   ____________ |  |   ____ |__|/  |_
     def make_prompt(self, location=None):
         """Create the command line prompt."""
         prompt = '(acsploit : %s) ' % location if location is not None else '(acsploit) '
-        return self.colorize(prompt, 'blue')
+        prompt = Fore.BLUE + prompt + Fore.RESET
+        return prompt
 
     def complete_set(self, text, line, begidx, endidx):
         """Provide tab completion for the "set" option."""
