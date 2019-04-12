@@ -14,7 +14,7 @@ class CharGenerator:
         self.options.add_option('min_value', 'a', 'Minimum ASCII character to use')
         self.options.add_option('max_value', 'z', 'Maximum ASCII character to use')
         self.options.add_option('restrictions', '', 'String of characters to exclude')
-        self.options.add_option('use_whitelist', False, 'If True, only generate characters from the whitelist')
+        self.options.add_option('use_whitelist', False, 'If true, only generate characters from the whitelist')
         self.options.add_option('whitelist', '', 'String of characters to generate from if use_whitelist is True')
 
         # char_set will be a sorted valid set of characters given the constraints set in options

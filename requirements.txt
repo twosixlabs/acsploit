@@ -3,13 +3,18 @@ certifi==2018.4.16
 chardet==3.0.4
 cmd2==0.8.2
 coverage==4.5.1
+delayed-assert==0.3.2
 exrex==0.10.5
+graphviz==0.10.1
 idna==2.5
+kamene==0.32
 Mako==1.0.7
 Markdown==3.0.1
 MarkupSafe==1.1.1
+netifaces==0.10.9
 pdoc3==0.5.3
 pluggy==0.6.0
+ply==3.11
 py==1.5.3
 pyparsing==2.2.0
 pyperclip==1.6.0
@@ -21,7 +26,3 @@ requests==2.20.0
 six==1.11.0
 urllib3==1.24.1
 z3-solver==4.5.1.0.post2
-kamene==0.32
-netifaces==0.10.9
-ply==3.11
-graphviz==0.10.1
