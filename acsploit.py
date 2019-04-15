@@ -265,7 +265,6 @@ _____    ____   ____________ |  |   ____ |__|/  |_
 
     def do_set(self, args):
         """Sets an option. Usage: set [option_name] [value]"""
-
         try:
             key, value = args.split(maxsplit=1)
         except ValueError:
