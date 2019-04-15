@@ -7,6 +7,8 @@ worst-case inputs are designed to result in the target program utilizing a large
 ACsploit is designed to be easy to contribute to. Future features will include adding arbitrary constraints to inputs, 
 creating an API, and hooking into running programs to feed worst-case input directly to functions of interest.
 
+Join us on the ACsploit Slack [here](https://join.slack.com/t/acsploit/shared_invite/enQtNTg2MTg5Mjc0NDcxLTc1MzVhMTdhMWViNGZkY2IxNTNiZDkxOTQxYmVmYzNkZWViZTYxYjE1NDE3NTkyMGJiMWY5OWUzMDg5ZjcyMDc)!
+
 ![Screenshot](acsploit.png)
 
 
@@ -54,13 +56,13 @@ Tests for ACsploit can be invoked by running `python -m pytest test`. Alternativ
 To run the tests and obtain an HTML coverage report run the following:
 
 ```
-python -m pytest --cov=exploits --cov=input --cov=output --cov-report html:cov test/
+python -m pytest --cov=. --cov-report html:cov test/
 ```
 
 Finally to run the tests in parellel the `-n` flag can be used followed by the number of parellel tests.  On Linux and Mac the following works:
 
 ```
-python -m pytest -n`nproc` --cov=exploits --cov=input --cov=output --cov-report html:cov test/
+python -m pytest -n`nproc` --cov=. --cov-report html:cov test/
 ```
 
 Contributing to ACsploit
