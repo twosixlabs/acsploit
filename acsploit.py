@@ -370,7 +370,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
             return
 
         # save current input/output and  to current exploit in private variables
-        # this allows restoration of the current settings f the exploit is used again
+        # this allows restoration of the current settings if the exploit is used again
         if self.exploit is not None:
             self.exploit._ACsploit_exploit_settings = {
                 'input': self.input,
