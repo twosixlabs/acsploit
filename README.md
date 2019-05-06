@@ -7,7 +7,7 @@ worst-case inputs are designed to result in the target program utilizing a large
 ACsploit is designed to be easy to contribute to. Future features will include adding arbitrary constraints to inputs, 
 creating an API, and hooking into running programs to feed worst-case input directly to functions of interest.
 
-Join us on the ACsploit Slack [here](https://join.slack.com/t/acsploit/shared_invite/enQtNTg2MTg5Mjc0NDcxLTc1MzVhMTdhMWViNGZkY2IxNTNiZDkxOTQxYmVmYzNkZWViZTYxYjE1NDE3NTkyMGJiMWY5OWUzMDg5ZjcyMDc)!
+Join us on the ACsploit Slack [here](https://join.slack.com/t/acsploit/shared_invite/enQtNjE2MTc3MDQ0NTQ2LTllYjViMjc5NTM1YzM0OWUwMTBiMmM3M2MxNGEwNWNmNjkyNDFiMTgyMjRiMzExZWU4Y2NhNTVlZTA4MThiZjg)!
 
 ![Screenshot](acsploit.png)
 
