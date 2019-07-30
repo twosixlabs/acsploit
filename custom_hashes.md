@@ -48,4 +48,4 @@ Selecting `target_type` `preimage` with a `preimage` values of `a = 27, b = 12, 
 - Computations are performed at 32-bits wide if `variable_width` is <= 32 (the default) and at 64-bits wide if `variable_width` is not.
     - The `image` and `preimage` values must fit within the computation width but can be wider than the `variable_width`.
     - eg, 500 cannot be expressed as an 8-bit signed integer, but `image` can 500 when `variable_width` is 8, because the computation will be performed at 32-bit precision, which is more than wide enough for 500.
-    - eg, `preimage` could be `x = 2, y = 256, z = 400000000000`, where `z` is not expressible in 32 bits, when `variable_width` is greater than 32, becuase the computation will be performed at 64-bit precision.  
+    - eg, `preimage` could be `x = 2, y = 256, z = 400000000000`, where `z` is not expressible in 32 bits, when `variable_width` is greater than 32, because the computation will be performed at 64-bit precision.
