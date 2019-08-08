@@ -50,3 +50,10 @@ Implements a [Red-black tree](https://en.wikipedia.org/wiki/Red–black_tree). T
 ```
 python red_black_tree.py INT [INT…]
 ```
+
+### zxcvbn (`passwords/zxcvbn`)
+Implements the [zxcvbn]() password strength checking algorithm.
+
+```
+./zxcvbn PASSWORD
+```

@@ -56,13 +56,17 @@ Tests for ACsploit can be invoked by running `python -m pytest test`. Alternativ
 To run the tests and obtain an HTML coverage report run the following:
 
 ```
+<<<<<<< HEAD
 python -m pytest --cov=exploits --cov=input --cov=output --cov-report html:cov test/
+=======
+python -m pytest --cov=. --cov-report html:cov test/
+>>>>>>> master
 ```
 
-Finally to run the tests in parellel the `-n` flag can be used followed by the number of parellel tests.  On Linux and Mac the following works:
+Finally to run the tests in parellel the `-n` flag can be used followed by the number of tests to run in parallel.  On Linux and Mac the following works:
 
 ```
-python -m pytest -n`nproc` --cov=exploits --cov=input --cov=output --cov-report html:cov test/
+python -m pytest -n`nproc` --cov=. --cov-report html:cov test/
 ```
 
 Contributing to ACsploit
