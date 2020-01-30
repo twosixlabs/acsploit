@@ -4,7 +4,7 @@ ACsploit: a tool for generating worst-case inputs for algorithms
 ACsploit is an interactive command-line utility to generate worst-case inputs to commonly used algorithms. These
 worst-case inputs are designed to result in the target program utilizing a large amount of resources (e.g. time or memory).
 
-ACsploit is designed to be easy to contribute to. Future features will include adding arbitrary constraints to inputs, 
+ACsploit is designed to be easy to contribute to. Future features will include adding arbitrary constraints to inputs,
 creating an API, and hooking into running programs to feed worst-case input directly to functions of interest.
 
 Join us on the ACsploit Slack [here](https://join.slack.com/t/acsploit/shared_invite/enQtNjE2MTc3MDQ0NTQ2LTllYjViMjc5NTM1YzM0OWUwMTBiMmM3M2MxNGEwNWNmNjkyNDFiMTgyMjRiMzExZWU4Y2NhNTVlZTA4MThiZjg)!
@@ -19,7 +19,7 @@ Start ACsploit with `python3 acsploit.py`. From there, you can use the `help` co
 You can call `help` on any of them to learn more about how to use that command, such as `help set`.
 
 To see the available exploits, use the `show` command. To stage one for use, use `use [exploit_name]`. To see a
-description of the exploit, run `info`. At any point, you can run `options` to see the current input, output, and 
+description of the exploit, run `info`. At any point, you can run `options` to see the current input, output, and
 exploit options, and then use `set [option_name] [value]` to set an option. To see detailed descriptions of the options,
  use `options describe`.
 
@@ -31,11 +31,11 @@ ACsploit supports abbreviated commands, bash commands using `!`, `CTRL+R` histor
 
 #### Command-line Options
 
-`--load-file SCRIPT` runs the commands in `SCRIPT` as if they had been entered in an interactive ACsploit session and then exits. `#` can be used for comments as in Python. 
+`--load-file SCRIPT` runs the commands in `SCRIPT` as if they had been entered in an interactive ACsploit session and then exits. `#` can be used for comments as in Python.
 
 `--debug` enables debug mode, in which ACsploit prints stack-traces when errors occur.
 
-Documentation 
+Documentation
 ------------------------
 
 Documents are generated using pdoc3 and can be found in the `docs` directory.
@@ -44,10 +44,10 @@ Documents are generated using pdoc3 and can be found in the `docs` directory.
 Run `pip3 install pdoc3` to install the documentation dependencies and then run `python generate_docs.py`
 
 
-Warning 
+Warning
 ------------------------
 
-Caution should be used in generating and accessing ACsploit exploits. Using unreasonable exploit parameters may cause denial of service on generation. Additionally, the canned exploits (e.g. compression bombs) may cause denial of service if accessed by relevant applications. 
+Caution should be used in generating and accessing ACsploit exploits. Using unreasonable exploit parameters may cause denial of service on generation. Additionally, the canned exploits (e.g. compression bombs) may cause denial of service if accessed by relevant applications.
 
 Tests
 ------------------------
@@ -56,11 +56,7 @@ Tests for ACsploit can be invoked by running `python -m pytest test`. Alternativ
 To run the tests and obtain an HTML coverage report run the following:
 
 ```
-<<<<<<< HEAD
-python -m pytest --cov=exploits --cov=input --cov=output --cov-report html:cov test/
-=======
 python -m pytest --cov=. --cov-report html:cov test/
->>>>>>> master
 ```
 
 Finally to run the tests in parellel the `-n` flag can be used followed by the number of tests to run in parallel.  On Linux and Mac the following works:
