@@ -11,7 +11,6 @@ execnet==1.6.0
 exrex==0.10.5
 graphviz==0.10.1
 idna==2.5
-kamene==0.32
 Mako==1.0.7
 Markdown==3.0.1
 MarkupSafe==1.1.1
@@ -31,6 +30,7 @@ pytest-forked==1.0.2
 pytest-xdist==1.27.0
 python-utils==2.3.0
 requests==2.20.0
+scapy==2.4.3
 scipy==1.2.1
 six==1.11.0
 tqdm==4.32.2
