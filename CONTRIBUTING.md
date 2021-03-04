@@ -127,7 +127,7 @@ To set the value of an option call `options.set_value(option_name, value)`. If `
 Example:
 
 ```
-	from options import Options
+	from acsploit.options import Options
 	…
 	class ExampleOutputFormatter(object):
 		…
