@@ -109,6 +109,7 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         self.defaulted_options = []
 
         self.script_mode = False
+        self.shortcuts = cmd2.DEFAULT_SHORTCUTS
 
     def setup_cmd2(self, hist_file):
         """"Set up interactive command line interface."""
@@ -116,15 +117,13 @@ _____    ____   ____________ |  |   ____ |__|/  |_
         del cmd2.Cmd.do_py
         del cmd2.Cmd.do_edit
         del cmd2.Cmd.do_shortcuts
-        del cmd2.Cmd.do_pyscript
+        del cmd2.Cmd.do_run_pyscript
         del cmd2.Cmd.do_set
-        del cmd2.Cmd.do_alias
-        del cmd2.Cmd.do_load
+        del cmd2.Cmd.do_run_script
         cmd2.Cmd.abbrev = True
         self.allow_cli_args = False  # disable parsing of command-line args by cmd2
         self.allow_redirection = False  # disable redirection to enable right shift (>>) in custom_hash to work
         self.redirector = '\xff'  # disable redirection in the parser as well
-        self.shortcuts.update({'sh': 'show'})  # don't want "sh" to trigger the hidden "shell" command
 
         # init cmd2 and the history file
         cmd2.Cmd.__init__(self, persistent_history_file=hist_file, persistent_history_length=200)
