@@ -51,7 +51,7 @@ Caution should be used in generating and accessing ACsploit exploits. Using unre
 
 Tests
 ------------------------
-Tests for ACsploit can be invoked by running `python -m pytest test`. Alternatively, individual tests can be invoked by running `python -m pytest test/path/to/test.py`.
+Tests for ACsploit can be invoked from inside the `acsploit` directory by running `python -m pytest test`. Alternatively, individual tests can be invoked by running `python -m pytest test/path/to/test.py`.
 
 To run the tests and obtain an HTML coverage report run the following:
 

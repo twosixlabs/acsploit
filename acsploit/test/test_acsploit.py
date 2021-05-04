@@ -1,4 +1,4 @@
-from ..acsploit import ACsploit
+from ..__main__ import ACsploit
 import os
 import pytest
 
