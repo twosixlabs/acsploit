@@ -24,7 +24,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/twosixlabs/acsploit',
-    author='twosixlabs',
+    author='Two Six Technologies',
 
     packages=find_packages(),
 

@@ -1,10 +1,12 @@
 ACsploit: a tool for generating worst-case inputs for algorithms
 =======================================================================
 
+By [Two Six Technologies](https://twosixtech.com)
+
 ACsploit is an interactive command-line utility to generate worst-case inputs to commonly used algorithms. These
 worst-case inputs are designed to result in the target program utilizing a large amount of resources (e.g. time or memory).
 
-ACsploit is designed to be easy to contribute to. Future features will include adding arbitrary constraints to inputs,
+ACsploit is designed to be easy to use and contribute to. Future features will include adding arbitrary constraints to inputs,
 creating an API, and hooking into running programs to feed worst-case input directly to functions of interest.
 
 Join us on the ACsploit Slack [here](https://join.slack.com/t/acsploit/shared_invite/zt-7v2fwif6-8ppJyUkirqqHxdYq744PWQ)!
@@ -68,4 +70,9 @@ python -m pytest -n`nproc` --cov=. --cov-report html:cov test/
 Contributing to ACsploit
 ------------------------
 
-We welcome community contributions to all aspects of ACsploit! For guidelines on contributing, please see [Contributing](CONTRIBUTING.md)
+We welcome community contributions to all aspects of ACsploit! For guidelines on contributing, please see [CONTRIBUTING.md](CONTRIBUTING.md)
+
+License
+------------------------
+
+Acsploit is available under the 3-clause BSD license (see [LICENSE](LICENSE))
