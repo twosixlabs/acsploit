@@ -89,7 +89,7 @@ toml==0.10.2
     # via pytest
 tqdm==4.60.0
     # via acsploit (setup.py)
-urllib3==1.26.4
+urllib3==1.26.5
     # via requests
 wcwidth==0.2.5
     # via cmd2
