@@ -34,7 +34,7 @@ idna==2.10
     # via requests
 iniconfig==1.1.1
     # via pytest
-mako==1.1.4
+mako==1.2.2
     # via pdoc3
 markdown==3.3.4
     # via pdoc3
