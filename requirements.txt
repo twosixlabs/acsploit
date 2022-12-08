@@ -10,7 +10,7 @@ attrs==20.3.0
     # via
     #   cmd2
     #   pytest
-certifi==2020.12.5
+certifi==2022.12.7
     # via requests
 chardet==4.0.0
     # via requests
