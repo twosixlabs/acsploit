@@ -77,7 +77,7 @@ pytest==6.2.4
     #   pytest-xdist
 python-utils==2.5.6
     # via acsploit (setup.py)
-requests==2.25.1
+requests==2.31.0
     # via acsploit (setup.py)
 scapy==2.4.5
     # via acsploit (setup.py)
