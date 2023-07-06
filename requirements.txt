@@ -81,7 +81,7 @@ requests==2.25.1
     # via acsploit (setup.py)
 scapy==2.4.5
     # via acsploit (setup.py)
-scipy==1.6.3
+scipy==1.10.0
     # via acsploit (setup.py)
 six==1.16.0
     # via python-utils
